@@ -8,7 +8,7 @@ classdef (Abstract) FeatureTransformerBase < handle
     end
     
     methods (Abstract = true)
-        obj = transform(obj); the
+        obj = transform(obj);
         %Subclasses must implement this method
     end
     
