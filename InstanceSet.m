@@ -13,8 +13,14 @@ classdef InstanceSet
             % features
             % -labels: a m x 1 matrix containing the labels for each
             % instance
-            IS.instances = instances;
-            IS.labels = floor(labels);
+            if nargin == 1
+                [~, cols] = size(instances);
+                IS.instances = instances(:,1:cols-1);
+                IS.labels = instances(:,cols);
+            elseif nargin==2
+                IS.instances = instances;
+                IS.labels = floor(labels);
+            end
         end
         
         function instances = getInstances(IS)
@@ -27,6 +33,27 @@ classdef InstanceSet
         end
         
         function numLabels = getNumLabels(IS)
+            % get the number of labels
+            numLabels = length(unique(IS.getLabels()));
+        end
+        
+        function numInstances = getNumInstances(IS)
+            [numInstances,~] = size(IS.instances);
+        end
+        
+        function numFeatures = getNumFeatures(IS)
+            [~, numFeatures] = size(IS.instances);
+        end
+        
+        
+        function instances = getInstancesForLabel(IS, label)
+            indices = IS.getInstanceIndicesForLabel(label);
+            instances = IS.getInstances();
+            instances = instances(indices,:);
+        end
+        
+        function indices = getInstanceIndicesForLabel(IS,label)
+            [indices, ~] = find(IS.getDataset()==label);
         end
             
         function dataset = getDataset(IS)

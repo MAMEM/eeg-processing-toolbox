@@ -23,9 +23,7 @@ classdef FrequencyFilter < FeatureExtractorBase
         end
         
         function FF = filter(FF)
-            numStim = length(FF.STIM_FREQUENCIES);
             bins = FF.STIM_FREQUENCIES;
-            indexes = {};
             [numInstances,~] = size(FF.originalDataset.instances);
             for i=2:FF.numberOfHarmonics
                 bins = horzcat(bins, FF.STIM_FREQUENCIES.*i);
