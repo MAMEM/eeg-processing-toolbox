@@ -4,7 +4,7 @@ classdef Experimenter < EvaluatorBase
         session;
         transformer;
         extractor;
-%         classifier;
+%         classifier; %inheritted from EvaluatorBase
         evaluator;
     end
     

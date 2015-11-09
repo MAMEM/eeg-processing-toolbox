@@ -4,14 +4,30 @@ classdef ResultSet < InstanceSet
         outputLabels;
         outputProbabilities;
         outputRanking;
+        confusionMatrix;
     end
     
     methods
         function RS = ResultSet(instanceSet, labels, probabilities, ranking)
             RS = RS@InstanceSet(instanceSet);
             RS.outputLabels = labels;
-            RS.outputProbabilities = probabilities;
-            RS.outputRanking = ranking;
+
+            %compute the confusion matrix
+            labels = unique(RS.getLabels);
+            numLabels = length(labels);
+            RS.confusionMatrix = zeros(numLabels);
+            trueLabels = RS.getLabels;
+            numInstances = RS.getNumInstances;
+            for k=1:numInstances
+                idx1 = find(labels==RS.outputLabels(k,1));
+                idx2 = find(labels==trueLabels(k,1));
+                RS.confusionMatrix(idx1,idx2) = RS.confusionMatrix(idx1,idx2)+ 1;
+            end
+            %if classifier supports ranking/probabilities
+            if nargin > 2
+                RS.outputProbabilities = probabilities;
+                RS.outputRanking = ranking;
+            end
         end
     end
     

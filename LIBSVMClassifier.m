@@ -15,6 +15,7 @@ classdef LIBSVMClassifier < ClassifierBase
     
     methods (Access = public)
         function LSVM = LIBSVMClassifier(instanceSet)
+            %set default parameters
             if nargin > 0
                 LSVM.kernel = LSVM.KERNEL_LINEAR;
                 LSVM.cost = 1.0;
@@ -24,6 +25,7 @@ classdef LIBSVMClassifier < ClassifierBase
         end
         
         function LSVM = build(LSVM)
+            %clear all from previous calls to "build"
             LSVM.reset;
             numLabels = LSVM.instanceSet.getNumLabels;
             uniqueLabels = unique(LSVM.instanceSet.getLabels);
@@ -34,6 +36,7 @@ classdef LIBSVMClassifier < ClassifierBase
                 instances = sparse(LSVM.instanceSet.getInstances);
                 LSVM.models{i} = libsvmtrain(labels,instances, '-t 0 -c 1 -b 1');
                 if LSVM.kernel == LSVM.KERNEL_LINEAR;
+                    %store the models in an instance variable
                     LSVM.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -b 1 -q', LSVM.kernel, LSVM.cost));
                 elseif LSVM.kernel == LSVM.KERNEL_RBF;
                     LSVM.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -g %f -b 1 -q', LSVM.kernel, LSVM.cost, LSVM.gamma));
@@ -44,26 +47,38 @@ classdef LIBSVMClassifier < ClassifierBase
         end
         
         function [output, probabilities, ranking] = classifyInstance(LSVM,instance)
-            numModels = length(LSVM.models);
+            %input = instance matrix rows = instances, cols = attributes
+            %output = predicted class
+            %probabilities = probability for predicted class
+            %ranking = propabilities for all classes (e.g. to use with mAP)
             
+            %TODO:should print an error if 'build' has not been called
+            numModels = length(LSVM.models);
             [numinstance, ~] = size(instance);
             scores = zeros(numModels,numinstance);
             for i=1:numModels
+                %predict using the stored models
                 [~, ~, t] = libsvmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');
+                %store probability for each class
                 scores(i,:) = t(:,1);
             end
             output = zeros(numinstance,1);
             probabilities = zeros(numinstance,1);
+            %we need these for ranking metrics (e.g. mAP)
             ranking = scores;
             for i=1:numinstance
+                %select the class with the highest probability
                 [prob, idx] = max(scores(:,i));
                 uniqueLabels = unique(LSVM.instanceSet.getLabels);
+                %output the label with highest probability
                 output(i,1) = uniqueLabels(idx);
+                %return the probability for the output label
                 probabilities(i,1) = prob;
             end
         end
         
         function LSVM = reset(LSVM)
+            %delete all stored models
             LSVM.models = {};
         end
                 

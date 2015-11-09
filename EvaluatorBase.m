@@ -1,8 +1,12 @@
 classdef  EvaluatorBase < handle
+    %evaluate a classifier
 
     properties
+        %classifier ("instanceSet" must be pre-set in the classifier instance)
         classifier;
+        %the input instances
         instanceSet;
+        %a struct with the input instances and the outputlabels
         resultSet;
     end
     
@@ -15,32 +19,62 @@ classdef  EvaluatorBase < handle
         end
         
         function EB = leaveOneOutCV(EB)
+            %leave one out cross validation
             numInstances = EB.instanceSet.getNumInstances;
             outputLabels = zeros(numInstances,1);
             outputScores = zeros(numInstances,1);
             outputRanking = zeros(numInstances, EB.instanceSet.getNumLabels);
             for i=1:numInstances
-%                 EB.classifier.reset;
+                %train the classifier without 1 instance
                 EB.classifier.instanceSet = EB.instanceSet.removeInstance(i);
                 EB.classifier.build();
+                %predict the label of the omitted instance
                 [outputLabels(i,1), outputScores(i,1), outputRanking] = EB.classifier.classifyInstance(EB.instanceSet.getInstance(i));
             end
+            %store the (final) results in a resultSet instances
             EB.resultSet = ResultSet(EB.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
         end
         
         function acc = getAccuracy(EB)
-            outputLabels = EB.resultSet.outputLabels;
-            trueLabels = EB.resultSet.getLabels;
-            numInstances = EB.resultSet.getNumInstances;
-            numCorrect = 0;
-            for i=1:numInstances
-                if outputLabels(i,1) == trueLabels(i,1)
-                    numCorrect = numCorrect +1;
-                end
-            end
-            acc = (numCorrect/numInstances) *100.0;
+            conf = EB.resultSet.confusionMatrix;
+            acc = sum(diag(conf))/sum(sum(conf))*100;
         end
         
+        function confusionMatrix = getConfusionMatrix(EB)
+            %returns confusion with labels as the last row
+            %if you want the conf mat without labels then
+            %"EB.resultSet.confusionMatrix"
+            labels = unique(EB.resultSet.getLabels);
+            confusionMatrix = horzcat(EB.resultSet.confusionMatrix, labels);
+        end
+        
+        %@Elli: are these correct?
+        %delete them if you want
+        function TP = getNumTruePositives(EB)
+            conf = EB.resultSet.confusionMatrix;
+            TP = diag(conf)';
+        end
+        
+        function TN = getNumTrueNegatives(EB)
+            %mpakale tropos
+            numInstances = EB.resultSet.getNumInstances;
+            FN = EB.getNumFalseNegatives;
+            TP = EB.getNumTruePositives;
+            FP = EB.getNumFalsePositives;
+            TN = numInstances - FN - TP - FP;
+        end
+        
+        function FP = getNumFalsePositives(EB)
+            conf = EB.resultSet.confusionMatrix;
+            FP = sum(conf') - diag(conf)';
+        end
+        
+        function FN = getNumFalseNegatives(EB)
+            conf = EB.resultSet.confusionMatrix;
+            FN = sum(conf) - diag(conf)';
+        end
+        
+%         
 %         function AP = getAP(EB)
 %             outputScores = EB.resultSet.outputProbabilities;
 %             outputLabels = EB.resultSet.outputLabels;
