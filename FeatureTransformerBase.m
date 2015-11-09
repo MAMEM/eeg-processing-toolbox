@@ -2,7 +2,7 @@ classdef (Abstract) FeatureTransformerBase < handle
     %Base class for a feature transformer
     %For writing your own FeatureTransformer extend this class and
     %implement the 'transform' function
-    properties (Access = protected)
+    properties (Access = public)
         instanceSet; % Output: The dataset
         trials;% Input: The trial signals
     end

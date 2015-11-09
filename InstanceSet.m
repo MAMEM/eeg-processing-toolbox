@@ -27,6 +27,10 @@ classdef InstanceSet
             % get the instances 
             instances = IS.instances;
         end
+        
+        function instance = getInstance(IS, idx)
+            instance = IS.instances(idx,:);
+        end
         function labels = getLabels(IS)
             % get the labels
             labels = IS.labels;
@@ -60,6 +64,11 @@ classdef InstanceSet
             % same with getInstances but includes the labels as the last
             % row
             dataset = horzcat(IS.instances,IS.labels);
+        end
+        
+        function IS = removeInstance(IS, idx)
+            IS.instances(idx,:) = [];
+            IS.labels(idx,:) = [];
         end
         function writeCSV(IS, csvname)
             % write the dataset to a csv file

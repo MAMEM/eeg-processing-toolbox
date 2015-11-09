@@ -23,9 +23,9 @@ classdef PWelchTransformer < FeatureTransformerBase
     
     methods (Access = public)
         function PWT = PWelchTransformer(trials, seconds, channel, nfft)
-            if ~iscell(trials)
-                error('trials must be cell array of Trial object');
-            end
+%             if ~iscell(trials)
+%                 error('trials must be cell array of Trial object');
+%             end
             if nargin == 0
                 PWT.trials = {};
                 PWT.seconds = 0;
@@ -52,7 +52,7 @@ classdef PWelchTransformer < FeatureTransformerBase
                 PWT.seconds = seconds;
                 PWT.nfft = nfft;
             else
-                error('invalid number of arguments');
+%                 error('invalid number of arguments');
             end
         end
         
