@@ -1,9 +1,9 @@
 classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
 %Computes the psd using the welch method
 %Usage:
-%   session = Session();
-%   session.loadSubject(Session.ANASTASIA);
-%   pwt = PWelchTransformer(session.trials);
+%   session = ssveptoolkit.util.Session();
+%   session.loadSubject(1);
+%   pwt = ssveptolkit.transform.PWelchTransformer(session.trials);
 %Specify the channel to be used (default = 126)
 %   pwt.channel = 150;
 %Specify the number of seconds to be used (default = 0, use all signal)
@@ -12,8 +12,6 @@ classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
 %   pwt.nfft = 512;
 %Transform the signal
 %   pwt.transform();
-%Pass the output to a FeatureExtractor
-%   ff = FrequencyFilter(pwt.getInstanceSet, pwt.pff);
     properties (Access = public)
         channel;
         seconds;
