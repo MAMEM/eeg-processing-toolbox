@@ -1,4 +1,4 @@
-classdef FEASTFilter < FeatureExtractorBase
+classdef FEASTFilter < ssveptoolkit.extractor.FeatureExtractorBase
     properties (Constant)
         ALGORITHM_MIM = 'mim';
         ALGORITHM_MRMR = 'mrmr';
@@ -43,15 +43,15 @@ classdef FEASTFilter < FeatureExtractorBase
         end
         
         function FF = filter(FF)
-            if (strcmp(FF.algorithm,FEASTFilter.ALGORITHM_MIFS) == 1) || (strcmp(FF.algorithm, FEASTFilter.ALGORITHM_FCBF) == 1)
+            if (strcmp(FF.algorithm,FF.ALGORITHM_MIFS) == 1) || (strcmp(FF.algorithm, FF.ALGORITHM_FCBF) == 1)
                 indices = feast(FF.algorithm, FF.numToSelect, FF.originalInstanceSet.getInstances, FF.originalInstanceSet.getLabels, FF.parameter1);
-            elseif strcmp(FF.algorithm, FEASTFilter.ALGORITHM_BETAGAMMA) == 1
+            elseif strcmp(FF.algorithm, FF.ALGORITHM_BETAGAMMA) == 1
                 indices = feast(FF.algorithm, FF.numToSelect, FF.originalInstanceSet.getInstances, FF.originalInstanceSet.getLabels, FF.parameter1, FF.parameter2);
             else 
                 indices = feast(FF.algorithm, FF.numToSelect, FF.originalInstanceSet.getInstances, FF.originalInstanceSet.getLabels);
             end
             dataset = FF.originalInstanceSet.getInstances;
-            FF.filteredInstanceSet = InstanceSet([dataset(:,indices) FF.originalInstanceSet.getLabels]);
+            FF.filteredInstanceSet = ssveptoolkit.util.InstanceSet([dataset(:,indices) FF.originalInstanceSet.getLabels]);
         end
             
     end

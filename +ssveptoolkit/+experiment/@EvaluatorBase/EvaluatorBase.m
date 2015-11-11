@@ -14,7 +14,7 @@ classdef  EvaluatorBase < handle
         function EB = EvaluatorBase(classifier)
             if nargin > 0
                 EB.classifier = classifier;
-                EB.instanceSet = InstanceSet(classifier.instanceSet.getDataset);
+                EB.instanceSet = ssveptoolkit.util.InstanceSet(classifier.instanceSet.getDataset);
             end
         end
         
@@ -24,15 +24,20 @@ classdef  EvaluatorBase < handle
             outputLabels = zeros(numInstances,1);
             outputScores = zeros(numInstances,1);
             outputRanking = zeros(numInstances, EB.instanceSet.getNumLabels);
+            h = waitbar(0,'Cross-validating..');
+            %TODO: parfor this?
             for i=1:numInstances
+                waitbar(i/numInstances,h,sprintf('Cross-validating fold: %d/%d', i, numInstances));
                 %train the classifier without 1 instance
+                %TODO: this line will change
                 EB.classifier.instanceSet = EB.instanceSet.removeInstance(i);
                 EB.classifier.build();
                 %predict the label of the omitted instance
-                [outputLabels(i,1), outputScores(i,1), outputRanking] = EB.classifier.classifyInstance(EB.instanceSet.getInstance(i));
+                [outputLabels(i,1), outputScores(i,1), outputRanking(i,:)] = EB.classifier.classifyInstance(EB.instanceSet.getInstance(i));
             end
             %store the (final) results in a resultSet instances
-            EB.resultSet = ResultSet(EB.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+            EB.resultSet = ssveptoolkit.util.ResultSet(EB.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+            close(h);
         end
         
         function acc = getAccuracy(EB)

@@ -1,4 +1,4 @@
-classdef PYAR_Transformer < FeatureTransformerBase
+classdef PYAR_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
     
     properties (Access = public)
         channel;
@@ -9,11 +9,11 @@ classdef PYAR_Transformer < FeatureTransformerBase
     
     methods (Access = public)
         function mAR = PYAR_Transformer(trials, seconds, channel,m_ord, nfft)
-            if ~iscell(trials)
-                error('trials must be cell array of Trial object');
-            end
             if nargin == 0
-                error('not enough arguments');
+                mAR.seconds = 0;
+                mAR.channel = 126;
+                mAR.order = 2;
+                mAR.nfft = 512;
             elseif nargin == 1
                 mAR.trials = trials;
                 mAR.seconds = 0;
@@ -65,7 +65,7 @@ classdef PYAR_Transformer < FeatureTransformerBase
                 instances(i,:) = pyy;
                 labels(i,1) = floor(mAR.trials{i}.label);
             end
-            mAR.instanceSet = InstanceSet(instances,labels);
+            mAR.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
     end
    

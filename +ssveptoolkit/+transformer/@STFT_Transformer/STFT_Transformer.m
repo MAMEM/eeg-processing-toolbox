@@ -1,4 +1,4 @@
-classdef STFT_Transformer < FeatureTransformerBase
+classdef STFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
     
     properties (Access = public)
         channel;
@@ -8,11 +8,11 @@ classdef STFT_Transformer < FeatureTransformerBase
     
     methods (Access = public)
         function mSTFT = STFT_Transformer(trials, seconds, channel,rangeFreq)
-            if ~iscell(trials)
-                error('trials must be cell array of Trial object');
-            end
             if nargin == 0
-                error('not enough arguments');
+                mSTFT.seconds = 0;
+                mSTFT.channel = 126;
+                mSTFT.Frange(1) = 0;
+%                 mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;
             elseif nargin == 1
                 mSTFT.trials = trials;
                 mSTFT.seconds = 0;
@@ -55,7 +55,7 @@ classdef STFT_Transformer < FeatureTransformerBase
         end
         
         function transform(mSTFT)
-            
+            mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;
             numsamples = mSTFT.trials{1}.samplingRate * mSTFT.seconds;
             if (numsamples == 0)                    
                 numsamples = size(mSTFT.trials{1}.signal(mSTFT.channel,:),2);                             
@@ -78,7 +78,7 @@ classdef STFT_Transformer < FeatureTransformerBase
                 instances(i,:) = P(:);
                 labels(i,1) = floor(mSTFT.trials{i}.label);
             end
-            mSTFT.instanceSet = InstanceSet(instances,labels);
+            mSTFT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
     end
    

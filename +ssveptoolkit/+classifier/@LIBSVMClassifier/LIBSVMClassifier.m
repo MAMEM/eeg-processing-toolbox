@@ -1,4 +1,4 @@
-classdef LIBSVMClassifier < ClassifierBase
+classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
     
     properties (Constant)
         KERNEL_LINEAR = 0;
@@ -21,6 +21,9 @@ classdef LIBSVMClassifier < ClassifierBase
                 LSVM.cost = 1.0;
                 LSVM.instanceSet = instanceSet;
                 LSVM.gamma = 1/instanceSet.getNumFeatures;
+            else
+                LSVM.kernel = LSVM.KERNEL_LINEAR;
+                LSVM.cost = 1.0;
             end
         end
         
@@ -34,12 +37,11 @@ classdef LIBSVMClassifier < ClassifierBase
                 labels = zeros(LSVM.instanceSet.getNumInstances,1)-1;
                 labels(LSVM.instanceSet.getInstanceIndicesForLabel(currentLabel)) = 1;
                 instances = sparse(LSVM.instanceSet.getInstances);
-                LSVM.models{i} = libsvmtrain(labels,instances, '-t 0 -c 1 -b 1');
                 if LSVM.kernel == LSVM.KERNEL_LINEAR;
                     %store the models in an instance variable
-                    LSVM.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -b 1 -q', LSVM.kernel, LSVM.cost));
+                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -b 1 -q', LSVM.kernel, LSVM.cost));
                 elseif LSVM.kernel == LSVM.KERNEL_RBF;
-                    LSVM.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -g %f -b 1 -q', LSVM.kernel, LSVM.cost, LSVM.gamma));
+                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -g %f -b 1 -q', LSVM.kernel, LSVM.cost, LSVM.gamma));
                 else
                     error('invalid kernel parameter');
                 end

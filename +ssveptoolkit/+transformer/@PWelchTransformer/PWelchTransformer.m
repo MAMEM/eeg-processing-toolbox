@@ -1,4 +1,4 @@
-classdef PWelchTransformer < FeatureTransformerBase
+classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
 %Computes the psd using the welch method
 %Usage:
 %   session = Session();
@@ -74,7 +74,7 @@ classdef PWelchTransformer < FeatureTransformerBase
                 instances(i,:) = pxx;
                 labels(i,1) = floor(PWT.trials{i}.label);
             end
-            PWT.instanceSet = InstanceSet(instances, labels);
+            PWT.instanceSet = ssveptoolkit.util.InstanceSet(instances, labels);
             PWT.pff = pff;
         end
     end

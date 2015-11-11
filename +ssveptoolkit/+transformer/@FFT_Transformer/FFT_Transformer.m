@@ -1,4 +1,4 @@
-classdef FFT_Transformer < FeatureTransformerBase
+classdef FFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
     
     properties (Access = public)
         channel;
@@ -8,11 +8,10 @@ classdef FFT_Transformer < FeatureTransformerBase
     
     methods (Access = public)
         function mFFT = FFT_Transformer(trials, seconds, channel,nfft)
-            if ~iscell(trials)
-                error('trials must be cell array of Trial object');
-            end
             if nargin == 0
-                error('not enough arguments');
+                mFFT.seconds = 0;
+                mFFT.channel = 126;
+                mFFT.nfft = 512;
             elseif nargin == 1
                 mFFT.trials = trials;
                 mFFT.seconds = 0;
@@ -56,7 +55,7 @@ classdef FFT_Transformer < FeatureTransformerBase
                 instances(i,:) = pyy;
                 labels(i,1) = floor(mFFT.trials{i}.label);
             end
-            mFFT.instanceSet = InstanceSet(instances,labels);
+            mFFT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
     end
    

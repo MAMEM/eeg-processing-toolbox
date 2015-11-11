@@ -1,4 +1,4 @@
-classdef ResultSet < InstanceSet
+classdef ResultSet < ssveptoolkit.util.InstanceSet
     
     properties
         outputLabels;
@@ -9,7 +9,7 @@ classdef ResultSet < InstanceSet
     
     methods
         function RS = ResultSet(instanceSet, labels, probabilities, ranking)
-            RS = RS@InstanceSet(instanceSet);
+            RS = RS@ssveptoolkit.util.InstanceSet(instanceSet);
             RS.outputLabels = labels;
 
             %compute the confusion matrix

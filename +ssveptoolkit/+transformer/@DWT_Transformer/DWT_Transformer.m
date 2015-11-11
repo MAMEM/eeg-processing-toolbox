@@ -1,4 +1,4 @@
-classdef DWT_Transformer < FeatureTransformerBase
+classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
     
     properties (Access = public)
         channel;
@@ -9,11 +9,11 @@ classdef DWT_Transformer < FeatureTransformerBase
     
     methods (Access = public)
         function mDWT = DWT_Transformer(trials, seconds, channel,levWT,WavFam)
-            if ~iscell(trials)
-                error('trials must be cell array of Trial object');
-            end
             if nargin == 0
-                error('not enough arguments');
+                mDWT.seconds = 0;
+                mDWT.channel = 126;
+                mDWT.levelWT = 5;
+                mDWT.WavFamily = 'db1';
             elseif nargin == 1
                 mDWT.trials = trials;
                 mDWT.seconds = 0;
@@ -73,7 +73,7 @@ classdef DWT_Transformer < FeatureTransformerBase
                 instances(i,:) = C;
                 labels(i,1) = floor(mDWT.trials{i}.label);
             end
-            mDWT.instanceSet = InstanceSet(instances,labels);
+            mDWT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
     end
    
