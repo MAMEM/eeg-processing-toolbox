@@ -9,7 +9,9 @@ classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
     
     methods
         function FF = FrequencyFilter(instanceSet, pff, numberOfHarmonics)
-            if nargin == 2
+            if nargin == 0
+                FF.numberOfHarmonics = 1;
+            elseif nargin == 2
                 FF.pff = pff.*2;
                 FF.originalInstanceSet = instanceSet;
                 FF.numberOfHarmonics = 1;
@@ -34,6 +36,10 @@ classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
                 instances(:,i) = FF.originalInstanceSet.instances(:,indx);
             end
             FF.filteredInstanceSet = ssveptoolkit.util.InstanceSet(instances, FF.originalInstanceSet.labels);
+        end
+        
+        function configInfo = getConfigInfo(FF)
+            configInfo = sprintf('FrequencyFilter\tnumberofharmonics:%d',FF.numberOfHarmonics);
         end
             
     end

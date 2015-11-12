@@ -8,6 +8,7 @@ classdef (Abstract) FeatureExtractorBase < handle
     
     methods (Abstract = true)
         obj = filter(obj);
+        configInfo = getConfigInfo(obj);
     end
     
 end

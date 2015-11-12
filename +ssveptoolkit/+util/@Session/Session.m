@@ -26,6 +26,7 @@ classdef Session < handle
         trials = {}; % Trials of the loaded sessions.
         filt; % Filter to be applied when data is loaded
         sessions;
+        subjectids;
     end
     
     properties (Access = private)
@@ -113,6 +114,8 @@ classdef Session < handle
             S.sessions{13,3} = 'S013c';
             S.sessions{13,4} = 'S013d';
             S.sessions{13,5} = 'S013e';
+            
+            S.subjectids = [];
         end
        
         function S = loadSubjectSession(S,subject,session)
@@ -124,7 +127,7 @@ classdef Session < handle
             %
             load(S.sessions{subject,session});
             signal = eval('eeg');
-            curTrials = S.split(signal, DIN_1);
+            curTrials = S.split(signal, DIN_1,subject);
             numTrials = length(S.trials) + 1;
             for i=1:length(curTrials)
                 S.trials{numTrials} = curTrials{i};
@@ -159,6 +162,7 @@ classdef Session < handle
         function S = clearData(S)
             %clears loaded data
             S.trials = {};
+            S.subjectids = [];
         end
         
         function applyFilter(S, filt)
@@ -178,7 +182,7 @@ classdef Session < handle
     end
     
     methods (Access = private)
-        function trials = split(S, signal, dins)
+        function trials = split(S, signal, dins, subjectid)
             timestamps = cell2mat(dins(2,:));
             samples = cell2mat(dins(4,:));
             [a numDins ]= size(dins);
@@ -221,12 +225,14 @@ classdef Session < handle
             trials = {};
             i = 1;
             for i=1:numSplits
-                trials{i} = ssveptoolkit.util.Trial(signal(:, ranges(i,1):ranges(i,2)), freqs(i), S.SAMPLING_RATE);
+                trials{i} = ssveptoolkit.util.Trial(signal(:, ranges(i,1):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid);
+                S.subjectids = [S.subjectids subjectid];
             end
             i = i +1;
             if(S.rest > 0)
                 for i=i:(numSplits*2)
-                    trials{i} = ssveptoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE);
+                    trials{i} = ssveptoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE, subjectid);
+                    S.subjectids = [S.subjectids subjectid];
                 end
             end
             %filter the trials (if a filter is set)
