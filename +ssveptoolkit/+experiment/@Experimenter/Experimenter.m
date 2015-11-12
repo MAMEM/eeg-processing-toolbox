@@ -19,6 +19,7 @@ classdef Experimenter < handle
         function E = Experimenter(evalMethod)
             if nargin > 0
                 E.evalMethod = evalMethod;
+            else E.evalMethod = 0;
             end
             E.results = {};
         end
@@ -42,8 +43,11 @@ classdef Experimenter < handle
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
                     subjects = unique(E.session.subjectids);
+                    instanceSet = E.classifier.instanceSet;
                     for i=1:length(subjects)
-                        E.leaveOneSubjectOut(subjects(i))
+                        fprintf('leaving subject #%d out\n', i);
+                        E.leaveOneSubjectOut(subjects(i), instanceSet);
+                        
                     end
                 otherwise
                     error ('eval method not set or invalid');
@@ -83,23 +87,25 @@ classdef Experimenter < handle
                 waitbar(i/numInstances,h,sprintf('Cross-validating fold: %d/%d', i, numInstances));
                 %train the classifier without 1 instance
                 %TODO: this line will change
-                E.classifier.instanceSet = instanceSet.removeInstance(i);
+                E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(i);
                 E.classifier.build();
                 %predict the label of the omitted instance
-                [outputLabels(i,1), outputScores(i,1), outputRanking(i,:)] = E.classifier.classifyInstance(instanceSet.getInstance(i));
+                [outputLabels(i,1), outputScores(i,1), outputRanking(i,:)] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(i));
             end
+            resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+            E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
             %store the (final) results in a resultSet instances
 %             EB.resultSet = ssveptoolkit.util.ResultSet(E.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
             close(h);
         end
         
-        function resultSet = leaveOneSubjectOut(E, subjectid)
+        function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)
             testingset = find(E.session.subjectids == subjectid);
-            instanceSet = E.classifier.instanceSet;
             E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
             E.classifier.build();
-            [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance(E.instanceSet.getInstancesWithIndices(testingset));
-            resultSet = ssveptoolkit.util.ResultSet(E.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+            [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+            resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+            E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
             %             h = waitbar(0, 'Evaluating..');
             
         end
