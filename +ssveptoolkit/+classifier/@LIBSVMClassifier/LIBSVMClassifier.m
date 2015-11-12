@@ -83,6 +83,17 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
             %delete all stored models
             LSVM.models = {};
         end
+        
+        function configInfo = getConfigInfo(LSVM)
+            switch LSVM.kernel
+                case LSVM.KERNEL_LINEAR
+                    configInfo = sprintf('LIBSVMClassifier\tkernel:linear\tcost:%d', LSVM.cost);
+                case LSVM.KERNEL_RBF
+                    configInfo = sprintf('LIBSVMClassifier\tkernel:rbf\tcost:%d\tgamma:%d', LSVM.cost, LSVM.gamma);
+                otherwise 
+                    configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';
+            end
+        end
                 
     end
 end

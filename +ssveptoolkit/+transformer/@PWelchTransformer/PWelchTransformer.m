@@ -75,6 +75,10 @@ classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
             PWT.instanceSet = ssveptoolkit.util.InstanceSet(instances, labels);
             PWT.pff = pff;
         end
+        
+        function configInfo = getConfigInfo(PWT)
+            configInfo = sprintf('PWelchTransformer\tchannel:%d\tseconds:%d\tnfft:%d',PWT.channel,PWT.seconds,PWT.nfft);
+        end
     end
    
 end

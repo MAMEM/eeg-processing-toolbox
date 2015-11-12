@@ -8,6 +8,7 @@ classdef (Abstract) ClassifierBase < handle
         obj = classifyInstance(obj);
         obj = build(obj);
         obj = reset(obj);
+        configInfo = getConfigInfo(obj);
     end
     
 end
