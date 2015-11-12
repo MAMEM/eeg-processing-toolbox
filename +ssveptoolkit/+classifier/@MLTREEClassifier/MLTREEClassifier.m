@@ -1,4 +1,3 @@
-%comment
 
 classdef MLTREEClassifier < ssveptoolkit.classifier.ClassifierBase
     
