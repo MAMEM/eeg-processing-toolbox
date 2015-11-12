@@ -101,6 +101,10 @@ classdef MLSVMClassifier < ClassifierBase
             %delete all stored models
             MLSVM.models = {};
         end
+        
+        function configInfo = getConigInfo(MLSVM)
+            configInfo = 'MLSVMClassifier (Config info not supported yet)';
+        end
                 
     end
 end

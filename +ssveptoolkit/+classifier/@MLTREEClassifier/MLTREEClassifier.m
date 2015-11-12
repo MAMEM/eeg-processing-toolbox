@@ -120,6 +120,10 @@ classdef MLTREEClassifier < ssveptoolkit.classifier.ClassifierBase
             %delete all stored models
             MLTREE.models = {};
         end
+        
+        function configInfo = getConigInfo(MLTREE)
+            configInfo = 'MLTREEClassifier (Config info not supported yet)';
+        end
                 
     end
 end
