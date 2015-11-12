@@ -1,7 +1,7 @@
 %IN-PRogress
 
 sess = ssveptoolkit.util.Session();
-sess.loadSubject(1);
+sess.loadSubject(2);
 %sess.loadAll();
 %transf = sveptoolkit.transformer.DWT_Transformer(sess.trials);
 transf = ssveptoolkit.transformer.PWelchTransformer();
@@ -15,17 +15,10 @@ transf.nfft = 512;
 % filt.algorithm = filt.ALGORITHM_MIM;
 % filt.numToSelect = 250;
 
-classif = ssveptoolkit.classifier.LIBSVMClassifier(); % Classifier based on libsvm
-classif.cost = 2.0;
-classif.kernel = classif.KERNEL_LINEAR;
+% classif = ssveptoolkit.classifier.LIBSVMClassifier(); % Classifier based on libsvm
+% classif.cost = 2.0;
+% classif.kernel = classif.KERNEL_LINEAR;
 
-% classif = ssveptoolkit.classifier.MLDAClassifier(); % Classifier based on Discriminant Analysis
-% classif.DiscrimType='linear';
-% classif.Delta=1;
-% classif.Gamma=0;
-% classif.FillCoeffs='on';
-% classif.ScoreTransform='symmetriclogit';
-% classif.Prior='uniform';
 
 % classif = ssveptoolkit.classifier.MLTREEClassifier(); % Classifier based on trees
 % classif.AlgorithmForCategorical='PCA';
@@ -52,4 +45,4 @@ experiment.classifier = classif;
 
 %run the experiment
 experiment.run();
-sprintf('acc = %f', experiment.getAccuracy())
+sprintf('acc = %f', experiment.results{1}.getAccuracy())

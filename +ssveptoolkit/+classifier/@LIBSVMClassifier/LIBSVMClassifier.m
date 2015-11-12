@@ -60,7 +60,7 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
             scores = zeros(numModels,numinstance);
             for i=1:numModels
                 %predict using the stored models
-                [~, ~, t] = libsvmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');
+                [~, ~, t] = svmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');
                 %store probability for each class
                 scores(i,:) = t(:,1);
             end

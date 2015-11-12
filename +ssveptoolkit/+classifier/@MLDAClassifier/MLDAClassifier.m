@@ -114,6 +114,10 @@ classdef MLDAClassifier < ssveptoolkit.classifier.ClassifierBase
             %delete all stored models
             MLDA.models = {};
         end
+        
+        function configInfo = getConfigInfo(MLDA)
+            configInfo = sprintf('MLDAClassifier\tdiscrimtype:%s\tdelta:%f\tgamma:%f\tfillcoeffs:%d\tscoretransform:%s\tprior:%s',MLDA.DiscrimType, MLDA.Delta, MLDA.Gamma, MLDA.FillCoeffs, MLDA.ScoreTransform, MLDA.Prior);
+        end
                 
     end
 end
