@@ -1,3 +1,5 @@
+%comment
+
 classdef MLTREEClassifier < ssveptoolkit.classifier.ClassifierBase
     
     properties (Constant)
