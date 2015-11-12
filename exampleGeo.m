@@ -1,3 +1,4 @@
+%comment
 session = ssveptoolkit.util.Session();
 
 session.loadSubject(1); % load first subject trials
