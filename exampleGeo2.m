@@ -13,7 +13,7 @@ filt.algorithm = filt.ALGORITHM_MIM;
 filt.numToSelect = 250;
 
 classif = ssveptoolkit.classifier.LIBSVMClassifier();
-classif.cost = 2.0;
+classif.cost = 1.0;
 classif.kernel = classif.KERNEL_LINEAR;
 
 experiment = ssveptoolkit.experiment.Experimenter();
@@ -25,4 +25,4 @@ experiment.classifier = classif;
 
 %run the experiment
 experiment.run();
-sprintf('acc = %f', experiment.getAccuracy())
+sprintf('acc = %f', experiment.results{1}.getAccuracy())
