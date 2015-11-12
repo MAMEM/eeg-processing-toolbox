@@ -1,4 +1,4 @@
-classdef MLSVMClassifier < ClassifierBase
+classdef MLSVMClassifier < ssveptoolkit.classifier.ClassifierBase
     
     properties (Constant)
 
@@ -38,7 +38,8 @@ classdef MLSVMClassifier < ClassifierBase
             instances=MLSVM.instanceSet.instances;
             labels=MLSVM.instanceSet.labels;
             
-            MLSVM.models{1}=fitcecoc(instances,labels,'Coding', MLSVM.Coding,'FitPosterior', MLSVM.FitPosterior,'Prior',MLSVM.Prior);
+            t=templateSVM('KernelFunction','polynomial');
+            MLSVM.models{1}=fitcecoc(instances,labels,'Coding', MLSVM.Coding,'FitPosterior', MLSVM.FitPosterior,'Prior',MLSVM.Prior,'Learners',t);
             
             % ---- One (vs) All ----- %
 %             for i=1:numLabels
@@ -102,7 +103,7 @@ classdef MLSVMClassifier < ClassifierBase
             MLSVM.models = {};
         end
         
-        function configInfo = getConigInfo(MLSVM)
+        function configInfo = getConfigInfo(MLSVM)
             configInfo = 'MLSVMClassifier (Config info not supported yet)';
         end
                 

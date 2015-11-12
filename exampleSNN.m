@@ -11,14 +11,26 @@ transf.channel = 126;
 transf.seconds = 5;
 transf.nfft = 512;
 
-% filt = ssveptoolkit.extractor.FEASTFilter();
-% filt.algorithm = filt.ALGORITHM_MIM;
-% filt.numToSelect = 250;
+filt = ssveptoolkit.extractor.FEASTFilter();
+filt.algorithm = filt.ALGORITHM_MIM;
+filt.numToSelect = 250;
 
 % classif = ssveptoolkit.classifier.LIBSVMClassifier(); % Classifier based on libsvm
 % classif.cost = 2.0;
 % classif.kernel = classif.KERNEL_LINEAR;
 
+classif = ssveptoolkit.classifier.MLSVMClassifier(); % Classifier based on SVM from the Machine learning toolbox
+classif.Coding='onevsall';
+classif.FitPosterior=1;
+classif.Prior='uniform';
+
+% classif = ssveptoolkit.classifier.MLDAClassifier(); % Classifier based on Discriminant Analysis
+% classif.DiscrimType='linear';
+% classif.Delta=1;
+% classif.Gamma=0;
+% classif.FillCoeffs='on';
+% classif.ScoreTransform='symmetriclogit';
+% classif.Prior='uniform';
 
 % classif = ssveptoolkit.classifier.MLTREEClassifier(); % Classifier based on trees
 % classif.AlgorithmForCategorical='PCA';
@@ -31,16 +43,12 @@ transf.nfft = 512;
 
 %classif = ssveptoolkit.classifier.MLENSClassifier(); % Classifier based on ensemples (e.g.Adaboost)
 
-% classif = ssveptoolkit.classifier.MLSVMClassifier(); % Classifier based on SVM from the Machine learning toolbox
-% classif.Coding='onevsall';
-% classif.FitPosterior=1;
-% classif.Prior='uniform';
 
 experiment = ssveptoolkit.experiment.Experimenter();
 experiment.session = sess;
 experiment.transformer = transf;
 %comment this line if you dont want a filter
-% experiment.extractor = filt;
+experiment.extractor = filt;
 experiment.classifier = classif;
 
 %run the experiment
