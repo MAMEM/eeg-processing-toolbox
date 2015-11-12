@@ -57,6 +57,10 @@ classdef FFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
             end
             mFFT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
+        
+        function configInfo = getConfigInfo(mFFT)
+            configInfo = sprintf('FFT_Transformer\tchannel:%d\tseconds:%d\tnfft:%d',mFFT.channel,mFFT.seconds,mFFT.nfft);
+        end
     end
    
 end

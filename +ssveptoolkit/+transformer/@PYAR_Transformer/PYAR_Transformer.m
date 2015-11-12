@@ -67,6 +67,10 @@ classdef PYAR_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
             end
             mAR.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
+        
+        function configInfo = getConfigInfo(mAR)
+            configInfo = sprintf('PYAR_Transformer\tchannel:%d\tseconds:%d\tnfft:%d\torder:%d',mAR.channel,mAR.seconds,mAR.nfft,mAR.order);
+        end
     end
    
 end

@@ -80,6 +80,14 @@ classdef STFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
             end
             mSTFT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
+        
+        function configInfo = getConfigInfo(mSTFT)
+            if length(mSTFT.Frange) == 2
+                configInfo = sprintf('STFT_Transformer\tchannel:%d\tseconds:%d\tfrange1:%d\tfrange2:%d',mSTFT.channel,mSTFT.seconds,mSTFT.Frange(1),mSTFT.Frange(2));
+            else
+                configInfo = sprintf('STFT_Transformer\tchannel:%d\tseconds:%d\tfrange1:%d\tfrange2:unset',mSTFT.channel,mSTFT.seconds,mSTFT.Frange(1));
+            end
+        end
     end
    
 end

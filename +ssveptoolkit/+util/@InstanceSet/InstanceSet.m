@@ -28,7 +28,7 @@ classdef InstanceSet
             instances = IS.instances;
         end
         
-        function instance = getInstance(IS, idx)
+        function instance = getInstancesWithIndices(IS, idx)
             instance = IS.instances(idx,:);
         end
         function labels = getLabels(IS)
@@ -66,7 +66,7 @@ classdef InstanceSet
             dataset = horzcat(IS.instances,IS.labels);
         end
         
-        function IS = removeInstance(IS, idx)
+        function IS = removeInstancesWithIndices(IS, idx)
             IS.instances(idx,:) = [];
             IS.labels(idx,:) = [];
         end
