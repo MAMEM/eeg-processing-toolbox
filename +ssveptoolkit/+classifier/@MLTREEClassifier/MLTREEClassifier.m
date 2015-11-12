@@ -121,7 +121,7 @@ classdef MLTREEClassifier < ssveptoolkit.classifier.ClassifierBase
             MLTREE.models = {};
         end
         
-        function configInfo = getConigInfo(MLTREE)
+        function configInfo = getConfigInfo(MLTREE)
             configInfo = 'MLTREEClassifier (Config info not supported yet)';
         end
                 
