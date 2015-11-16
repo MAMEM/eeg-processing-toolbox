@@ -66,4 +66,3 @@ classdef FEASTFilter < ssveptoolkit.extractor.FeatureExtractorBase
     end
     
 end
-
