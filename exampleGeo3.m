@@ -9,12 +9,13 @@ transf = ssveptoolkit.transformer.PWelchTransformer;
 % (optional) define the parameters
 transf.channel = 126;
 transf.seconds = 5;
-transf.nfft = 128;
+% transf.nfft = 128;
 % transf.nfft = 512;
 
-filt = ssveptoolkit.extractor.FEASTFilter();
-filt.algorithm = filt.ALGORITHM_MIM;
-filt.numToSelect = 250;
+filt = ssveptoolkit.extractor.SVDFilter();
+filt.modes = 150;
+% filt.algorithm = filt.ALGORITHM_MIM;
+% filt.numToSelect = 250;
 
 classif = ssveptoolkit.classifier.LIBSVMClassifier();
 classif.cost = 1.0;
@@ -24,7 +25,7 @@ experiment = ssveptoolkit.experiment.Experimenter();
 experiment.session = sess;
 experiment.transformer = transf;
 %comment this line if you dont want a filter
-% experiment.extractor = filt;
+ experiment.extractor = filt;
 experiment.classifier = classif;
 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)
 %run the experiment
