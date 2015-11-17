@@ -4,9 +4,9 @@ properties (Access = public)
 end
 methods
         function FF = SVDFilter(instanceSet,modes)
-            if nargin > 0
+            if nargin == 0
                 FF.modes = 50;
-                FF.originalInstanceSet = instanceSet;
+                %FF.originalInstanceSet = instanceSet;
             end
             if nargin > 1
                 FF.modes = modes;
