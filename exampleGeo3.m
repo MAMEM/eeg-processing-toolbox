@@ -13,7 +13,7 @@ transf.seconds = 5;
 % transf.nfft = 512;
 
 filt = ssveptoolkit.extractor.SVDFilter();
-filt.modes = 50;
+filt.modes = 150;
 % filt.algorithm = filt.ALGORITHM_MIM;
 % filt.numToSelect = 250;
 
