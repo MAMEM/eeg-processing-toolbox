@@ -7,24 +7,56 @@ classdef MLSVMClassifier < ssveptoolkit.classifier.ClassifierBase
     properties
        Coding; % Coding design 'onevsall' (default) | 'allpairs' | 'binarycomplete' | 'denserandom' | 'onevsone' | 'ordinal' | 'sparserandom' | 'ternarycomplete' | numeric matrix
        FitPosterior; % Flag indicating whether to transform scores to posterior probabilities false or 0 (default) | true or 1
-       Prior % 'empirical' (default) or 'uniform'.  Prior probabilities for each class. 
+       Prior % 'empirical' (default) or 'uniform'.  Prior probabilities for each class.
+       tmpltSVM;
        models; 
     end
     
     methods (Access = public)
-        function MLSVM = MLSVMClassifier(instanceSet, coding, fitPosterior, prior)
+        function MLSVM = MLSVMClassifier(instanceSet, coding, fitPosterior, prior, tmpltsvm)
             %set default parameters
-            if nargin > 0
+            
+            if nargin == 0
+                MLSVM.Coding='onevsone';
+                MLSVM.FitPosterior='off';
+                MLSVM.Prior='empirical';
+                MLSVM.tmpltSVM=templateSVM('KernelFunction','linear');
+            elseif nargin == 1 
                 MLSVM.instanceSet = instanceSet;
-            end
-            if nargin > 1
+                MLSVM.Coding='onevsone';
+                MLSVM.FitPosterior='off';
+                MLSVM.Prior='empirical';
+                MLSVM.tmpltSVM=templateSVM('KernelFunction','linear');              
+            elseif nargin == 2 
+                MLSVM.instanceSet = instanceSet;
+                MLSVM.Coding=coding;
+                MLSVM.FitPosterior='off';
+                MLSVM.Prior='empirical';
+                MLSVM.tmpltSVM=templateSVM('KernelFunction','linear');
+            elseif nargin == 3 
+                MLSVM.instanceSet = instanceSet;
                 MLSVM.Coding = coding;
-            end
-            if nargin > 2 
+                MLSVM.FitPosterior=fitPosterior';
+                MLSVM.Prior='empirical';
+                MLSVM.tmpltSVM=templateSVM('KernelFunction','linear');
+            elseif nargin == 4
+                MLSVM.instanceSet = instanceSet;
+                MLSVM.Coding = coding;
                 MLSVM.FitPosterior=fitPosterior;
-            end
-            if nargin > 3
-                MLSVM.Prior = prior;
+                MLSVM.Prior=prior;
+                MLSVM.tmpltSVM=templateSVM('KernelFunction','linear');
+            elseif nargin == 5
+                MLSVM.instanceSet = instanceSet;
+                MLSVM.Coding = coding;
+                MLSVM.FitPosterior=fitPosterior;
+                MLSVM.Prior=prior;
+                MLSVM.tmpltSVM=tmpltsvm;
+            elseif nargin > 5
+                MLSVM.instanceSet = instanceSet;
+                MLSVM.Coding = coding;
+                MLSVM.FitPosterior=fitPosterior;
+                MLSVM.Prior=prior;
+                MLSVM.tmpltSVM=tmpltsvm;             
             end
         end
         
@@ -38,9 +70,8 @@ classdef MLSVMClassifier < ssveptoolkit.classifier.ClassifierBase
             instances=MLSVM.instanceSet.instances;
             labels=MLSVM.instanceSet.labels;
             
-            t=templateSVM('KernelFunction','polynomial');
-            MLSVM.models{1}=fitcecoc(instances,labels,'Coding', MLSVM.Coding,'FitPosterior', MLSVM.FitPosterior,'Prior',MLSVM.Prior,'Learners',t);
-            
+            %t=templateSVM('KernelFunction','linear');
+            MLSVM.models{1}=fitcecoc(instances,labels,'Coding', MLSVM.Coding,'FitPosterior', MLSVM.FitPosterior,'Prior',MLSVM.Prior,'Learners',MLSVM.tmpltSVM); 
             % ---- One (vs) All ----- %
 %             for i=1:numLabels
 %                 currentLabel = uniqueLabels(i);
@@ -104,7 +135,10 @@ classdef MLSVMClassifier < ssveptoolkit.classifier.ClassifierBase
         end
         
         function configInfo = getConfigInfo(MLSVM)
-            configInfo = 'MLSVMClassifier (Config info not supported yet)';
+            %configInfo=sprintf('MLSVMClassifier\tCoding:%s\tFitPosterior:%s\tPrior:%s\templateSVM-Kernel:%s\n', MLSVM.Coding, MLSVM.FitPosterior,MLSVM.Prior,MLSVM.tmpltSVM);
+            configInfo=sprintf('MLSVMClassifier\tCoding:%s\tFitPosterior:%s\tPrior:%s\n', MLSVM.Coding, MLSVM.FitPosterior,MLSVM.Prior);
+            MLSVM.tmpltSVM
+            %configInfo = 'MLSVMClassifier (Config info not supported yet)';
         end
                 
     end
