@@ -1,4 +1,3 @@
-% allagi
 % Leave one subject out testing
 % load filtMAMEM; % load a filter
 % sess = ssveptoolkit.util.Session(Hhp);
@@ -25,7 +24,7 @@ experiment = ssveptoolkit.experiment.Experimenter();
 experiment.session = sess;
 experiment.transformer = transf;
 %comment this line if you dont want a filter
- experiment.extractor = filt;
+%experiment.extractor = filt;
 experiment.classifier = classif;
 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)
 %run the experiment
