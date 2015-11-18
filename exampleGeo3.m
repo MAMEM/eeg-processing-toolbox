@@ -12,10 +12,11 @@ transf.seconds = 5;
 % transf.nfft = 128;
 % transf.nfft = 512;
 
-filt = ssveptoolkit.extractor.SVDFilter();
-filt.modes = 150;
-% filt.algorithm = filt.ALGORITHM_MIM;
-% filt.numToSelect = 250;
+filt = ssveptoolkit.extractor.FEASTFilter();
+%filt.componentNum = 256;
+%filt.modes = 80;
+ filt.algorithm = filt.ALGORITHM_RELIEF;
+ filt.numToSelect = 100;
 
 classif = ssveptoolkit.classifier.LIBSVMClassifier();
 classif.cost = 1.0;
@@ -34,6 +35,7 @@ accuracies = [];
 for i=1:length(experiment.results)
     accuracies = [accuracies experiment.results{i}.getAccuracy()];
 end
+accuracies'
 %mean accuracy for all subjects
 fprintf('mean acc = %f\n', mean(accuracies));
 %get the configuration used (for reporting)
