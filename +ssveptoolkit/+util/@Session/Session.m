@@ -99,21 +99,21 @@ classdef Session < handle
             S.sessions{10,3} = 'S010c';
             S.sessions{10,4} = 'S010d';
             S.sessions{10,5} = 'S010e';
-            S.sessions{11,1} = 'S011a';
-            S.sessions{11,2} = 'S011b';
-            S.sessions{11,3} = 'S011c';
-            S.sessions{11,4} = 'S011d';
-            S.sessions{11,5} = 'S011e';
-            S.sessions{12,1} = 'S012a';
-            S.sessions{12,2} = 'S012b';
-            S.sessions{12,3} = 'S012c';
-            S.sessions{12,4} = 'S012d';
-            S.sessions{12,5} = 'S012e';
-            S.sessions{13,1} = 'S013a';
-            S.sessions{13,2} = 'S013b';
-            S.sessions{13,3} = 'S013c';
-            S.sessions{13,4} = 'S013d';
-            S.sessions{13,5} = 'S013e';
+%             S.sessions{11,1} = 'S011a';
+%             S.sessions{11,2} = 'S011b';
+%             S.sessions{11,3} = 'S011c';
+%             S.sessions{11,4} = 'S011d';
+%             S.sessions{11,5} = 'S011e';
+%             S.sessions{12,1} = 'S012a';
+%             S.sessions{12,2} = 'S012b';
+%             S.sessions{12,3} = 'S012c';
+%             S.sessions{12,4} = 'S012d';
+%             S.sessions{12,5} = 'S012e';
+            S.sessions{11,1} = 'S013a';
+            S.sessions{11,2} = 'S013b';
+            S.sessions{11,3} = 'S013c';
+            S.sessions{11,4} = 'S013d';
+            S.sessions{11,5} = 'S013e';
             
             S.subjectids = [];
         end
