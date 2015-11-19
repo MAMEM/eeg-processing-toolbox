@@ -12,7 +12,6 @@ classdef Experimenter < handle
         evalMethod;
         classifier;
         results;
-%         evaluator; 
     end
     
     methods
@@ -40,13 +39,23 @@ classdef Experimenter < handle
             disp('evaluating..');
             switch E.evalMethod
                 case E.EVAL_METHOD_LOOCV
+                    if isa(E.classifier,'ssvep.toolkit.classifier.LIBSVMClassifierFast')
+                        error('LIBSVMClassifierFast not supported for LOOCV eval method');
+                    end
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
                     subjects = unique(E.session.subjectids);
                     instanceSet = E.classifier.instanceSet;
+                    if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
+                        instanceSet.K = instanceSet.computeLinKernel;
+                    end
                     for i=1:length(subjects)
                         fprintf('leaving subject #%d out\n', i);
-                        E.leaveOneSubjectOut(subjects(i), instanceSet);
+                        if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
+                            E.leaveOneSubjectOutFast(subjects(i), instanceSet);
+                        else
+                            E.leaveOneSubjectOut(subjects(i), instanceSet);
+                        end
                         
                     end
                 otherwise
@@ -108,6 +117,19 @@ classdef Experimenter < handle
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
             %             h = waitbar(0, 'Evaluating..');
             
+        end
+        
+        function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
+            testingset = E.session.subjectids == subjectid;
+            E.classifier.Ktrain = instanceSet.getTrainKernel(~testingset);
+            E.classifier.Ktest = instanceSet.getTestKernel(~testingset,testingset);
+            testingset = find(E.session.subjectids == subjectid);
+            E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+            E.classifier.build();
+            [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance();
+            resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+            E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
+            %             h = waitbar(0, 'Evaluating..');
         end
     end
     
