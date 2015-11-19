@@ -3,6 +3,7 @@ classdef Experimenter < handle
     properties (Constant)
         EVAL_METHOD_LOOCV = 0;
         EVAL_METHOD_LOSO = 1;
+        EVAL_METHOD_LOSO_FAST = 2;
     end
     
     properties (Access = public)
@@ -48,6 +49,14 @@ classdef Experimenter < handle
                         fprintf('leaving subject #%d out\n', i);
                         E.leaveOneSubjectOut(subjects(i), instanceSet);
                         
+                    end
+                case E.EVAL_METHOD_LOSO_FAST
+                    subjects = unique(E.session.subjectids);
+                    instanceSet = E.classifier.instanceSet;
+                    instanceSet.K = instanceSet.computeLinKernel;
+                    for i=1:length(subjects)
+                        fprintf('leaving subject #%d out\n', i);
+                        E.leaveOneSubjectOutFast(subjects(i), instanceSet);
                     end
                 otherwise
                     error ('eval method not set or invalid');
@@ -108,6 +117,19 @@ classdef Experimenter < handle
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
             %             h = waitbar(0, 'Evaluating..');
             
+        end
+        
+        function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
+            testingset = E.session.subjectids == subjectid;
+            E.classifier.Ktrain = instanceSet.getTrainKernel(~testingset);
+            E.classifier.Ktest = instanceSet.getTestKernel(~testingset,testingset);
+            testingset = find(E.session.subjectids == subjectid);
+            E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+            E.classifier.build();
+            [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance();
+            resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+            E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
+            %             h = waitbar(0, 'Evaluating..');
         end
     end
     
