@@ -4,6 +4,7 @@ classdef InstanceSet
     properties (Access = public)
         instances; % the instances
         labels; % the labels
+        K; % the kernel of the instances
     end
     
     methods
@@ -26,6 +27,18 @@ classdef InstanceSet
         function instances = getInstances(IS)
             % get the instances 
             instances = IS.instances;
+        end
+        
+        function K = computeLinKernel(IS)
+            K = IS.instances*IS.instances';
+        end
+        
+        function Ktrain = getTrainKernel(IS, trainidx)
+            Ktrain = IS.K(trainidx,trainidx);
+        end
+        
+        function Ktest = getTestKernel(IS, trainidx, testidx)
+            Ktest = IS.K(testidx,trainidx);
         end
         
         function instance = getInstancesWithIndices(IS, idx)
