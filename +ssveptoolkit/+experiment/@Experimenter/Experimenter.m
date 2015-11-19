@@ -3,7 +3,6 @@ classdef Experimenter < handle
     properties (Constant)
         EVAL_METHOD_LOOCV = 0;
         EVAL_METHOD_LOSO = 1;
-        EVAL_METHOD_LOSO_FAST = 2;
     end
     
     properties (Access = public)
@@ -13,7 +12,6 @@ classdef Experimenter < handle
         evalMethod;
         classifier;
         results;
-%         evaluator; 
     end
     
     methods
@@ -41,22 +39,24 @@ classdef Experimenter < handle
             disp('evaluating..');
             switch E.evalMethod
                 case E.EVAL_METHOD_LOOCV
+                    if isa(E.classifier,'ssvep.toolkit.classifier.LIBSVMClassifierFast')
+                        error('LIBSVMClassifierFast not supported for LOOCV eval method');
+                    end
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
                     subjects = unique(E.session.subjectids);
                     instanceSet = E.classifier.instanceSet;
-                    for i=1:length(subjects)
-                        fprintf('leaving subject #%d out\n', i);
-                        E.leaveOneSubjectOut(subjects(i), instanceSet);
-                        
+                    if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
+                        instanceSet.K = instanceSet.computeLinKernel;
                     end
-                case E.EVAL_METHOD_LOSO_FAST
-                    subjects = unique(E.session.subjectids);
-                    instanceSet = E.classifier.instanceSet;
-                    instanceSet.K = instanceSet.computeLinKernel;
                     for i=1:length(subjects)
                         fprintf('leaving subject #%d out\n', i);
-                        E.leaveOneSubjectOutFast(subjects(i), instanceSet);
+                        if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
+                            E.leaveOneSubjectOutFast(subjects(i), instanceSet);
+                        else
+                            E.leaveOneSubjectOut(subjects(i), instanceSet);
+                        end
+                        
                     end
                 otherwise
                     error ('eval method not set or invalid');

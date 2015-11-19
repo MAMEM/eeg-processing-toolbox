@@ -90,9 +90,9 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
         function configInfo = getConfigInfo(LSVM)
             switch LSVM.kernel
                 case LSVM.KERNEL_LINEAR
-                    configInfo = sprintf('LIBSVMClassifier\tkernel:linear\tcost:%d', LSVM.cost);
+                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:linear\tcost:%d', LSVM.cost);
                 case LSVM.KERNEL_RBF
-                    configInfo = sprintf('LIBSVMClassifier\tkernel:rbf\tcost:%d\tgamma:%d', LSVM.cost, LSVM.gamma);
+                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:rbf\tcost:%d\tgamma:%d', LSVM.cost, LSVM.gamma);
                 otherwise 
                     configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';
             end
