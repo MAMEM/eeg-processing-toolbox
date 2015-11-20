@@ -24,6 +24,7 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
             else
                 LSVM.kernel = LSVM.KERNEL_LINEAR;
                 LSVM.cost = 1.0;
+                LSVM.gamma = 1;
             end
         end
         

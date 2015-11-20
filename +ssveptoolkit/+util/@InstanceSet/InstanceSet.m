@@ -22,10 +22,13 @@ classdef InstanceSet
                 IS.instances = instances;
                 IS.labels = floor(labels);
             end
+%             for i=1:size(IS.instances,1)
+%                 IS.instances(i,:) = IS.instances(i,:)./norm(IS.instances(i,:));
+%             end
         end
         
         function instances = getInstances(IS)
-            % get the instances 
+            % get the instances
             instances = IS.instances;
         end
         
@@ -72,7 +75,7 @@ classdef InstanceSet
         function indices = getInstanceIndicesForLabel(IS,label)
             [indices, ~] = find(IS.getDataset()==label);
         end
-            
+        
         function dataset = getDataset(IS)
             % same with getInstances but includes the labels as the last
             % row
@@ -100,7 +103,7 @@ classdef InstanceSet
             % Example:
             %   obj.writeArff('data')
             data = IS.getDataset();
-%             data = horzcat(IS.instances,floor(IS.labels));
+            %             data = horzcat(IS.instances,floor(IS.labels));
             sss=size(data,2)-1;
             filename1=strcat(fname,'.arff');
             out1 = fopen (filename1, 'w+');
