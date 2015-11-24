@@ -55,7 +55,11 @@ classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
         end
         
         function transform(PWT)
-            numFeatures = PWT.nfft/2+1;
+            if length(PWT.nfft)==1
+                numFeatures = PWT.nfft/2+1;
+            else
+                numFeatures = length(PWT.nfft);
+            end
             numTrials = length(PWT.trials);
             instances = zeros(numTrials, numFeatures);
             labels = zeros(numTrials,1);
@@ -68,7 +72,11 @@ classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
                 else
                     y = PWT.trials{i}.signal(PWT.channel, 1:numsamples);
                 end
-                [pxx, pff]=pwelch(y,[],[],PWT.nfft,PWT.trials{i}.samplingRate,'onesided');
+                if length(PWT.nfft>1)
+                    [pxx, pff]=pwelch(y,[],[],PWT.nfft,PWT.trials{i}.samplingRate);
+                else
+                    [pxx, pff]=pwelch(y,[],[],PWT.nfft,PWT.trials{i}.samplingRate,'onesided');
+                end
                 instances(i,:) = pxx;
                 labels(i,1) = floor(PWT.trials{i}.label);
             end
@@ -77,7 +85,11 @@ classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
         end
         
         function configInfo = getConfigInfo(PWT)
-            configInfo = sprintf('PWelchTransformer\tchannel:%d\tseconds:%d\tnfft:%d',PWT.channel,PWT.seconds,PWT.nfft);
+            if length(PWT.nfft)>1
+                configInfo = sprintf('PWelchTransformer\tchannel:%d\tseconds:%d\t freq range:%.3f to %.3f',PWT.channel,PWT.seconds,PWT.nfft(1),PWT.nfft(end));
+            else
+                configInfo = sprintf('PWelchTransformer\tchannel:%d\tseconds:%d\tnfft:%d',PWT.channel,PWT.seconds,PWT.nfft);
+            end
         end
     end
    
