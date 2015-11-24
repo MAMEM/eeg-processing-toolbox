@@ -42,7 +42,7 @@ classdef AdaboostClassifier < ssveptoolkit.classifier.ClassifierBase
             instances=BOOST.instanceSet.instances;
             labels=BOOST.instanceSet.labels;
             
-            BOOST.models{1} = fitensemble(instances,labels,BOOST.Method, BOOST.NLearn, BOOST.Learners);
+            BOOST.models{1} = fitensemble(instances,labels,BOOST.Method, BOOST.NLearn, BOOST.Learners,'Type','Classification');
 
 %             for i=1:numLabels
 %                 currentLabel = uniqueLabels(i);
