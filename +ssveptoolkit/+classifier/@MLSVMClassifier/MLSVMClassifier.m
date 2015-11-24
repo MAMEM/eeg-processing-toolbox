@@ -137,7 +137,7 @@ classdef MLSVMClassifier < ssveptoolkit.classifier.ClassifierBase
         function configInfo = getConfigInfo(MLSVM)
             %configInfo=sprintf('MLSVMClassifier\tCoding:%s\tFitPosterior:%s\tPrior:%s\templateSVM-Kernel:%s\n', MLSVM.Coding, MLSVM.FitPosterior,MLSVM.Prior,MLSVM.tmpltSVM);
             configInfo=sprintf('MLSVMClassifier\tCoding:%s\tFitPosterior:%s\tPrior:%s\n', MLSVM.Coding, MLSVM.FitPosterior,MLSVM.Prior);
-            MLSVM.tmpltSVM
+            disp(MLSVM.tmpltSVM)
             %configInfo = 'MLSVMClassifier (Config info not supported yet)';
         end
                 
