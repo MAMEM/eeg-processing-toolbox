@@ -5,7 +5,7 @@ end
 methods
         function FF = PCAFilter(instanceSet,componentNum)
             if nargin == 0
-                FF.componentNum = 30;
+                FF.componentNum = 50;
             else
                 FF.componentNum = componentNum;
                 FF.originalInstanceSet = instanceSet;

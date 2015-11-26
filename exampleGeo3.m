@@ -8,14 +8,16 @@ transf = ssveptoolkit.transformer.PWelchTransformer;
 % (optional) define the parameters
 transf.channel = 126;
 transf.seconds = 5;
-% transf.nfft = 128;
+ %transf.nfft = 256;
 % transf.nfft = 512;
 
-filt = ssveptoolkit.extractor.FEASTFilter();
-%filt.componentNum = 256;
-%filt.modes = 80;
- filt.algorithm = filt.ALGORITHM_RELIEF;
- filt.numToSelect = 100;
+filt = ssveptoolkit.extractor.PCAFilter();
+   filt.componentNum = 50;
+%  filt.modes = 100;
+%   filt.algorithm = filt.ALGORITHM_CMI;
+%   filt.numToSelect = 24
+%  filt.parameter1 = 0.7;
+%  filt.parameter2 = 0.5;
 
 classif = ssveptoolkit.classifier.LIBSVMClassifier();
 classif.cost = 1.0;
