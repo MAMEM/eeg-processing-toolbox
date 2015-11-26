@@ -4,6 +4,8 @@
 % Usage: 
 %init a session
 %   session = ssveptoolkit.util.Session();
+%init a session with a filter (created with 'filterbuilder' function)
+%   session = ssveptoolkit.util.Session(filt);
 %load trials for a subject
 %   session.loadSubject(subjectid);
 %load a specific session
@@ -12,7 +14,7 @@
 %   session.loadAll();
 %clear loaded data
 %   session.clearData;
-%apply a filter that was created with 'filterbuilder' (e.g. filtMAMEM.mat)
+%apply a filter that was created with 'filterbuilder'
 %   session.applyFilter(filt);
 %   
 % 
@@ -25,27 +27,22 @@ classdef Session < handle
     properties (Access = public)
         trials = {}; % Trials of the loaded sessions.
         filt; % Filter to be applied when data is loaded
-        sessions;
-        subjectids;
+        sessions; % Filenames of the dataset
+        subjectids; % The subject ids corresponding to the loaded trials
     end
     
     properties (Access = private)
-        rest;
+        rest; % Experimental
     end
     
     methods (Access = public)
         function S = Session(filt, rest)
-            %S = Session();
+            %S = ssveptoolkit.util.Session();
             %Constructs a session object
             %
-            %S = Session(rest);
-            %(Experimental) includes trials for resting with duration =
-            %rest number of samples
-            %
-            %Example: 
-            %    S = Session(1000);
-            %For each trial an additional trial with duration 4 seconds
-            %before each trial is included
+            %S = ssveptoolkit.util.Session(filt);
+            %Constructs a session object. A filter will applied to all
+            %loaded trials
             if(nargin==1)
                 S.filt = filt;
                 S.rest = 0;
@@ -149,7 +146,6 @@ classdef Session < handle
         end
         function S = loadAll(S)
             %loads everything
-            %(Careful for memory issues)
             [l,~] = size(S.sessions);
             h = waitbar(0,'Loading...');
             for i=1:l

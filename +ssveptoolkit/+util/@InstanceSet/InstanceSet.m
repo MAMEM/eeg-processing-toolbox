@@ -45,6 +45,7 @@ classdef InstanceSet
         end
         
         function instance = getInstancesWithIndices(IS, idx)
+            % get instances of specific indices
             instance = IS.instances(idx,:);
         end
         function labels = getLabels(IS)
@@ -58,21 +59,25 @@ classdef InstanceSet
         end
         
         function numInstances = getNumInstances(IS)
+            % get the number of instances
             [numInstances,~] = size(IS.instances);
         end
         
         function numFeatures = getNumFeatures(IS)
+            % get the number of features
             [~, numFeatures] = size(IS.instances);
         end
         
         
         function instances = getInstancesForLabel(IS, label)
+            % get the instances of a specific label
             indices = IS.getInstanceIndicesForLabel(label);
             instances = IS.getInstances();
             instances = instances(indices,:);
         end
         
         function indices = getInstanceIndicesForLabel(IS,label)
+            % get the indices corresponding to a specific label
             [indices, ~] = find(IS.getDataset()==label);
         end
         
@@ -83,11 +88,16 @@ classdef InstanceSet
         end
         
         function dataset = getDatasetWithIndices(IS,idx)
+            % get the instances with specific indices. The last column of
+            % the matrix will contain the label.
             instance = IS.instances(idx,:);
             label = IS.labels(idx,:);
             dataset = horzcat(instance,label);
         end
         function IS = removeInstancesWithIndices(IS, idx)
+            % remove instances with specific indices. A new InstanceSet
+            % object is returned by this functioned without the specified
+            % instances
             IS.instances(idx,:) = [];
             IS.labels(idx,:) = [];
         end

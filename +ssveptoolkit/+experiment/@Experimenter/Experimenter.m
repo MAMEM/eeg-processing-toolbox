@@ -1,17 +1,39 @@
+% EXPERIMENTER class
+% Wraps all the necessary objects for performing an experiment. 
+%Before running an experiment all the required properties must be set.
+% Required:
+% - session
+% - transformer
+% - evalMethod
+% - classifier
+% Optional:
+% - extractor
+%
+% to run the experiment execute the "run()" method.
+% Example:
+% experiment = ssveptoolkit.experiment.Experimenter;
+% experiment.session = ssveptoolkit.util.Session;
+% experiment.session.loadSubject(1);
+% experiment.transformer = ssveptoolkit.transformer.PWelchTransformer;
+% experiment.extractor = ssveptoolkit.extractor.FEASTFilter;
+% experiment.classifier = ssveptoolkit.classifier.LIBSVMClassifier;
+% experiment.evalMethod = experiment.evalMethod.EVAL_METHOD_LOSO;
+% experiment.run;
+% results = experiment.results;
+% confmatrix = results{1}.getConfusionMatrix;
 classdef Experimenter < handle
-    
     properties (Constant)
-        EVAL_METHOD_LOOCV = 0;
-        EVAL_METHOD_LOSO = 1;
+        EVAL_METHOD_LOOCV = 0; % Leave One Out Cross-Validation
+        EVAL_METHOD_LOSO = 1; % Leave One Subject Out 
     end
     
     properties (Access = public)
-        session; 
-        transformer;
-        extractor;
-        evalMethod;
-        classifier;
-        results;
+        session; % The Session object. Trials must be loaded before run() is executed
+        transformer; % A transformer object
+        extractor; % An extractor object
+        evalMethod; % The evaluation method
+        classifier; % A classifier object
+        results; % A cell array containing objects of the 'ResultEvaluator' class.
     end
     
     methods
@@ -24,6 +46,7 @@ classdef Experimenter < handle
         end
         
         function E = run(E)
+            % Runs an experiment
             E.transformer.trials = E.session.trials;
             disp('transform ...');
             E.transformer.transform;
@@ -35,7 +58,6 @@ classdef Experimenter < handle
             else
                 E.classifier.instanceSet = E.transformer.getInstanceSet;
             end
-%             E.instanceSet = ssveptoolkit.util.InstanceSet(E.classifier.instanceSet.getDataset);
             disp('evaluating..');
             switch E.evalMethod
                 case E.EVAL_METHOD_LOOCV
@@ -64,6 +86,7 @@ classdef Experimenter < handle
         end
         
         function info = getExperimentInfo(E)
+            % Prints the configuration info of the experiment
             info = 'Experiment Configuration:\n';
             if ~isempty(E.transformer)
                 info = strcat(info, E.transformer.getConfigInfo);
@@ -91,11 +114,9 @@ classdef Experimenter < handle
             outputScores = zeros(numInstances,1);
             outputRanking = zeros(numInstances, instanceSet.getNumLabels);
             h = waitbar(0,'Cross-validating..');
-            %TODO: parfor this?
             for i=1:numInstances
                 waitbar(i/numInstances,h,sprintf('Cross-validating fold: %d/%d', i, numInstances));
                 %train the classifier without 1 instance
-                %TODO: this line will change
                 E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(i);
                 E.classifier.build();
                 %predict the label of the omitted instance
@@ -103,8 +124,6 @@ classdef Experimenter < handle
             end
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
-            %store the (final) results in a resultSet instances
-%             EB.resultSet = ssveptoolkit.util.ResultSet(E.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
             close(h);
         end
         
@@ -115,8 +134,6 @@ classdef Experimenter < handle
             [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
-            %             h = waitbar(0, 'Evaluating..');
-            
         end
         
         function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
@@ -129,7 +146,6 @@ classdef Experimenter < handle
             [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance();
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
-            %             h = waitbar(0, 'Evaluating..');
         end
     end
     
