@@ -12,8 +12,8 @@ transf.seconds = 5;
  %transf.nfft = 256;
 % transf.nfft = 512;
 
-filt = ssveptoolkit.extractor.FEASTFilter();
-%   filt.componentNum = 50;
+filt = ssveptoolkit.extractor.PCAFilter();
+   filt.componentNum = 50;
 %  filt.modes = 100;
 %   filt.algorithm = filt.ALGORITHM_CMI;
 %   filt.numToSelect = 24
