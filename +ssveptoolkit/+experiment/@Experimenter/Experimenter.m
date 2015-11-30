@@ -35,6 +35,7 @@ classdef Experimenter < handle
         evalMethod; % The evaluation method
         classifier; % A classifier object
         results; % A cell array containing objects of the 'ResultEvaluator' class.
+        subjectids;
     end
     
     methods
@@ -49,11 +50,16 @@ classdef Experimenter < handle
         function E = run(E)
             % Runs an experiment
             E.checkCompatibility;
+            if ~isempty(E.session)
+                E.subjectids = E.session.subjectids;
+            end
             disp('transform ...');
             if iscell(E.transformer)
                 numTransf = length(E.transformer);
                 for i=1:numTransf
-                    E.transformer{i}.trials = E.session.trials;
+                    if ~isempty(E.session)
+                        E.transformer{i}.trials = E.session.trials;
+                    end
                     E.transformer{i}.transform;
                     
                 end
@@ -61,7 +67,9 @@ classdef Experimenter < handle
                 E.aggregator.aggregate;
                 instanceSet = E.aggregator.instanceSet;
             else 
-                E.transformer.trials = E.session.trials;
+                if ~isempty(E.session)
+                    E.transformer.trials = E.session.trials;
+                end
                 E.transformer.transform;
                 instanceSet = E.transformer.getInstanceSet;
             end
@@ -81,7 +89,7 @@ classdef Experimenter < handle
                 case E.EVAL_METHOD_LOOCV
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
-                    subjects = unique(E.session.subjectids);
+                    subjects = unique(E.subjectids);
                     instanceSet = E.classifier.instanceSet;
                     if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
                         instanceSet.K = instanceSet.computeLinKernel;
@@ -170,7 +178,7 @@ classdef Experimenter < handle
         end
         
         function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)
-            testingset = find(E.session.subjectids == subjectid);
+            testingset = find(E.subjectids == subjectid);
             E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
             E.classifier.build();
             [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
@@ -179,10 +187,10 @@ classdef Experimenter < handle
         end
         
         function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
-            testingset = E.session.subjectids == subjectid;
+            testingset = E.subjectids == subjectid;
             E.classifier.Ktrain = instanceSet.getTrainKernel(~testingset);
             E.classifier.Ktest = instanceSet.getTestKernel(~testingset,testingset);
-            testingset = find(E.session.subjectids == subjectid);
+            testingset = find(E.subjectids == subjectid);
             E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
             E.classifier.build();
             [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance();
