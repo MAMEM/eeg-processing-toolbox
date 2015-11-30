@@ -1,4 +1,5 @@
 classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
+%(Experimental)
     properties (Constant)
         STIM_FREQUENCIES = [6.66 7.5 8.57 10 12];
     end
@@ -32,8 +33,8 @@ classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
             end
             instances = zeros(numInstances, length(bins));
             for i=1:length(bins)
-                [~,indx] = min(abs(FF.pff-bins(i)));
-                instances(:,i) = FF.originalInstanceSet.instances(:,indx);
+                indx = (bins(i)-0.5)<FF.pff & bins(i)>FF.pff;
+                instances(:,i) = (sum(FF.originalInstanceSet.instances(:,indx)')')./sum(indx);
             end
             FF.filteredInstanceSet = ssveptoolkit.util.InstanceSet(instances, FF.originalInstanceSet.labels);
         end

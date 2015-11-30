@@ -107,12 +107,22 @@ classdef InstanceSet
             %   obj.writeCSV('data.csv');
             csvwrite(csvname, IS.getDataset());
         end
-        function writeArff(IS, fname)
+        function writeArff(IS, fname, indices)
             % write the dataset to a weka-readable file (arff)
             % Caution: filename without extension
             % Example:
             %   obj.writeArff('data')
-            data = IS.getDataset();
+            if nargin==3
+                data1 = IS.getDatasetWithIndices(indices);
+                is1 = ssveptoolkit.util.InstanceSet(data1);
+                data2 = IS.getDatasetWithIndices(~indices);
+                is2 = ssveptoolkit.util.InstanceSet(data2);
+                is1.writeArff(sprintf('test%s', fname));
+                is2.writeArff(sprintf('train%s',fname));
+                return;
+            else 
+                data = IS.getDataset();
+            end
             %             data = horzcat(IS.instances,floor(IS.labels));
             sss=size(data,2)-1;
             filename1=strcat(fname,'.arff');

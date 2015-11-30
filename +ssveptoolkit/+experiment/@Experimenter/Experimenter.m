@@ -30,6 +30,7 @@ classdef Experimenter < handle
     properties (Access = public)
         session; % The Session object. Trials must be loaded before run() is executed
         transformer; % A transformer object
+        aggregator;
         extractor; % An extractor object
         evalMethod; % The evaluation method
         classifier; % A classifier object
@@ -47,23 +48,37 @@ classdef Experimenter < handle
         
         function E = run(E)
             % Runs an experiment
-            E.transformer.trials = E.session.trials;
+            E.checkCompatibility;
             disp('transform ...');
-            E.transformer.transform;
+            if iscell(E.transformer)
+                numTransf = length(E.transformer);
+                for i=1:numTransf
+                    E.transformer{i}.trials = E.session.trials;
+                    E.transformer{i}.transform;
+                    
+                end
+                E.aggregator.transformers = E.transformer;
+                E.aggregator.aggregate;
+                instanceSet = E.aggregator.instanceSet;
+            else 
+                E.transformer.trials = E.session.trials;
+                E.transformer.transform;
+                instanceSet = E.transformer.getInstanceSet;
+            end
             if ~isempty(E.extractor)
-                E.extractor.originalInstanceSet = E.transformer.getInstanceSet;
+                E.extractor.originalInstanceSet = instanceSet;
+                if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter')
+                    E.extractor.pff = E.transformer.pff;
+                end
                 disp('extract ...');
                 E.extractor.filter;
                 E.classifier.instanceSet = E.extractor.filteredInstanceSet;
             else
-                E.classifier.instanceSet = E.transformer.getInstanceSet;
+                E.classifier.instanceSet = instanceSet;
             end
             disp('evaluating..');
             switch E.evalMethod
                 case E.EVAL_METHOD_LOOCV
-                    if isa(E.classifier,'ssvep.toolkit.classifier.LIBSVMClassifierFast')
-                        error('LIBSVMClassifierFast not supported for LOOCV eval method');
-                    end
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
                     subjects = unique(E.session.subjectids);
@@ -89,8 +104,19 @@ classdef Experimenter < handle
             % Prints the configuration info of the experiment
             info = 'Experiment Configuration:\n';
             if ~isempty(E.transformer)
-                info = strcat(info, E.transformer.getConfigInfo);
-                info = strcat(info,'\n');
+                if ~iscell(E.transformer)
+                    info = strcat(info, E.transformer.getConfigInfo);
+                    info = strcat(info,'\n');
+                else
+                    for i=1:length(E.transformer)
+                        info = strcat(info, E.transformer{i}.getConfigInfo);
+                        info = strcat(info,'\n');
+                    end
+                end
+            end
+            if ~isempty(E.aggregator)
+                info = strcat(info, E.aggregator.getConfigInfo);
+                info = strcat(info, '\n');
             end
             if ~isempty(E.extractor)
                 info = strcat(info, E.extractor.getConfigInfo);
@@ -106,6 +132,22 @@ classdef Experimenter < handle
     end
     
     methods (Access = private)
+        
+        function E = checkCompatibility(E)
+            if iscell(E.transformer)
+                if isempty(E.aggregator)
+                    error ('Provided many transformers but not an Aggregator');
+                end
+            end
+            if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast') && E.evalMethod == 0
+                error('LIBSVMClassifierFast not supported for LOOCV eval method');
+            end
+            if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter') && ...
+                    ~isa(E.transformer,'ssveptoolkit.transformer.PSDTransformerBase')
+                error('FrequencyFilter only supported with PSD based transformers');
+            end
+        end
+            
         function E = leaveOneOutCV(E)
             %leave one out cross validation
             instanceSet = E.classifier.instanceSet;
