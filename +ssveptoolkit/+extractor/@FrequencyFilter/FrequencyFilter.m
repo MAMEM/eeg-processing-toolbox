@@ -1,4 +1,5 @@
 classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
+%(Experimental)
     properties (Constant)
         STIM_FREQUENCIES = [6.66 7.5 8.57 10 12];
     end
@@ -27,21 +28,14 @@ classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
         function FF = filter(FF)
             bins = FF.STIM_FREQUENCIES;
             [numInstances,~] = size(FF.originalInstanceSet.instances);
-%             FF.originalInstanceSet.instances = FF.originalInstanceSet.instances./norm(FF.originalInstanceSet.instances);
             for i=2:FF.numberOfHarmonics
                 bins = horzcat(bins, FF.STIM_FREQUENCIES.*i);
             end
             instances = zeros(numInstances, length(bins));
             for i=1:length(bins)
-%                 [~,indx] = min(abs(FF.pff-bins(i)));
                 indx = (bins(i)-0.5)<FF.pff & bins(i)>FF.pff;
                 instances(:,i) = (sum(FF.originalInstanceSet.instances(:,indx)')')./sum(indx);
-%                 instances(:,i) = FF.originalInstanceSet.instances(:,indx);
             end
-%             summed = zeros(numInstances, 5);
-%             for i=1:length(bins)
-%                 summed(:,mod(i,5)+1) = summed(:,mod(i,5)+1) + instances(:,i);
-%             end
             FF.filteredInstanceSet = ssveptoolkit.util.InstanceSet(instances, FF.originalInstanceSet.labels);
         end
         
