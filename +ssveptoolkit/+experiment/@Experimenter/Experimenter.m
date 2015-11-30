@@ -47,11 +47,15 @@ classdef Experimenter < handle
         
         function E = run(E)
             % Runs an experiment
+            E.checkCompatibility;
             E.transformer.trials = E.session.trials;
             disp('transform ...');
             E.transformer.transform;
             if ~isempty(E.extractor)
                 E.extractor.originalInstanceSet = E.transformer.getInstanceSet;
+                if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter')
+                    E.extractor.pff = E.transformer.pff;
+                end
                 disp('extract ...');
                 E.extractor.filter;
                 E.classifier.instanceSet = E.extractor.filteredInstanceSet;
@@ -61,9 +65,6 @@ classdef Experimenter < handle
             disp('evaluating..');
             switch E.evalMethod
                 case E.EVAL_METHOD_LOOCV
-                    if isa(E.classifier,'ssvep.toolkit.classifier.LIBSVMClassifierFast')
-                        error('LIBSVMClassifierFast not supported for LOOCV eval method');
-                    end
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
                     subjects = unique(E.session.subjectids);
@@ -106,6 +107,17 @@ classdef Experimenter < handle
     end
     
     methods (Access = private)
+        
+        function E = checkCompatibility(E)
+            if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast') && E.evalMethod == 0
+                error('LIBSVMClassifierFast not supported for LOOCV eval method');
+            end
+            if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter') && ...
+                    ~isa(E.transformer,'ssveptoolkit.transformer.PSDTransformerBase')
+                error('FrequencyFilter only supported with PSD based transformers');
+            end
+        end
+            
         function E = leaveOneOutCV(E)
             %leave one out cross validation
             instanceSet = E.classifier.instanceSet;
