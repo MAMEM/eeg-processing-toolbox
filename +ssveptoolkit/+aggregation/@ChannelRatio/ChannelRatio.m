@@ -8,7 +8,6 @@ classdef ChannelRatio < ssveptoolkit.aggregation.AggregatorBase;
     methods
         
         function CR = ChannelRatio(CR)
-            1;
         end
         
         function CR = aggregate(CR)

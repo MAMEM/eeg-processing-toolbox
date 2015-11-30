@@ -8,7 +8,6 @@ classdef ChannelAveraging < ssveptoolkit.aggregation.AggregatorBase;
     methods
         
         function CA = ChannelAveraging(CA)
-            1;
         end
         
         function CA = aggregate(CA)
@@ -24,7 +23,7 @@ classdef ChannelAveraging < ssveptoolkit.aggregation.AggregatorBase;
         end
         
         function configInfo = getConfigInfo(CA)
-            configInfo = 'ChannelAveraging\n';
+            configInfo = 'ChannelAveraging';
         end
     end
     

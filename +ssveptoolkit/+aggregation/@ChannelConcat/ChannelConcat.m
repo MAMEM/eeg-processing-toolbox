@@ -8,7 +8,6 @@ classdef ChannelConcat < ssveptoolkit.aggregation.AggregatorBase;
     methods
         
         function CC = ChannelConcat(CC)
-            1;
         end
         
         function CC = aggregate(CC)
@@ -24,7 +23,7 @@ classdef ChannelConcat < ssveptoolkit.aggregation.AggregatorBase;
         end
         
         function configInfo = getConfigInfo(CC)
-            configInfo = 'ChannelConcat\n';
+            configInfo = 'ChannelConcat';
         end
     end
     

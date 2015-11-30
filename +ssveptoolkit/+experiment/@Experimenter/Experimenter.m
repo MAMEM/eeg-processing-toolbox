@@ -114,6 +114,10 @@ classdef Experimenter < handle
                     end
                 end
             end
+            if ~isempty(E.aggregator)
+                info = strcat(info, E.aggregator.getConfigInfo);
+                info = strcat(info, '\n');
+            end
             if ~isempty(E.extractor)
                 info = strcat(info, E.extractor.getConfigInfo);
                 info = strcat(info, '\n');
