@@ -69,8 +69,8 @@ classdef Experimenter < handle
             else 
                 if ~isempty(E.session)
                     E.transformer.trials = E.session.trials;
+                    E.transformer.transform;
                 end
-                E.transformer.transform;
                 instanceSet = E.transformer.getInstanceSet;
             end
             if ~isempty(E.extractor)
