@@ -34,6 +34,7 @@ classdef ResultSet < ssveptoolkit.util.InstanceSet
                 idx2 = find(labels==trueLabels(k,1));
                 RS.confusionMatrix(idx1,idx2) = RS.confusionMatrix(idx1,idx2)+ 1;
             end
+            RS.confusionMatrix = RS.confusionMatrix';
             %if classifier supports ranking/probabilities
             if nargin > 2
                 RS.outputProbabilities = probabilities;

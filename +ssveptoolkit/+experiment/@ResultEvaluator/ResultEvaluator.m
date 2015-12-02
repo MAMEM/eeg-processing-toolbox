@@ -26,28 +26,28 @@ classdef  ResultEvaluator < handle
             confusionMatrix = horzcat(RE.resultSet.confusionMatrix, labels);
         end
         
-        function TP = getNumTruePositives(RE)
-            conf = RE.resultSet.confusionMatrix;
-            TP = diag(conf)';
-        end
-        
-        function TN = getNumTrueNegatives(RE)
-            numInstances = RE.resultSet.getNumInstances;
-            FN = RE.getNumFalseNegatives;
-            TP = RE.getNumTruePositives;
-            FP = RE.getNumFalsePositives;
-            TN = numInstances - FN - TP - FP;
-        end
-        
-        function FP = getNumFalsePositives(RE)
-            conf = RE.resultSet.confusionMatrix;
-            FP = sum(conf') - diag(conf)';
-        end
-        
-        function FN = getNumFalseNegatives(RE)
-            conf = RE.resultSet.confusionMatrix;
-            FN = sum(conf) - diag(conf)';
-        end
+%         function TP = getNumTruePositives(RE)
+%             conf = RE.resultSet.confusionMatrix;
+%             TP = diag(conf)';
+%         end
+%         
+%         function TN = getNumTrueNegatives(RE)
+%             numInstances = RE.resultSet.getNumInstances;
+%             FN = RE.getNumFalseNegatives;
+%             TP = RE.getNumTruePositives;
+%             FP = RE.getNumFalsePositives;
+%             TN = numInstances - FN - TP - FP;
+%         end
+%         
+%         function FP = getNumFalsePositives(RE)
+%             conf = RE.resultSet.confusionMatrix;
+%             FP = sum(conf') - diag(conf)';
+%         end
+%         
+%         function FN = getNumFalseNegatives(RE)
+%             conf = RE.resultSet.confusionMatrix;
+%             FN = sum(conf) - diag(conf)';
+%         end
         
     end
 end
