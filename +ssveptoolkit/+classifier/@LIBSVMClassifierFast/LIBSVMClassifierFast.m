@@ -10,14 +10,18 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
         models;
         Ktrain;
         Ktest;
+        maxlag;
+        scaleopt;
     end
     
     methods (Access = public)
-        function LSVM = LIBSVMClassifierFast(instanceSet,kernel,cost,gamma)
+        function LSVM = LIBSVMClassifierFast(instanceSet,kernel,cost,gamma,maxlag,scaleopt)
             %set default parameters
             LSVM.kernel = 'linear';
             LSVM.cost = 1.0;
             LSVM.gamma = 0.01;
+            LSVM.maxlag = 150;
+            LSVM.scaleopt = 'coeff';
             if nargin > 0
                 LSVM.instanceSet = instanceSet;
                 LSVM.gamma = 1/instanceSet.getNumFeatures;
@@ -30,6 +34,12 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
             end
             if nargin > 3
                 LSVM.gamma = gamma;
+            end
+            if nargin > 4
+                LSVM.maxlag = maxlag;
+            end
+            if nargin > 5
+                LSVM.scaleopt = scaleopt;
             end
         end
         
@@ -88,8 +98,10 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
         
         function configInfo = getConfigInfo(LSVM)
             switch LSVM.kernel
-                case 'linear'
-                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:linear\tcost:%d', LSVM.cost);
+                case {'linear','spearman','correlation','cosine'}
+                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:%s\tcost:%d', LSVM.kernel, LSVM.cost);
+                case 'xcorr'
+                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:%s\tcost:%d\tgamma:%d\tmaxlag:%d\tscaleopt:%s', LSVM.kernel, LSVM.cost, LSVM.maxlag,LSVM.scaleopt);
                 otherwise
                     configInfo = sprintf('LIBSVMClassifierFast\tkernel:%s\tcost:%d\tgamma:%d', LSVM.kernel, LSVM.cost, LSVM.gamma);
 %                 otherwise 

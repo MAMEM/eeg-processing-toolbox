@@ -32,7 +32,7 @@ classdef InstanceSet
             instances = IS.instances;
         end
         
-        function K = computeKernel(IS,kernel, gamma)
+        function K = computeKernel(IS,kernel, gamma, maxlag, scaleopt)
             switch kernel
                 case 'linear'
                     K = IS.instances*IS.instances';
@@ -46,8 +46,6 @@ classdef InstanceSet
                 case 'chi'
                     error('chi kernel not implemented yet');
                 case 'xcorr'
-                    maxlag = 150;
-                    scaleopt = 'coeff';
                     K = zeros(size(IS.instances,1));
                     if size(IS.instances,2) < 500 % if memory allows it go for the vectorized version
                         a = xcorr(IS.instances',maxlag,scaleopt);
@@ -68,11 +66,11 @@ classdef InstanceSet
                 case {'spearman','correlation','cosine'}
                     dist = pdist2(IS.instances,IS.instances,kernel);
                     K = 1-dist;
-                case {'eucledian','seucledian','mahalanobis'}
+                case {'euclidean','seuclidean','mahalanobis'}
                     dist = pdist2(IS.instances,IS.instances,kernel).^2;
                     K = exp(-gamma.*dist);
                 otherwise % if not one of the above, it can either be any value of distance in pdist2 or a function handle
-                    dist = pdist2(IS.instances,IS.instances,kernel).^2;
+                    dist = pdist2(IS.instances,IS.instances,kernel);
                     K = exp(-gamma.*dist);
             end
         end
