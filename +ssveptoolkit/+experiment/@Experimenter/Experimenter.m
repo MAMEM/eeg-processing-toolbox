@@ -47,7 +47,7 @@ classdef Experimenter < handle
                     subjects = unique(E.session.subjectids);
                     instanceSet = E.classifier.instanceSet;
                     if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
-                        instanceSet.K = instanceSet.computeLinKernel;
+                        instanceSet.K = instanceSet.computeKernel(E.classifier.kernel,E.classifier.gamma);
                     end
                     for i=1:length(subjects)
                         fprintf('leaving subject #%d out\n', i);

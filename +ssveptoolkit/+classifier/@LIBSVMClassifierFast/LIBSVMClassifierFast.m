@@ -1,10 +1,7 @@
 classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
     
     properties (Constant)
-        KERNEL_LINEAR = 0;
-%         KERNEL_POLYNOMIAL = 1;
-        KERNEL_RBF = 2;
-%         KERNEL_SIGMOID = 3;
+
     end
     properties
         kernel;
@@ -16,16 +13,23 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
     end
     
     methods (Access = public)
-        function LSVM = LIBSVMClassifierFast(instanceSet)
+        function LSVM = LIBSVMClassifierFast(instanceSet,kernel,cost,gamma)
             %set default parameters
+            LSVM.kernel = 'linear';
+            LSVM.cost = 1.0;
+            LSVM.gamma = 0.01;
             if nargin > 0
-                LSVM.kernel = LSVM.KERNEL_LINEAR;
-                LSVM.cost = 1.0;
                 LSVM.instanceSet = instanceSet;
                 LSVM.gamma = 1/instanceSet.getNumFeatures;
-            else
-                LSVM.kernel = LSVM.KERNEL_LINEAR;
-                LSVM.cost = 1.0;
+            end
+            if nargin > 1
+                LSVM.kernel = kernel;
+            end
+            if nargin > 2
+                LSVM.cost = cost;
+            end
+            if nargin > 3
+                LSVM.gamma = gamma;
             end
         end
         
@@ -38,14 +42,9 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
                 currentLabel = uniqueLabels(i);
                 labels = zeros(LSVM.instanceSet.getNumInstances,1)-1;
                 labels(LSVM.instanceSet.getInstanceIndicesForLabel(currentLabel)) = 1;
-                if LSVM.kernel == LSVM.KERNEL_LINEAR;
-                    %store the models in an instance variable
-                    LSVM.models{i} = svmtrain(labels, [(1:size(LSVM.Ktrain,1))', ...
-                        LSVM.Ktrain+eye(size(LSVM.Ktrain,1))*realmin], ...
-                        sprintf(' -t 4 -c %f -b 1 -q', LSVM.cost));
-                else
-                    error('The fast version is only supported for Linear Kernel');
-                end
+                LSVM.models{i} = svmtrain(labels, [(1:size(LSVM.Ktrain,1))', ...
+                    LSVM.Ktrain+eye(size(LSVM.Ktrain,1))*realmin], ...
+                    sprintf(' -t 4 -c %f -b 1 -q', LSVM.cost));
             end
         end
         
@@ -89,12 +88,12 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
         
         function configInfo = getConfigInfo(LSVM)
             switch LSVM.kernel
-                case LSVM.KERNEL_LINEAR
+                case 'linear'
                     configInfo = sprintf('LIBSVMClassifierFast\tkernel:linear\tcost:%d', LSVM.cost);
-                case LSVM.KERNEL_RBF
-                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:rbf\tcost:%d\tgamma:%d', LSVM.cost, LSVM.gamma);
-                otherwise 
-                    configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';
+                otherwise
+                    configInfo = sprintf('LIBSVMClassifierFast\tkernel:%s\tcost:%d\tgamma:%d', LSVM.kernel, LSVM.cost, LSVM.gamma);
+%                 otherwise 
+%                     configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';
             end
         end
                 

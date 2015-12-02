@@ -22,9 +22,9 @@ classdef InstanceSet
                 IS.instances = instances;
                 IS.labels = floor(labels);
             end
-%             for i=1:size(IS.instances,1)
-%                 IS.instances(i,:) = IS.instances(i,:)./norm(IS.instances(i,:));
-%             end
+            %             for i=1:size(IS.instances,1)
+            %                 IS.instances(i,:) = IS.instances(i,:)./norm(IS.instances(i,:));
+            %             end
         end
         
         function instances = getInstances(IS)
@@ -32,8 +32,49 @@ classdef InstanceSet
             instances = IS.instances;
         end
         
-        function K = computeLinKernel(IS)
-            K = IS.instances*IS.instances';
+        function K = computeKernel(IS,kernel, gamma)
+            switch kernel
+                case 'linear'
+                    K = IS.instances*IS.instances';
+                case 'rbf'
+                    dist = pdist2(IS.instances,IS.instances).^2;
+                    %                     N = size(IS.instances,1);
+                    %                     dist = repmat(sum(IS.instances.^2, 2)', [N 1])' + ...
+                    %                         repmat(sum(IS.instances.^2,2)', [N 1]) - ...
+                    %                         2.*IS.instances*IS.instances';
+                    K = exp(-gamma.*dist);
+                case 'chi'
+                    error('chi kernel not implemented yet');
+                case 'xcorr'
+                    maxlag = 150;
+                    scaleopt = 'coeff';
+                    K = zeros(size(IS.instances,1));
+                    if size(IS.instances,2) < 500 % if memory allows it go for the vectorized version
+                        a = xcorr(IS.instances',maxlag,scaleopt);
+                        c = reshape(a, 2*maxlag+1, size(IS.instances,1), size(IS.instances,1));
+                        if size(c,1) == 1 % no max is required
+                            K = squeeze(c);
+                        else
+                            K = squeeze(max(c));
+                        end
+                    else
+                        for i=1:size(IS.instances,1)
+                            for j=i:size(IS.instances,1)
+                                K(i,j)=max(xcorr(IS.instances(i,:),IS.instances(j,:),maxlag,scaleopt));
+                                K(j,i)=K(i,j);
+                            end
+                        end
+                    end
+                case {'spearman','correlation','cosine'}
+                    dist = pdist2(IS.instances,IS.instances,kernel);
+                    K = 1-dist;
+                case {'eucledian','seucledian','mahalanobis'}
+                    dist = pdist2(IS.instances,IS.instances,kernel).^2;
+                    K = exp(-gamma.*dist);
+                otherwise % if not one of the above, it can either be any value of distance in pdist2 or a function handle
+                    dist = pdist2(IS.instances,IS.instances,kernel).^2;
+                    K = exp(-gamma.*dist);
+            end
         end
         
         function Ktrain = getTrainKernel(IS, trainidx)
