@@ -44,7 +44,17 @@ classdef InstanceSet
                     %                         2.*IS.instances*IS.instances';
                     K = exp(-gamma.*dist);
                 case 'chi'
-                    error('chi kernel not implemented yet');
+                    m = size(IS.instances,1);
+                    n = size(IS.instances,1);
+                    mOnes = ones(1,m); D = zeros(m,n);
+                    for i=1:n
+                      yi = IS.instances(i,:);  yiRep = yi( mOnes, : );
+                      s = yiRep + IS.instances;    d = yiRep - IS.instances;
+                      D(:,i) = sum( d.^2 ./ (s+eps), 2 );
+                    end
+                    D = D/2;
+                    K = exp(-gamma.*D);
+%                     error('chi kernel not implemented yet');
                 case 'xcorr'
                     K = zeros(size(IS.instances,1));
                     if size(IS.instances,2) < 500 % if memory allows it go for the vectorized version
