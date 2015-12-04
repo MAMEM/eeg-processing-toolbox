@@ -37,7 +37,11 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
                 end
             end
             for i=1:numTrials
-                dataToBeEncoded = squeeze(pcainstances(i,:,:));
+                if FA.pcanum > 0
+                    dataToBeEncoded = squeeze(pcainstances(i,:,:));
+                else
+                    dataToBeEncoded = squeeze(instances(i,:,:));
+                end
                 fishers(i,:) =  vl_fisher(dataToBeEncoded', FA.means, FA.covariances, FA.priors);
             end
             FA.instanceSet = ssveptoolkit.util.InstanceSet(fishers,FA.transformers{1}.getLabels);
@@ -78,7 +82,6 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
             for i=1:length(channels)
                 codebookInfo = sprintf('%s%d ',codebookInfo,channels(i));
             end
-            save('occipital','instances');
             save(codebookfilename,'means','covariances','priors','codebookInfo');
             close(h);
         end
