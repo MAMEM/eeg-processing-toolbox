@@ -1,23 +1,22 @@
 classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
-    %FISHERAGGREGATOR Summary of this class goes here
-    %   Detailed explanation goes here
-    
     properties
         codebookInfo;
         numClusters;
         means;
         covariances;
         priors;
+        pcanum;
     end
     
     methods
-        function FA = FisherAggregator(codebookfilename)
+        function FA = FisherAggregator(codebookfilename,pcanum)
             load(codebookfilename);
             FA.means = means;
             FA.covariances = covariances;
             FA.priors = priors;
             FA.numClusters = length(priors);
             FA.codebookInfo = codebookInfo;
+            FA.pcanum = pcanum;
         end
         
         function FA = aggregate(FA)
@@ -25,12 +24,20 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
             numFeatures = FA.transformers{1}.instanceSet.getNumFeatures;
             numTrials = length(FA.transformers{1}.trials);
             instances = zeros(numTrials,numTransf,numFeatures);
-            fishers = zeros(numTrials,FA.numClusters*numFeatures*2);
+            pcainstances = zeros(numTrials,numTransf,FA.pcanum);
+            if FA.pcanum > 0
+                fishers = zeros(numTrials, FA.numClusters * FA.pcanum *2);
+            else
+                fishers = zeros(numTrials,FA.numClusters*numFeatures*2);
+            end
             for i=1:numTransf
                 instances(:,i,:) = FA.transformers{i}.getInstances;
+                if FA.pcanum > 0
+                    [~,pcainstances(:,i,:),~,~,~] = pca(squeeze(instances(:,i,:)),'NumComponents',FA.pcanum);
+                end
             end
             for i=1:numTrials
-                dataToBeEncoded = squeeze(instances(i,:,:));
+                dataToBeEncoded = squeeze(pcainstances(i,:,:));
                 fishers(i,:) =  vl_fisher(dataToBeEncoded', FA.means, FA.covariances, FA.priors);
             end
             FA.instanceSet = ssveptoolkit.util.InstanceSet(fishers,FA.transformers{1}.getLabels);
@@ -42,7 +49,7 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
     end
     
     methods (Static)
-        function [] = trainCodebook(session, channels, numCenters, codebookfilename)
+        function [] = trainCodebook(session, channels, numCenters, codebookfilename,pcanum)
             nfft = 512;
             transformers = {};
             numChannels = length(channels);
@@ -62,12 +69,12 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
             end
             instances = reshape(instances,numTrials*numChannels,numFeatures);
             waitbar(i/(length(channels)+10),h,'Computing gmm..');
+            if(pcanum > 0)
+                [~,instances,~,~,~] = pca(instances,'NumComponents',pcanum);
+            end
             [means, covariances, priors] = vl_gmm(instances', numCenters);
-%             centers = vl_kmeans(instances',numCenters);
-%             waitbar(i+4/(length(channels)+10),h,'Building kdtree..');
-%             kdtree = vl_kdtreebuild(centers);
             waitbar(i+5/(length(channels)+10),h,'Saving variables..');
-            codebookInfo = sprintf('filename:%s\tnumClusters:%d\tchannels:',codebookfilename, numCenters);
+            codebookInfo = sprintf('filename:%s\tnumClusters:%d\tnumPCA:%d\tchannels:',codebookfilename, numCenters, pcanum);
             for i=1:length(channels)
                 codebookInfo = sprintf('%s%d ',codebookInfo,channels(i));
             end
