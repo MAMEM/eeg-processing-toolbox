@@ -19,7 +19,7 @@ end
 aggr = ssveptoolkit.aggregation.VladAggregator(codebookfilename);
 %numPCA = 80; % the same used for codebook
 %aggr = ssveptoolkit.aggregation.FisherAggregator(codebookfilename,numPCA);
-filt = ssveptoolkit.extractor.PCAFilter;
+filt = ssveptoolkit.extractor.PCA2Filter;
 filt.componentNum = 257;
 classif = ssveptoolkit.classifier.LIBSVMClassifierFast();
 
@@ -27,7 +27,7 @@ experiment = ssveptoolkit.experiment.Experimenter();
 experiment.session = sess;
 experiment.transformer = transformers;
 experiment.aggregator = aggr;
-% experiment.extractor = filt;
+experiment.extractor = filt;
 experiment.classifier = classif;
 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)
 %run the experiment
