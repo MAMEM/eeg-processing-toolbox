@@ -29,6 +29,7 @@ classdef Session < handle
         filt; % Filter to be applied when data is loaded
         sessions; % Filenames of the dataset
         subjectids; % The subject ids corresponding to the loaded trials
+        skipSamples;
     end
     
     properties (Access = private)
@@ -111,7 +112,7 @@ classdef Session < handle
             S.sessions{11,3} = 'S013c';
             S.sessions{11,4} = 'S013d';
             S.sessions{11,5} = 'S013e';
-            
+            S.skipSamples = 0;
             S.subjectids = [];
         end
        
@@ -221,7 +222,7 @@ classdef Session < handle
             trials = {};
             i = 1;
             for i=1:numSplits
-                trials{i} = ssveptoolkit.util.Trial(signal(:, ranges(i,1):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid);
+                trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid);
                 S.subjectids = [S.subjectids subjectid];
             end
             i = i +1;
