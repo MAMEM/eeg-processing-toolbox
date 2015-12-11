@@ -29,7 +29,7 @@ classdef Session < handle
         filt; % Filter to be applied when data is loaded
         sessions; % Filenames of the dataset
         subjectids; % The subject ids corresponding to the loaded trials
-        skipSamples;
+        skipSamples; % Number of samples to skip, at the beginning of each Trial
     end
     
     properties (Access = private)
