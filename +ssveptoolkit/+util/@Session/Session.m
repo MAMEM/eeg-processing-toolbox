@@ -4,6 +4,8 @@
 % Usage: 
 %init a session
 %   session = ssveptoolkit.util.Session();
+%init a session with a filter (created with 'filterbuilder' function)
+%   session = ssveptoolkit.util.Session(filt);
 %load trials for a subject
 %   session.loadSubject(subjectid);
 %load a specific session
@@ -12,7 +14,7 @@
 %   session.loadAll();
 %clear loaded data
 %   session.clearData;
-%apply a filter that was created with 'filterbuilder' (e.g. filtMAMEM.mat)
+%apply a filter that was created with 'filterbuilder'
 %   session.applyFilter(filt);
 %   
 % 
@@ -25,27 +27,23 @@ classdef Session < handle
     properties (Access = public)
         trials = {}; % Trials of the loaded sessions.
         filt; % Filter to be applied when data is loaded
-        sessions;
-        subjectids;
+        sessions; % Filenames of the dataset
+        subjectids; % The subject ids corresponding to the loaded trials
+        skipSamples; % Number of samples to skip, at the beginning of each Trial
     end
     
     properties (Access = private)
-        rest;
+        rest; % Experimental
     end
     
     methods (Access = public)
         function S = Session(filt, rest)
-            %S = Session();
+            %S = ssveptoolkit.util.Session();
             %Constructs a session object
             %
-            %S = Session(rest);
-            %(Experimental) includes trials for resting with duration =
-            %rest number of samples
-            %
-            %Example: 
-            %    S = Session(1000);
-            %For each trial an additional trial with duration 4 seconds
-            %before each trial is included
+            %S = ssveptoolkit.util.Session(filt);
+            %Constructs a session object. A filter will applied to all
+            %loaded trials
             if(nargin==1)
                 S.filt = filt;
                 S.rest = 0;
@@ -114,7 +112,7 @@ classdef Session < handle
             S.sessions{11,3} = 'S013c';
             S.sessions{11,4} = 'S013d';
             S.sessions{11,5} = 'S013e';
-            
+            S.skipSamples = 0;
             S.subjectids = [];
         end
        
@@ -149,7 +147,6 @@ classdef Session < handle
         end
         function S = loadAll(S)
             %loads everything
-            %(Careful for memory issues)
             [l,~] = size(S.sessions);
             h = waitbar(0,'Loading...');
             for i=1:l
@@ -225,7 +222,7 @@ classdef Session < handle
             trials = {};
             i = 1;
             for i=1:numSplits
-                trials{i} = ssveptoolkit.util.Trial(signal(:, ranges(i,1):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid);
+                trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid);
                 S.subjectids = [S.subjectids subjectid];
             end
             i = i +1;

@@ -4,24 +4,29 @@
 % sess.loadAll(); %its best to do this once, outside the script (too much
 % time)
 % transf = ssveptoolkit.transformer.PWelchTransformer();
-transf = ssveptoolkit.transformer.PWelchTransformer;
-% (optional) define the parameters
-transf.channel = 126;
-transf.seconds = 5;
-transf.nfft = 256;
+transformers = {};
+% occipital =[ 126 138	150	139	137	149	125	113	114	115	116	117	118	119	120	121	122	123	124	127	133	134	135	136	145	146	147	148	156	157	158	159	165	166	167	168	174	175	176	187];
+occipital = [138 150];
+codebookfilename = 'vlad16'; % codebook must be trained first
 
-filt = ssveptoolkit.extractor.FEASTFilter();
-filt.algorithm = filt.ALGORITHM_JMI;
-filt.numToSelect = 85;
-
+%transformers to aggregate
+for i=1:length(occipital)
+    transformers{i} = ssveptoolkit.transformer.PWelchTransformer;
+    transformers{i}.channel = occipital(i);
+    transformers{i}.nfft = 512;
+    transformers{i}.seconds = 5;
+end
+aggr = ssveptoolkit.aggregation.VladAggregator(codebookfilename);
+%numPCA = 80; % the same used for codebook
+%aggr = ssveptoolkit.aggregation.FisherAggregator(codebookfilename,numPCA);
+filt = ssveptoolkit.extractor.PCA2Filter;
+filt.componentNum = 257;
 classif = ssveptoolkit.classifier.LIBSVMClassifierFast();
-classif.cost = 1.0;
-classif.kernel = classif.KERNEL_LINEAR;
 
 experiment = ssveptoolkit.experiment.Experimenter();
 experiment.session = sess;
-experiment.transformer = transf;
-%comment this line if you dont want a filter
+experiment.transformer = transformers;
+experiment.aggregator = aggr;
 experiment.extractor = filt;
 experiment.classifier = classif;
 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)

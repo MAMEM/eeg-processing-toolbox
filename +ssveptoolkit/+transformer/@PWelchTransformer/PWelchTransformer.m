@@ -1,4 +1,4 @@
-classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
+classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
 %Computes the psd using the welch method
 %Usage:
 %   session = ssveptoolkit.util.Session();
@@ -16,7 +16,6 @@ classdef PWelchTransformer < ssveptoolkit.transformer.FeatureTransformerBase
         channel;
         seconds;
         nfft;
-        pff;
     end
     
     methods (Access = public)

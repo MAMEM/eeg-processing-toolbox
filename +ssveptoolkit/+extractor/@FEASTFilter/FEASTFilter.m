@@ -24,8 +24,8 @@ classdef FEASTFilter < ssveptoolkit.extractor.FeatureExtractorBase
     methods
         function FF = FEASTFilter(instanceSet,algorithm, numtoSelect, param1, param2)
             if nargin == 0
-                FF.algorithm = 'mim';
-                FF.numToSelect = 10;
+                FF.algorithm = 'icap';
+                FF.numToSelect = 85;
             end
             if nargin > 1
                 FF.originalInstanceSet = instanceSet;
