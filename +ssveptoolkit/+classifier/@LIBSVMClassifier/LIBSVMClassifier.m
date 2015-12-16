@@ -97,7 +97,13 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
                     configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';
             end
         end
-                
+        
+        function newLSVM = copy(LSVM)
+            newLSVM = ssveptoolkit.classifier.LIBSVMClassifier;
+            newLSVM.kernel = LSVM.kernel;
+            newLSVM.cost = LSVM.cost;
+            newLSVM.gamma = LSVM.gamma;
+        end
     end
 end
 
