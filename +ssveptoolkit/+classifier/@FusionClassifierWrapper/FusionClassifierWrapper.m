@@ -63,18 +63,6 @@ classdef FusionClassifierWrapper < ssveptoolkit.classifier.ClassifierBase & ssve
         
         
     end
-    methods (Access = private)
-        function new = copy(FCW,objToCopy)
-            % Instantiate new object of the same class.
-            new = feval(class(objToCopy));
-            
-            % Copy all non-hidden properties.
-            p = properties(objToCopy);
-            for i = 1:length(p)
-                new.(p{i}) = objToCopy.(p{i});
-            end
-        end
-    end
     
 end
 
