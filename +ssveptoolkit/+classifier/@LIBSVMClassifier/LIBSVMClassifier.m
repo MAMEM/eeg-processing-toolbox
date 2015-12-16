@@ -1,21 +1,23 @@
+% LIBSVMCLASSIFIER class
+% Wrapper class of the libsvm library (libsvm) .mex files must be added to
+% your matlab path before using this class
 classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
     
     properties (Constant)
-        KERNEL_LINEAR = 0;
-%         KERNEL_POLYNOMIAL = 1;
+        KERNEL_LINEAR = 0; 
+%         KERNEL_POLYNOMIAL = 1; not supported yet
         KERNEL_RBF = 2;
-%         KERNEL_SIGMOID = 3;
+%         KERNEL_SIGMOID = 3; not supported yet
     end
     properties
-        kernel;
-        cost;
-        gamma;
-        models;
+        kernel; % The svm kernel
+        cost; % The cost parameter
+        gamma; % The gamma parameter (used only with rbf kernel)
+        models; % The trained models
     end
     
     methods (Access = public)
         function LSVM = LIBSVMClassifier(instanceSet)
-            %set default parameters
             if nargin > 0
                 LSVM.kernel = LSVM.KERNEL_LINEAR;
                 LSVM.cost = 1.0;
@@ -29,7 +31,7 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
         end
         
         function LSVM = build(LSVM)
-            %clear all from previous calls to "build"
+            % Builds the classification models
             LSVM.reset;
             numLabels = LSVM.instanceSet.getNumLabels;
             uniqueLabels = unique(LSVM.instanceSet.getLabels);
@@ -67,7 +69,6 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
             end
             output = zeros(numinstance,1);
             probabilities = zeros(numinstance,1);
-            %we need these for ranking metrics (e.g. mAP)
             ranking = scores;
             for i=1:numinstance
                 %select the class with the highest probability
@@ -81,11 +82,12 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
         end
         
         function LSVM = reset(LSVM)
-            %delete all stored models
+            % 'Resets' the classifier.
             LSVM.models = {};
         end
         
         function configInfo = getConfigInfo(LSVM)
+            % Prints the parameters of the classifier
             switch LSVM.kernel
                 case LSVM.KERNEL_LINEAR
                     configInfo = sprintf('LIBSVMClassifier\tkernel:linear\tcost:%d', LSVM.cost);

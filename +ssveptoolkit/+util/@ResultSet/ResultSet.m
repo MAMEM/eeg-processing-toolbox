@@ -1,14 +1,25 @@
+% RESULTSET class
+% Stores the results of an experiment
 classdef ResultSet < ssveptoolkit.util.InstanceSet
     
     properties
-        outputLabels;
-        outputProbabilities;
-        outputRanking;
-        confusionMatrix;
+        outputLabels; % The output labels 
+        outputProbabilities; % Probabilities
+        outputRanking; % Confidence scores
+        confusionMatrix; % The Confusion Matrix
     end
     
     methods
         function RS = ResultSet(instanceSet, labels, probabilities, ranking)
+            %Constructor method
+            %Input:
+            %(InstanceSet object): the original instanceSet
+            %Labels: a vector containing the output labels of the
+            %experiment
+            %Proababilities: a vector containing the probabilities of each
+            %label
+            %Ranking (optional): a matrix containing a score for each label
+            
             RS = RS@ssveptoolkit.util.InstanceSet(instanceSet);
             RS.outputLabels = labels;
 
@@ -23,6 +34,7 @@ classdef ResultSet < ssveptoolkit.util.InstanceSet
                 idx2 = find(labels==trueLabels(k,1));
                 RS.confusionMatrix(idx1,idx2) = RS.confusionMatrix(idx1,idx2)+ 1;
             end
+            RS.confusionMatrix = RS.confusionMatrix';
             %if classifier supports ranking/probabilities
             if nargin > 2
                 RS.outputProbabilities = probabilities;

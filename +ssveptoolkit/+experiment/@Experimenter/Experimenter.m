@@ -1,17 +1,41 @@
+% EXPERIMENTER class
+% Wraps all the necessary objects for performing an experiment. 
+%Before running an experiment all the required properties must be set.
+% Required:
+% - session
+% - transformer
+% - evalMethod
+% - classifier
+% Optional:
+% - extractor
+%
+% to run the experiment execute the "run()" method.
+% Example:
+% experiment = ssveptoolkit.experiment.Experimenter;
+% experiment.session = ssveptoolkit.util.Session;
+% experiment.session.loadSubject(1);
+% experiment.transformer = ssveptoolkit.transformer.PWelchTransformer;
+% experiment.extractor = ssveptoolkit.extractor.FEASTFilter;
+% experiment.classifier = ssveptoolkit.classifier.LIBSVMClassifier;
+% experiment.evalMethod = experiment.evalMethod.EVAL_METHOD_LOSO;
+% experiment.run;
+% results = experiment.results;
+% confmatrix = results{1}.getConfusionMatrix;
 classdef Experimenter < handle
-    
     properties (Constant)
-        EVAL_METHOD_LOOCV = 0;
-        EVAL_METHOD_LOSO = 1;
+        EVAL_METHOD_LOOCV = 0; % Leave One Out Cross-Validation
+        EVAL_METHOD_LOSO = 1; % Leave One Subject Out 
     end
     
     properties (Access = public)
-        session; 
-        transformer;
-        extractor;
-        evalMethod;
-        classifier;
-        results;
+        session; % The Session object. Trials must be loaded before run() is executed
+        transformer; % A transformer object
+        aggregator;
+        extractor; % An extractor object
+        evalMethod; % The evaluation method
+        classifier; % A classifier object
+        results; % A cell array containing objects of the 'ResultEvaluator' class.
+        subjectids;
     end
     
     methods
@@ -24,27 +48,48 @@ classdef Experimenter < handle
         end
         
         function E = run(E)
-            E.transformer.trials = E.session.trials;
+            % Runs an experiment
+            E.checkCompatibility;
+            if ~isempty(E.session)
+                E.subjectids = E.session.subjectids;
+            end
             disp('transform ...');
-            E.transformer.transform;
+            if iscell(E.transformer)
+                numTransf = length(E.transformer);
+                for i=1:numTransf
+                    if ~isempty(E.session)
+                        E.transformer{i}.trials = E.session.trials;
+                    end
+                    E.transformer{i}.transform;
+                    
+                end
+                E.aggregator.transformers = E.transformer;
+                E.aggregator.aggregate;
+                instanceSet = E.aggregator.instanceSet;
+            else 
+                if ~isempty(E.session)
+                    E.transformer.trials = E.session.trials;
+                    E.transformer.transform;
+                end
+                instanceSet = E.transformer.getInstanceSet;
+            end
             if ~isempty(E.extractor)
-                E.extractor.originalInstanceSet = E.transformer.getInstanceSet;
+                E.extractor.originalInstanceSet = instanceSet;
+                if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter')
+                    E.extractor.pff = E.transformer.pff;
+                end
                 disp('extract ...');
                 E.extractor.filter;
                 E.classifier.instanceSet = E.extractor.filteredInstanceSet;
             else
-                E.classifier.instanceSet = E.transformer.getInstanceSet;
+                E.classifier.instanceSet = instanceSet;
             end
-%             E.instanceSet = ssveptoolkit.util.InstanceSet(E.classifier.instanceSet.getDataset);
             disp('evaluating..');
             switch E.evalMethod
                 case E.EVAL_METHOD_LOOCV
-                    if isa(E.classifier,'ssvep.toolkit.classifier.LIBSVMClassifierFast')
-                        error('LIBSVMClassifierFast not supported for LOOCV eval method');
-                    end
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
-                    subjects = unique(E.session.subjectids);
+                    subjects = unique(E.subjectids);
                     instanceSet = E.classifier.instanceSet;
                     if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
                         instanceSet.K = instanceSet.computeKernel(E.classifier.kernel,E.classifier.gamma);
@@ -64,10 +109,22 @@ classdef Experimenter < handle
         end
         
         function info = getExperimentInfo(E)
+            % Prints the configuration info of the experiment
             info = 'Experiment Configuration:\n';
             if ~isempty(E.transformer)
-                info = strcat(info, E.transformer.getConfigInfo);
-                info = strcat(info,'\n');
+                if ~iscell(E.transformer)
+                    info = strcat(info, E.transformer.getConfigInfo);
+                    info = strcat(info,'\n');
+                else
+                    for i=1:length(E.transformer)
+                        info = strcat(info, E.transformer{i}.getConfigInfo);
+                        info = strcat(info,'\n');
+                    end
+                end
+            end
+            if ~isempty(E.aggregator)
+                info = strcat(info, E.aggregator.getConfigInfo);
+                info = strcat(info, '\n');
             end
             if ~isempty(E.extractor)
                 info = strcat(info, E.extractor.getConfigInfo);
@@ -83,6 +140,22 @@ classdef Experimenter < handle
     end
     
     methods (Access = private)
+        
+        function E = checkCompatibility(E)
+            if iscell(E.transformer)
+                if isempty(E.aggregator)
+                    error ('Provided many transformers but not an Aggregator');
+                end
+            end
+            if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast') && E.evalMethod == 0
+                error('LIBSVMClassifierFast not supported for LOOCV eval method');
+            end
+            if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter') && ...
+                    ~isa(E.transformer,'ssveptoolkit.transformer.PSDTransformerBase')
+                error('FrequencyFilter only supported with PSD based transformers');
+            end
+        end
+            
         function E = leaveOneOutCV(E)
             %leave one out cross validation
             instanceSet = E.classifier.instanceSet;
@@ -91,11 +164,9 @@ classdef Experimenter < handle
             outputScores = zeros(numInstances,1);
             outputRanking = zeros(numInstances, instanceSet.getNumLabels);
             h = waitbar(0,'Cross-validating..');
-            %TODO: parfor this?
             for i=1:numInstances
                 waitbar(i/numInstances,h,sprintf('Cross-validating fold: %d/%d', i, numInstances));
                 %train the classifier without 1 instance
-                %TODO: this line will change
                 E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(i);
                 E.classifier.build();
                 %predict the label of the omitted instance
@@ -103,33 +174,28 @@ classdef Experimenter < handle
             end
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
-            %store the (final) results in a resultSet instances
-%             EB.resultSet = ssveptoolkit.util.ResultSet(E.instanceSet.getDataset, outputLabels, outputScores, outputRanking);
             close(h);
         end
         
         function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)
-            testingset = find(E.session.subjectids == subjectid);
+            testingset = find(E.subjectids == subjectid);
             E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
             E.classifier.build();
             [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
-            %             h = waitbar(0, 'Evaluating..');
-            
         end
         
         function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
-            testingset = E.session.subjectids == subjectid;
+            testingset = E.subjectids == subjectid;
             E.classifier.Ktrain = instanceSet.getTrainKernel(~testingset);
             E.classifier.Ktest = instanceSet.getTestKernel(~testingset,testingset);
-            testingset = find(E.session.subjectids == subjectid);
+            testingset = find(E.subjectids == subjectid);
             E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
             E.classifier.build();
             [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance();
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
-            %             h = waitbar(0, 'Evaluating..');
         end
     end
     

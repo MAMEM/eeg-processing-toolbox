@@ -4,11 +4,15 @@
 % sess.loadAll(); %its best to do this once, outside the script (too much
 % time)
 % transf = ssveptoolkit.transformer.PWelchTransformer();
-transf = ssveptoolkit.transformer.PWelchTransformer;
+transf1 = ssveptoolkit.transformer.PWelchTransformer;
 % (optional) define the parameters
-transf.channel = 126;
-transf.seconds = 5;
-transf.nfft = 256;
+transf1.channel = 138;
+transf2 = ssveptoolkit.transformer.PWelchTransformer;
+transf2.channel = 150;
+transf3 = ssveptoolkit.transformer.PWelchTransformer;
+transf3.channel = 139;
+
+aggr = ssveptoolkit.aggregation.ChannelAveraging;
 
 filt = ssveptoolkit.extractor.FEASTFilter();
 filt.algorithm = filt.ALGORITHM_JMI;
@@ -20,8 +24,8 @@ classif.kernel = classif.KERNEL_LINEAR;
 
 experiment = ssveptoolkit.experiment.Experimenter();
 experiment.session = sess;
-experiment.transformer = transf;
-%comment this line if you dont want a filter
+experiment.transformer = {transf1,transf2,transf3};
+experiment.aggregator = aggr;
 experiment.extractor = filt;
 experiment.classifier = classif;
 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)
