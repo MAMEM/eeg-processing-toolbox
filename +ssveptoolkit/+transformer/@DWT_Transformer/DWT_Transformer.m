@@ -43,7 +43,7 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                 mDWT.channel = channel;
                 mDWT.seconds = seconds;
                 mDWT.levelWT = levWT;
-                mDWT.WavFamily = WavFam;                
+                mDWT.WavFamily = WavFam;
             else
                 error('invalid number of arguments');
             end
@@ -81,6 +81,8 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                     % zero padding to nearest power of 2
                     if isa(mDWT.filter,'dfilt.df2sos')
                         y = filter(mDWT.filter,y);
+                    elseif isa(mDWT.filter,'dfilt.dffir')
+                        y = filtfilt(mDWT.filter.Numerator,1,y);
                     end
                     [C L] = wavedec(y,mDWT.levelWT,mDWT.WavFamily);%pwelch(y,[],[],512,mDWT.trials{i}.samplingRate,'onesided');
                 elseif length(mDWT.seconds) == 2
@@ -89,6 +91,8 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                     y = mDWT.trials{i}.signal(mDWT.channel,sampleA:sampleB);
                     if isa(mDWT.filter,'dfilt.df2sos')
                         y = filter(mDWT.filter,y);
+                    elseif isa(mDWT.filter,'dfilt.dffir')
+                        y = filtfilt(mDWT.filter.Numerator,1,y);
                     end
                     [C L] = wavedec(y,mDWT.levelWT,mDWT.WavFamily);%pwelch(y,[],[],512,mDWT.trials{i}.samplingRate,'onesided');
                 else
@@ -104,5 +108,5 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
             configInfo = sprintf('DWT_Transformer\tchannel:%d\tseconds:%d\tlevelWT:%d\tWavFamily:%s',mDWT.channel,mDWT.seconds,mDWT.levelWT,mDWT.WavFamily);
         end
     end
-   
+    
 end

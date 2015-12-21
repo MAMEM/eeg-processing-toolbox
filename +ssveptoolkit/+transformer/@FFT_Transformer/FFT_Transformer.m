@@ -57,8 +57,10 @@ classdef FFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                     
                     error ('invalid seconds parameter');
                 end
-                if isa(mDWT.filter,'dfilt.df2sos')
-                    y = filter(mDWT.filter,y);
+                if isa(mFFT.filter,'dfilt.df2sos')
+                    y = filter(mFFT.filter,y);
+                elseif isa(mFFT.filter,'dfilt.dffir')
+                    y = filtfilt(mFFT.filter.Numerator,1,y);
                 end
                 %Y = fft(y,(NUM_FEATURES-1)*2)/((NUM_FEATURES-1)*2);
                 %f = Fs/2*linspace(0,1,NFFT/2+1);
