@@ -5,6 +5,7 @@ classdef (Abstract) FeatureTransformerBase < handle
     properties (Access = public)
         instanceSet; % Output: The dataset
         trials;% Input: The trial signals
+        filter;
     end
     
     methods (Abstract = true)

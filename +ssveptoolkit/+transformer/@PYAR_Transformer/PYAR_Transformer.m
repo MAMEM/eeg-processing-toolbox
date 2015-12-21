@@ -68,6 +68,9 @@ classdef PYAR_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                 else
                     error('invalid seconds parameter');
                 end
+                if isa(mDWT.filter,'dfilt.df2sos')
+                    y = filter(mDWT.filter,y);
+                end
                 [pyy pff] = pyulear(y,mAR.order,mAR.nfft,mAR.trials{i}.samplingRate);
                 instances(i,:) = pyy;
                 labels(i,1) = floor(mAR.trials{i}.label);

@@ -54,7 +54,11 @@ classdef FFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                     sampleB = mFFT.trials{i}.samplingRate * mFFT.seconds(2);
                     y = mFFT.trials{i}.signal(mFFT.channel, sampleA:sampleB);
                 else
+                    
                     error ('invalid seconds parameter');
+                end
+                if isa(mDWT.filter,'dfilt.df2sos')
+                    y = filter(mDWT.filter,y);
                 end
                 %Y = fft(y,(NUM_FEATURES-1)*2)/((NUM_FEATURES-1)*2);
                 %f = Fs/2*linspace(0,1,NFFT/2+1);

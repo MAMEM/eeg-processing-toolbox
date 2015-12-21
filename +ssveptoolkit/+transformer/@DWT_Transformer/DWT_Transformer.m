@@ -50,7 +50,7 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
         end
         
         function transform(mDWT)
-            if length(mDWT.seconds) == 1
+            if length(mDWT.seconds)==1
                 numsamples = mDWT.trials{1}.samplingRate * mDWT.seconds;
                 if (numsamples == 0)
                     numsamples = size(mDWT.trials{1}.signal(mDWT.channel,:),2);
@@ -58,26 +58,42 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                 numTrials = length(mDWT.trials);
                 
                 [C L] = wavedec(mDWT.trials{1}.signal(mDWT.channel, 1:numsamples),mDWT.levelWT,mDWT.WavFamily);
-            elseif length(mDWT.seconds == 2)
-                sampleA = mDWT.trials{i}.samplingRate*mDWT.seconds(1) + 1;
-                sampleB = mDWT.trials{i}.samplingRate*mDWT.seconds(2);
-                [C L] = wavedec(mDWT.trials{i}.signal(mDWT.channel, sampleA:sampleB), mDWT.levelWT, mDWT.WavFamily);
+                instances = zeros(numTrials, length(C));
+                labels = zeros(numTrials,1);
+            elseif length(mDWT.seconds) == 2
+                sampleA = mDWT.trials{1}.samplingRate * mDWT.seconds(1) + 1;
+                sampleB = mDWT.trials{1}.samplingRate * mDWT.seconds(2);
+                numTrials = length(mDWT.trials);
+                [C L] = wavedec(mDWT.trials{1}.signal(mDWT.channel, sampleA:sampleB),mDWT.levelWT,mDWT.WavFamily);
+                instances = zeros(numTrials, length(C));
+                labels = zeros(numTrials,1);
             else
                 error('invalid seconds parameter');
             end
-            instances = zeros(numTrials, length(C));
-            labels = zeros(numTrials,1);
-                                    
             for i=1:numTrials
-                numsamples = mDWT.trials{i}.samplingRate * mDWT.seconds;
-                if(numsamples == 0)
-                    y = mDWT.trials{i}.signal(mDWT.channel,:);
+                if length(mDWT.seconds) == 1
+                    numsamples = mDWT.trials{i}.samplingRate * mDWT.seconds;
+                    if(numsamples == 0)
+                        y = mDWT.trials{i}.signal(mDWT.channel,:);
+                    else
+                        y = mDWT.trials{i}.signal(mDWT.channel, 1:numsamples);
+                    end
+                    % zero padding to nearest power of 2
+                    if isa(mDWT.filter,'dfilt.df2sos')
+                        y = filter(mDWT.filter,y);
+                    end
+                    [C L] = wavedec(y,mDWT.levelWT,mDWT.WavFamily);%pwelch(y,[],[],512,mDWT.trials{i}.samplingRate,'onesided');
+                elseif length(mDWT.seconds) == 2
+                    sampleA = mDWT.trials{i}.samplingRate * mDWT.seconds(1) + 1;
+                    sampleB = mDWT.trials{i}.samplingRate * mDWT.seconds(2);
+                    y = mDWT.trials{i}.signal(mDWT.channel,sampleA:sampleB);
+                    if isa(mDWT.filter,'dfilt.df2sos')
+                        y = filter(mDWT.filter,y);
+                    end
+                    [C L] = wavedec(y,mDWT.levelWT,mDWT.WavFamily);%pwelch(y,[],[],512,mDWT.trials{i}.samplingRate,'onesided');
                 else
-                    y = mDWT.trials{i}.signal(mDWT.channel, 1:numsamples);
+                    error('invalid seconds parameter');
                 end
-                % zero padding to nearest power of 2
-                y = mDWT.trials{i}.signal(mDWT.channel, 1:numsamples);
-                [C L] = wavedec(y,mDWT.levelWT,mDWT.WavFamily);%pwelch(y,[],[],512,mDWT.trials{i}.samplingRate,'onesided');
                 instances(i,:) = C;
                 labels(i,1) = floor(mDWT.trials{i}.label);
             end
@@ -90,4 +106,3 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
     end
    
 end
-
