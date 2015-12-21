@@ -65,11 +65,19 @@ classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
 %             PWT.instances = zeros(numTrials, numFeatures);
 %             PWT.labels = zeros(numTrials,1);
             for i=1:numTrials
-                numsamples = PWT.trials{i}.samplingRate * PWT.seconds;
-                if(numsamples == 0)
-                    y = PWT.trials{i}.signal(PWT.channel,:);
-                else
-                    y = PWT.trials{i}.signal(PWT.channel, 1:numsamples);
+                if length(PWT.seconds) == 1
+                    numsamples = PWT.trials{i}.samplingRate * PWT.seconds;
+                    if(numsamples == 0)
+                        y = PWT.trials{i}.signal(PWT.channel,:);
+                    else
+                        y = PWT.trials{i}.signal(PWT.channel, 1:numsamples);
+                    end
+                elseif length(PWT.seconds) == 2
+                    sampleA = PWT.trials{i}.samplingRate*PWT.seconds(1) +1
+                    sampleB = PWT.trials{i}.samplingRate*PWT.seconds(2)
+                    y = PWT.trials{i}.signal(PWT.channel, sampleA:sampleB);
+                else 
+                    error('invalid seconds parameter');
                 end
                 if length(PWT.nfft>1)
                     [pxx, pff]=pwelch(y,[],[],PWT.nfft,PWT.trials{i}.samplingRate);

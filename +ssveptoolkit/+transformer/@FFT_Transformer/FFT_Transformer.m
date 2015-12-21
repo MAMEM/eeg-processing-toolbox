@@ -42,12 +42,20 @@ classdef FFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
             instances = zeros(numTrials, NUM_FEATURES);
             labels = zeros(numTrials,1);
             for i=1:numTrials
+                if length(mFFT.seconds) == 1
                 numsamples = mFFT.trials{i}.samplingRate * mFFT.seconds;
                 if(numsamples == 0)
                     y = mFFT.trials{i}.signal(mFFT.channel,:);
                 else
                     y = mFFT.trials{i}.signal(mFFT.channel, 1:numsamples);
-                end                
+                end
+                elseif length(mFFT.seconds) == 2
+                    sampleA = mFFT.trials{i}.samplingRate * mFFT.seconds(1) + 1;
+                    sampleB = mFFT.trials{i}.samplingRate * mFFT.seconds(2);
+                    y = mFFT.trials{i}.signal(mFFT.channel, sampleA:sampleB);
+                else
+                    error ('invalid seconds parameter');
+                end
                 %Y = fft(y,(NUM_FEATURES-1)*2)/((NUM_FEATURES-1)*2);
                 %f = Fs/2*linspace(0,1,NFFT/2+1);
                 %pyy = abs(Y(1:(NUM_FEATURES-1)*2/2+1)).^2;

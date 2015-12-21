@@ -55,12 +55,19 @@ classdef PYAR_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
             instances = zeros(numTrials, NUM_FEATURES);
             labels = zeros(numTrials,1);
             for i=1:numTrials
+                if length(PWT.seconds) ==1
                 numsamples = mAR.trials{i}.samplingRate * mAR.seconds;
                 if(numsamples == 0)
                     y = mAR.trials{i}.signal(mAR.channel,:);
                 else
                     y = mAR.trials{i}.signal(mAR.channel, 1:numsamples);
-                end                
+                end
+                elseif length(mAR.seconds) ==2
+                    sampleA = mAR.trials{i}.samplingRate*mAR.seconds(1) + 1;
+                    sampleB = mAR.trials{i}.samplingRate*mAR.seconds(2);
+                else
+                    error('invalid seconds parameter');
+                end
                 [pyy pff] = pyulear(y,mAR.order,mAR.nfft,mAR.trials{i}.samplingRate);
                 instances(i,:) = pyy;
                 labels(i,1) = floor(mAR.trials{i}.label);

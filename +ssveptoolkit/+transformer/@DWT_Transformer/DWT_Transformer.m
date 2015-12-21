@@ -50,13 +50,21 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
         end
         
         function transform(mDWT)
-            numsamples = mDWT.trials{1}.samplingRate * mDWT.seconds;
-            if (numsamples == 0)                    
-                numsamples = size(mDWT.trials{1}.signal(mDWT.channel,:),2);                             
+            if length(mDWT.seconds) == 1
+                numsamples = mDWT.trials{1}.samplingRate * mDWT.seconds;
+                if (numsamples == 0)
+                    numsamples = size(mDWT.trials{1}.signal(mDWT.channel,:),2);
+                end
+                numTrials = length(mDWT.trials);
+                
+                [C L] = wavedec(mDWT.trials{1}.signal(mDWT.channel, 1:numsamples),mDWT.levelWT,mDWT.WavFamily);
+            elseif length(mDWT.seconds == 2)
+                sampleA = mDWT.trials{i}.samplingRate*mDWT.seconds(1) + 1;
+                sampleB = mDWT.trials{i}.samplingRate*mDWT.seconds(2);
+                [C L] = wavedec(mDWT.trials{i}.signal(mDWT.channel, sampleA:sampleB), mDWT.levelWT, mDWT.WavFamily);
+            else
+                error('invalid seconds parameter');
             end
-            numTrials = length(mDWT.trials);
-            
-            [C L] = wavedec(mDWT.trials{1}.signal(mDWT.channel, 1:numsamples),mDWT.levelWT,mDWT.WavFamily);            
             instances = zeros(numTrials, length(C));
             labels = zeros(numTrials,1);
                                     
