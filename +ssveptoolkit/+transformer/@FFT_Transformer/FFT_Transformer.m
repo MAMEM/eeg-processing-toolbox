@@ -57,7 +57,7 @@ classdef FFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                     
                     error ('invalid seconds parameter');
                 end
-                if isa(mFFT.filter,'dfilt.df2sos')
+                if isa(mFFT.filter,'dfilt.df2sos') || isa(mFFT.filter,'dfilt.df2')
                     y = filter(mFFT.filter,y);
                 elseif isa(mFFT.filter,'dfilt.dffir')
                     y = filtfilt(mFFT.filter.Numerator,1,y);

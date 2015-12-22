@@ -89,7 +89,7 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                     sampleA = mDWT.trials{i}.samplingRate * mDWT.seconds(1) + 1;
                     sampleB = mDWT.trials{i}.samplingRate * mDWT.seconds(2);
                     y = mDWT.trials{i}.signal(mDWT.channel,sampleA:sampleB);
-                    if isa(mDWT.filter,'dfilt.df2sos')
+                    if isa(mDWT.filter,'dfilt.df2sos') || isa(mDWT.filter,'dfilt.df2')
                         y = filter(mDWT.filter,y);
                     elseif isa(mDWT.filter,'dfilt.dffir')
                         y = filtfilt(mDWT.filter.Numerator,1,y);
