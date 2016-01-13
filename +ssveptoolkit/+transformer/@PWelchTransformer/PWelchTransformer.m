@@ -26,16 +26,16 @@ classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
             if nargin == 0
                 PWT.trials = {};
                 PWT.seconds = 0;
-                PWT.channel = 126;
+                PWT.channel = 1;
                 PWT.nfft = 512;
             elseif nargin == 1
                 PWT.trials = trials;
                 PWT.seconds = 0;
-                PWT.channel = 126;
+                PWT.channel = 1;
                 PWT.nfft = 512;
             elseif nargin == 2
                 PWT.trials = trials;
-                PWT.channel = 126;
+                PWT.channel = 1;
                 PWT.seconds = seconds;
                 PWT.nfft = 512;
             elseif nargin == 3

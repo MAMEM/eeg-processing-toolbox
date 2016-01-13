@@ -9,6 +9,7 @@ classdef PreprocessingBase < handle
     
     methods (Abstract = true)
         obj = process(obj);
+        configInfo = getConfigInfo(obj);
     end
     
 end

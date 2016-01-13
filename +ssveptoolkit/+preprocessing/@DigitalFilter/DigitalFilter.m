@@ -4,6 +4,7 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
     
     properties
         filt;
+        info;
     end
     
     methods
@@ -15,7 +16,6 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
         
         function DF = process(DF)
             for i=1:length(DF.originalTrials)
-                i
                 signal = DF.originalTrials{i}.signal;
                 [numChannels, ~] = size(signal);
                 for j=1:numChannels
@@ -26,6 +26,14 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
                     end
                 end
                 DF.processedTrials{i} = ssveptoolkit.util.Trial(signal,DF.originalTrials{i}.label,DF.originalTrials{i}.samplingRate,DF.originalTrials{i}.subjectid);
+            end
+        end
+        
+        function configInfo = getConfigInfo(DF)
+            if isempty(DF.info)
+                configInfo = 'DigitalFilter';
+            else
+                configInfo = strcat('DigitalFilter:\t',info);
             end
         end
     end

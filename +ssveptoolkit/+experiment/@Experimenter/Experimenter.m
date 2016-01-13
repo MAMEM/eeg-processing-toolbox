@@ -29,6 +29,7 @@ classdef Experimenter < handle
     
     properties (Access = public)
         session; % The Session object. Trials must be loaded before run() is executed
+        preprocessing;
         transformer; % A transformer object
         aggregator;
         extractor; % An extractor object
@@ -46,31 +47,45 @@ classdef Experimenter < handle
             end
             E.results = {};
         end
-        
+%         function E = run2(E)
+%             E.subjectids = E.session.subjectids;
+%             trials = E.session.trials;
+%             %preprocessing
+%             if ~isempty(E.preprocessing)
+%                 for i=1:length(E.preprocessing)
+%                     E.preprocessing{i}.originalTrials = trials;
+%                     E.preprocessing{i}.process;
+%                     trials = E.preprocessing{i}.processedTrials;
+%                 end
+%             end
+%             if iscell(E.transformer)
+%                 numTransf = length(E.transforemr
+%         end
         function E = run(E)
             % Runs an experiment
             E.checkCompatibility;
-            if ~isempty(E.session)
-                E.subjectids = E.session.subjectids;
+            E.subjectids = E.session.subjectids;
+            trials = E.session.trials;
+            if ~isempty(E.preprocessing)
+                for i=1:length(E.preprocessing)
+                    E.preprocessing{i}.originalTrials = trials;
+                    E.preprocessing{i}.process;
+                    trials = E.preprocessing{i}.processedTrials;
+                end
             end
             disp('transform ...');
             if iscell(E.transformer)
                 numTransf = length(E.transformer);
                 for i=1:numTransf
-                    if ~isempty(E.session)
-                        E.transformer{i}.trials = E.session.trials;
-                    end
-                    E.transformer{i}.transform;
-                    
+                    E.transformer{i}.trials = trials;
+                    E.transformer{i}.transform;    
                 end
                 E.aggregator.transformers = E.transformer;
                 E.aggregator.aggregate;
                 instanceSet = E.aggregator.instanceSet;
-            else 
-                if ~isempty(E.session)
-                    E.transformer.trials = E.session.trials;
-                    E.transformer.transform;
-                end
+            else
+                E.transformer.trials = trials;
+                E.transformer.transform;
                 instanceSet = E.transformer.getInstanceSet;
             end
             if ~isempty(E.extractor)
