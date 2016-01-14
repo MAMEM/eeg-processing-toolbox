@@ -11,7 +11,7 @@ classdef (Abstract) FeatureTransformerBase < handle
     methods (Abstract = true)
         obj = transform(obj);
         configInfo = getConfigInfo(obj);
-        %Subclasses must implement this method
+        time = getTime(obj);
     end
     
     methods (Access = public)

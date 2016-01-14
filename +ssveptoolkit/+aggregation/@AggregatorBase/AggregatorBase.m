@@ -10,6 +10,7 @@ classdef (Abstract) AggregatorBase < handle
     methods (Abstract = true)
         obj = aggregate(obj);
         configInfo = getConfigInfo(obj);
+        time = getTime(obj);
     end
     
 end

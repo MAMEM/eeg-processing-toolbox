@@ -19,6 +19,11 @@ classdef PreprocessingWrapper < ssveptoolkit.preprocessing.PreprocessingBase
             end
             PW.processedTrials = currTrials;
         end
+        
+                        
+        function time = getTime(PW)
+            time = 0;
+        end
     end
     
 end

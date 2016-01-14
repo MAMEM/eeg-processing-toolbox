@@ -24,6 +24,11 @@ classdef ChannelRatio < ssveptoolkit.aggregation.AggregatorBase;
         function configInfo = getConfigInfo(CR)
             configInfo = 'ChannelRatio';
         end
+        
+                
+        function time = getTime(CR)
+            time = 0;
+        end
     end
     
 end

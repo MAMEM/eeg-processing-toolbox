@@ -56,6 +56,11 @@ classdef FusionClassifierWrapper < ssveptoolkit.classifier.ClassifierBase & ssve
             configInfo = 'FusionClassifierWrapper';
         end
         
+                        
+        function time = getTime(FCW)
+            time = 0;
+        end
+        
         function FCW = reset(FCW)
             FCW.classifiers = {};
         end

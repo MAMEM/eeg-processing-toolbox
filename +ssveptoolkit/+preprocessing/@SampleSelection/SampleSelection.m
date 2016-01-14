@@ -9,6 +9,10 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
     
     methods
         function CS = SampleSelection(channels,sampleRange)
+            if(nargin == 0)
+                CS.channels = 126;
+                CS.sampleRange = [1,1250];
+            end
             if(nargin > 0)
                 CS.channels = channels;
             end
@@ -23,17 +27,23 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
                 if(length(CS.channels) > 0)
                     if(length(CS.sampleRange) > 0)
                         %channels AND sampleRange
-                        CS.processedTrials{i} = ssveptoolkit.util.Trial(CS.originalTrials{i}.signal(CS.channels,CS.sampleRange(1):CS.sampleRange(2)) ...
+                        signal = CS.originalTrials{i}.signal(CS.channels,CS.sampleRange(1):CS.sampleRange(2));
+                        signal = signal - mean(signal);
+                        CS.processedTrials{i} = ssveptoolkit.util.Trial(signal ...
                             ,CS.originalTrials{i}.label,CS.originalTrials{i}.samplingRate,CS.originalTrials{i}.subjectid);
                     else
                         %ONLY channels
-                        CS.processedTrials{i} = ssveptoolkit.util.Trial(CS.originalTrials{i}.signal(CS.channels,:) ...
+                        signal = CS.originalTrials{i}.signal(CS.channels,:);
+                        signal = signal - mean(signal);
+                        CS.processedTrials{i} = ssveptoolkit.util.Trial(signal ...
                             ,CS.originalTrials{i}.label,CS.originalTrials{i}.samplingRate,CS.originalTrials{i}.subjectid);
                     end
                 else
                     if(length(CS.sampleRange) > 0)
                         %ONLY sampleRange
-                        CS.processedTrials{i} = ssveptoolkit.util.Trial(CS.originalTrials{i}.signal(:,CS.sampleRange(1):CS.sampleRange(2)) ...
+                        signal = CS.originalTrials{i}.signal(:,CS.sampleRange(1):CS.sampleRange(2));
+                        signal = signal - mean(signal);
+                        CS.processedTrials{i} = ssveptoolkit.util.Trial(signal ...
                             ,CS.originalTrials{i}.label,CS.originalTrials{i}.samplingRate,CS.originalTrials{i}.subjectid);
                     else
                         %NOTHING (?)
@@ -50,7 +60,7 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
                     for i=1:length(CS.channels)
                         configInfo = strcat(configInfo,sprintf('%d+',CS.channels(i)));
                     end
-                    configInfo = strcat(configInfo,sprintf('\tsampleRange:%d-%d',CS.sampleRange(0),CS.sampleRange(1)));
+                    configInfo = strcat(configInfo,sprintf('\tsampleRange:%d-%d',CS.sampleRange(1),CS.sampleRange(2)));
                 else
                     configInfo = 'SampleSelection\tChannels:';
                     for i=1:length(CS.channels)
@@ -59,7 +69,7 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
                 end
             else
                 if(length(CS.sampleRange) > 0)
-                    configInfo = sprintf('SampleSelection\tSampleRange:%d-%d',CS.sampleRange(0),CS.sampleRange(1));
+                    configInfo = sprintf('SampleSelection\tSampleRange:%d-%d',CS.sampleRange(1),CS.sampleRange(2));
                     %ONLY sampleRange
                 else
                     %NOTHING (?)
@@ -67,6 +77,12 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
                 end
             end
         end
+        
+                        
+        function time = getTime(CS)
+            time = 0;
+        end
+        
     end
     
 end

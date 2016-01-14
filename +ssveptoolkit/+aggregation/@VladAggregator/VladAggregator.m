@@ -39,6 +39,11 @@ classdef VladAggregator < ssveptoolkit.aggregation.AggregatorBase;
         function configInfo = getConfigInfo(VA)
             configInfo = sprintf('VladAggregator:\tcodebook:%s',VA.codebookInfo);
         end
+        
+                
+        function time = getTime(VA)
+            time = 0;
+        end
     end
     
     methods (Static)

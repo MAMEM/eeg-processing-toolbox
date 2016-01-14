@@ -115,6 +115,11 @@ classdef AdaboostClassifier < ssveptoolkit.classifier.ClassifierBase
             configInfo = sprintf('AdaboostClassifier: Method: %s NLearn: %d Learners: %s',...
                 BOOST.Method, BOOST.NLearn, BOOST.Learners);
         end
+        
+                        
+        function time = getTime(BOOST)
+            time = 0;
+        end
                 
     end
 end

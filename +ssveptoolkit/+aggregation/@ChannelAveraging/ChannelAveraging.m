@@ -25,6 +25,10 @@ classdef ChannelAveraging < ssveptoolkit.aggregation.AggregatorBase;
         function configInfo = getConfigInfo(CA)
             configInfo = 'ChannelAveraging';
         end
+        
+        function time = getTime(CA)
+            time = 0;
+        end
     end
     
 end

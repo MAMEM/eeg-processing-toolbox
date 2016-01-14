@@ -88,6 +88,11 @@ classdef MLClassifier < ssveptoolkit.classifier.ClassifierBase
             %configInfo = 'MLSVMClassifier (Config info not supported yet)';
         end
         
+                        
+        function time = getTime(MLC)
+            time = 0;
+        end
+        
     end
 end
 

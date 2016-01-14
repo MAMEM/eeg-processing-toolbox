@@ -124,6 +124,11 @@ classdef MLTREEClassifier < ssveptoolkit.classifier.ClassifierBase
         function configInfo = getConfigInfo(MLTREE)
             configInfo = 'MLTREEClassifier (Config info not supported yet)';
         end
+        
+                        
+        function time = getTime(MLTREE)
+            time = 0;
+        end
                 
     end
 end

@@ -118,6 +118,11 @@ classdef MLDAClassifier < ssveptoolkit.classifier.ClassifierBase
         function configInfo = getConfigInfo(MLDA)
             configInfo = sprintf('MLDAClassifier\tdiscrimtype:%s\tdelta:%f\tgamma:%f\tfillcoeffs:%d\tscoretransform:%s\tprior:%s',MLDA.DiscrimType, MLDA.Delta, MLDA.Gamma, MLDA.FillCoeffs, MLDA.ScoreTransform, MLDA.Prior);
         end
+        
+                        
+        function time = getTime(MLDA)
+            time = 0;
+        end
                 
     end
 end

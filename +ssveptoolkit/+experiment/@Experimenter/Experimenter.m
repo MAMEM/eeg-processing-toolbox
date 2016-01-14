@@ -47,20 +47,6 @@ classdef Experimenter < handle
             end
             E.results = {};
         end
-%         function E = run2(E)
-%             E.subjectids = E.session.subjectids;
-%             trials = E.session.trials;
-%             %preprocessing
-%             if ~isempty(E.preprocessing)
-%                 for i=1:length(E.preprocessing)
-%                     E.preprocessing{i}.originalTrials = trials;
-%                     E.preprocessing{i}.process;
-%                     trials = E.preprocessing{i}.processedTrials;
-%                 end
-%             end
-%             if iscell(E.transformer)
-%                 numTransf = length(E.transforemr
-%         end
         function E = run(E)
             % Runs an experiment
             E.checkCompatibility;
@@ -122,10 +108,54 @@ classdef Experimenter < handle
                     error ('eval method not set or invalid');
             end
         end
+        function time = getTime(E)
+            info = 'Average time elapsed for trial:\n';
+            if ~isempty(E.preprocessing)
+                info = strcat(info, 'Preprocessing:\n');
+                for i=1:length(E.preprocessing)
+                    info = strcat(info, num2str(E.preprocessing{i}.getTime));
+                    info = strcat(info, ' seconds \n');
+                end
+            end
+            if ~isempty(E.transformer)
+                info = strcat(info, 'Transformation:\n');
+                if ~iscell(E.transformer)
+                    info = strcat(info, num2str(E.transformer.getTime));
+                    info = strcat(info, ' seconds \n');
+                else
+                    for i=1:length(E.transformer)
+                        info = strcat(info, num2str(E.transformer{i}.getTime));
+                        info = strcat(info,' seconds \n');
+                    end
+                end
+            end
+            if ~isempty(E.aggregator)
+                info = strcat(info, 'Aggregation:\n');
+                info = strcat(info, num2str(E.aggregation.getTime));
+                info = strcat(info, ' seconds \n');
+            end
+            if ~isempty(E.extractor)
+                info = strcat(info, 'Extractor:\n');
+                info = strcat(info, num2str(E.extractor.getTime));
+                info = strcat(info, ' seconds \n');
+            end
+            if ~isempty(E.classifier)
+                info = strcat(info, 'Classifier (Prediction):\n');
+                info = strcat(info, num2str(E.classifier.getTime));
+                info = strcat(info, ' seconds \n');
+            end
+            time = sprintf(info);
+        end
         
         function info = getExperimentInfo(E)
             % Prints the configuration info of the experiment
             info = 'Experiment Configuration:\n';
+            if ~isempty(E.preprocessing)
+                for i=1:length(E.preprocessing)
+                    info = strcat(info, E.preprocessing{i}.getConfigInfo);
+                    info = strcat(info,'\n');
+                end
+            end
             if ~isempty(E.transformer)
                 if ~iscell(E.transformer)
                     info = strcat(info, E.transformer.getConfigInfo);

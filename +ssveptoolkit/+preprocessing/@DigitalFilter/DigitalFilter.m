@@ -5,6 +5,7 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
     properties
         filt;
         info;
+        avgTime;
     end
     
     methods
@@ -15,6 +16,7 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
         end
         
         function DF = process(DF)
+            tic;
             for i=1:length(DF.originalTrials)
                 signal = DF.originalTrials{i}.signal;
                 [numChannels, ~] = size(signal);
@@ -27,6 +29,8 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
                 end
                 DF.processedTrials{i} = ssveptoolkit.util.Trial(signal,DF.originalTrials{i}.label,DF.originalTrials{i}.samplingRate,DF.originalTrials{i}.subjectid);
             end
+            total = toc;
+            DF.avgTime = total/length(DF.originalTrials);
         end
         
         function configInfo = getConfigInfo(DF)
@@ -35,6 +39,10 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
             else
                 configInfo = strcat('DigitalFilter:\t',info);
             end
+        end
+        
+        function time = getTime(DF)
+            time = DF.avgTime;
         end
     end
     

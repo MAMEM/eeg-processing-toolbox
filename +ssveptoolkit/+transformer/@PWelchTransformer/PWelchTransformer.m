@@ -16,6 +16,7 @@ classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
         channel;
         seconds;
         nfft;
+        avgTime;
     end
     
     methods (Access = public)
@@ -64,6 +65,7 @@ classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
             labels = zeros(numTrials,1);
 %             PWT.instances = zeros(numTrials, numFeatures);
 %             PWT.labels = zeros(numTrials,1);
+            tic;
             for i=1:numTrials
                 if length(PWT.seconds) == 1
                     numsamples = PWT.trials{i}.samplingRate * PWT.seconds;
@@ -92,6 +94,8 @@ classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
                 instances(i,:) = pxx;
                 labels(i,1) = floor(PWT.trials{i}.label);
             end
+            total = toc;
+            PWT.avgTime = total/numTrials;
             PWT.instanceSet = ssveptoolkit.util.InstanceSet(instances, labels);
             PWT.pff = pff;
         end
@@ -102,6 +106,10 @@ classdef PWelchTransformer < ssveptoolkit.transformer.PSDTransformerBase
             else
                 configInfo = sprintf('PWelchTransformer\tchannel:%d\tseconds:%d\tnfft:%d',PWT.channel,PWT.seconds,PWT.nfft);
             end
+        end
+        
+        function time = getTime(PWT)
+            time = PWT.avgTime;
         end
     end
    

@@ -22,6 +22,11 @@ classdef LateFusionAggregator < ssveptoolkit.aggregation.AggregatorBase;
         function configInfo = getConfigInfo(LFA)
             configInfo = 'LateFusionAggregator';
         end
+        
+                
+        function time = getTime(LFA)
+            time = 0;
+        end
     end
     
 end

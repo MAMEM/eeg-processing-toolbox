@@ -9,6 +9,7 @@ classdef (Abstract) ClassifierBase < handle
         obj = build(obj);
         obj = reset(obj);
         configInfo = getConfigInfo(obj);
+        time = getTime(obj);
     end
     
 end

@@ -51,6 +51,11 @@ classdef RandomForestClassifier < ssveptoolkit.classifier.ClassifierBase
         function configInfo = getConfigInfo(RF)
             configInfo = sprintf('RandomForestClassifier:\tnumTrees:%d',RF.numTrees);
         end
+        
+                        
+        function time = getTime(RF)
+            time = 0;
+        end
                 
     end
 end
