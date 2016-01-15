@@ -1,8 +1,8 @@
 classdef SVDFilter < ssveptoolkit.extractor.FeatureExtractorBase
-properties (Access = public)
+    properties (Access = public)
         modes;
-end
-methods
+    end
+    methods
         function FF = SVDFilter(instanceSet,modes)
             if nargin == 0
                 FF.modes = 80;
@@ -13,12 +13,16 @@ methods
         end
         
         function FF = filter(FF)
-			[U, S, V] = svd(FF.originalInstanceSet.getInstances);
-			data_svd = U*S(:,1:FF.modes)*V(1:FF.modes,1:FF.modes)';
+            [U, S, V] = svd(FF.originalInstanceSet.getInstances);
+            data_svd = U*S(:,1:FF.modes)*V(1:FF.modes,1:FF.modes)';
             FF.filteredInstanceSet = ssveptoolkit.util.InstanceSet(data_svd, FF.originalInstanceSet.getLabels);
         end
         function configInfo = getConfigInfo(FF)
-                configInfo = sprintf('SVDFilter\tmodes:%d', FF.modes);
+            configInfo = sprintf('SVDFilter\tmodes:%d', FF.modes);
         end
-end
+        
+        function time = getTime(FF)
+            time = 0;
+        end
+    end
 end

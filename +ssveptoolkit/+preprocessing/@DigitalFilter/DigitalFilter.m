@@ -15,10 +15,10 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
             end
         end
         
-        function DF = process(DF)
+        function out = process(DF,in )
             tic;
-            for i=1:length(DF.originalTrials)
-                signal = DF.originalTrials{i}.signal;
+            for i=1:length(in)
+                signal = in{i}.signal;
                 [numChannels, ~] = size(signal);
                 for j=1:numChannels
                     if isa(DF.filt,'dfilt.df2sos') || isa(DF.filt,'dfilt.df2')
@@ -27,10 +27,10 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
                         signal(j,:) = filtfilt(DF.filt.Numerator,1,signal(j,:));
                     end
                 end
-                DF.processedTrials{i} = ssveptoolkit.util.Trial(signal,DF.originalTrials{i}.label,DF.originalTrials{i}.samplingRate,DF.originalTrials{i}.subjectid);
+                out{i} = ssveptoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
             end
             total = toc;
-            DF.avgTime = total/length(DF.originalTrials);
+            DF.avgTime = total/length(in);
         end
         
         function configInfo = getConfigInfo(DF)

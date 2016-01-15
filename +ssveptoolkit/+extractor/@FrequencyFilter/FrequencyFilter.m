@@ -1,5 +1,5 @@
 classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
-%(Experimental)
+    %(Experimental)
     properties (Constant)
         STIM_FREQUENCIES = [6.66 7.5 8.57 10 12];
     end
@@ -42,7 +42,11 @@ classdef FrequencyFilter < ssveptoolkit.extractor.FeatureExtractorBase
         function configInfo = getConfigInfo(FF)
             configInfo = sprintf('FrequencyFilter\tnumberofharmonics:%d',FF.numberOfHarmonics);
         end
-            
+        
+        function time = getTime(FF)
+            time = 0;
+        end
+        
     end
     
 end

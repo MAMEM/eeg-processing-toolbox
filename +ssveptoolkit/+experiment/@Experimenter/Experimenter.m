@@ -54,9 +54,9 @@ classdef Experimenter < handle
             trials = E.session.trials;
             if ~isempty(E.preprocessing)
                 for i=1:length(E.preprocessing)
-                    E.preprocessing{i}.originalTrials = trials;
-                    E.preprocessing{i}.process;
-                    trials = E.preprocessing{i}.processedTrials;
+%                     E.preprocessing{i}.originalTrials = trials;
+                    trials = E.preprocessing{i}.process(trials);
+%                     trials = E.preprocessing{i}.processedTrials;
                 end
             end
             disp('transform ...');
@@ -131,7 +131,7 @@ classdef Experimenter < handle
             end
             if ~isempty(E.aggregator)
                 info = strcat(info, 'Aggregation:\n');
-                info = strcat(info, num2str(E.aggregation.getTime));
+                info = strcat(info, num2str(E.aggregator.getTime));
                 info = strcat(info, ' seconds \n');
             end
             if ~isempty(E.extractor)

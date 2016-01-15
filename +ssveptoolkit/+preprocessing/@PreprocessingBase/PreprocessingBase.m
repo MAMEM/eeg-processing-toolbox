@@ -8,7 +8,7 @@ classdef PreprocessingBase < handle
     end
     
     methods (Abstract = true)
-        obj = process(obj);
+        out = process(obj,in);
         configInfo = getConfigInfo(obj);
         time = getTime(obj);
     end
