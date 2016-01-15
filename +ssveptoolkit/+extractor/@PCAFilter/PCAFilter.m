@@ -1,8 +1,8 @@
 classdef PCAFilter < ssveptoolkit.extractor.FeatureExtractorBase
-properties (Access = public)
+    properties (Access = public)
         componentNum;
-end
-methods
+    end
+    methods
         function FF = PCAFilter(instanceSet,componentNum)
             if nargin == 0
                 FF.componentNum = 50;
@@ -19,7 +19,11 @@ methods
             FF.filteredInstanceSet = ssveptoolkit.util.InstanceSet(PC, FF.originalInstanceSet.getLabels);
         end
         function configInfo = getConfigInfo(FF)
-                configInfo = sprintf('PCAFilter\tcomponents:%d', FF.componentNum);
+            configInfo = sprintf('PCAFilter\tcomponents:%d', FF.componentNum);
         end
-end
+        
+        function time = getTime(FF)
+            time = 0;
+        end
+    end
 end

@@ -12,11 +12,15 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
         Ktest;
         maxlag;
         scaleopt;
+        predictTotalTime;
+        predictCount;
     end
     
     methods (Access = public)
         function LSVM = LIBSVMClassifierFast(instanceSet,kernel,cost,gamma,maxlag,scaleopt)
             %set default parameters
+            LSVM.predictTotalTime = 0;
+            LSVM.predictCount = 0;
             LSVM.kernel = 'linear';
             LSVM.cost = 1.0;
             LSVM.gamma = 0.01;
@@ -70,8 +74,11 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
             scores = zeros(numModels,numinstance);
             for i=1:numModels
                 %predict using the stored models
+                tic
                 [~, ~, t] = svmpredict(eye(numinstance,1),...
                     [(1:numinstance)', LSVM.Ktest], LSVM.models{i},'-b 1 -q');
+                LSVM.predictTotalTime = LSVM.predictTotalTime + toc;
+                LSVM.predictCount = LSVM.predictCount + 1;
                 %svmpredict(labels(~idx), [(1:sum(~idx))', K(~idx,idx)], model);
                 %store probability for each class
                 scores(i,:) = t(:,1);
@@ -108,7 +115,10 @@ classdef LIBSVMClassifierFast < ssveptoolkit.classifier.ClassifierBase
 %                     configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';
             end
         end
-                
+        
+        function time = getTime(LSVM)
+            time = LSVM.predictTotalTime/LSVM.predictCount;
+        end
     end
 end
 

@@ -83,6 +83,11 @@ classdef PYAR_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
         function configInfo = getConfigInfo(mAR)
             configInfo = sprintf('PYAR_Transformer\tchannel:%d\tseconds:%d\tnfft:%d\torder:%d',mAR.channel,mAR.seconds,mAR.nfft,mAR.order);
         end
+        
+                        
+        function time = getTime(mAR)
+            time = 0;
+        end
     end
    
 end

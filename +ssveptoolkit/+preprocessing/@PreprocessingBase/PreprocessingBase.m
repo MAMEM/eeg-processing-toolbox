@@ -1,14 +1,14 @@
-classdef (Abstract) AggregatorBase < handle
-    %AGGREGATORBASE Summary of this class goes here
+classdef PreprocessingBase < handle
+    %PREPROCESSINGBASE Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        transformers;
-        instanceSet;
+        originalTrials;
+        processedTrials;
     end
     
     methods (Abstract = true)
-        obj = aggregate(obj);
+        out = process(obj,in);
         configInfo = getConfigInfo(obj);
         time = getTime(obj);
     end

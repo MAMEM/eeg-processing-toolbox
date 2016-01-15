@@ -50,6 +50,10 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
         function configInfo = getConfigInfo(FA)
             configInfo = sprintf('FisherAggregator:\tcodebook:%s',FA.codebookInfo);
         end
+                        
+        function time = getTime(FA)
+            time = 0;
+        end
     end
     
     methods (Static)
@@ -85,6 +89,8 @@ classdef FisherAggregator < ssveptoolkit.aggregation.AggregatorBase
             save(codebookfilename,'means','covariances','priors','codebookInfo');
             close(h);
         end
+        
+
     end
     
 end

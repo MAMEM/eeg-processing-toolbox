@@ -107,6 +107,11 @@ classdef DWT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
         function configInfo = getConfigInfo(mDWT)
             configInfo = sprintf('DWT_Transformer\tchannel:%d\tseconds:%d\tlevelWT:%d\tWavFamily:%s',mDWT.channel,mDWT.seconds,mDWT.levelWT,mDWT.WavFamily);
         end
+        
+                        
+        function time = getTime(mDWT)
+            time = 0;
+        end
     end
     
 end

@@ -25,6 +25,11 @@ classdef ChannelConcat < ssveptoolkit.aggregation.AggregatorBase;
         function configInfo = getConfigInfo(CC)
             configInfo = 'ChannelConcat';
         end
+        
+                
+        function time = getTime(CC)
+            time = 0;
+        end
     end
     
 end

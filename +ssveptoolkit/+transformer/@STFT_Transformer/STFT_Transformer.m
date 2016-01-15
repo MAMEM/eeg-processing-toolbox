@@ -88,6 +88,11 @@ classdef STFT_Transformer < ssveptoolkit.transformer.FeatureTransformerBase
                 configInfo = sprintf('STFT_Transformer\tchannel:%d\tseconds:%d\tfrange1:%d\tfrange2:unset',mSTFT.channel,mSTFT.seconds,mSTFT.Frange(1));
             end
         end
+        
+                        
+        function time = getTime(mSTFT)
+            time = 0;
+        end
     end
    
 end

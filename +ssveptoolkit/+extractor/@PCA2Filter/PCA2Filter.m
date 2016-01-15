@@ -1,8 +1,8 @@
 classdef PCA2Filter < ssveptoolkit.extractor.FeatureExtractorBase
-properties (Access = public)
+    properties (Access = public)
         componentNum;
-end
-methods
+    end
+    methods
         function PCA2 = PCA2Filter(instanceSet,componentNum)
             if nargin == 0
                 PCA2.componentNum = 50;
@@ -18,7 +18,11 @@ methods
             PCA2.filteredInstanceSet = ssveptoolkit.util.InstanceSet(score,PCA2.originalInstanceSet.getLabels);
         end
         function configInfo = getConfigInfo(PCA2)
-                configInfo = sprintf('PCA2Filter\tcomponents:%d', PCA2.componentNum);
+            configInfo = sprintf('PCA2Filter\tcomponents:%d', PCA2.componentNum);
         end
-end
+        
+        function time = getTime(PCA2)
+            time = 0;
+        end
+    end
 end

@@ -104,6 +104,11 @@ classdef LIBSVMClassifier < ssveptoolkit.classifier.ClassifierBase
             newLSVM.cost = LSVM.cost;
             newLSVM.gamma = LSVM.gamma;
         end
+        
+                        
+        function time = getTime(LSVM)
+            time = 0;
+        end
     end
 end
 
