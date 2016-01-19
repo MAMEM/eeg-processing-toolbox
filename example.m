@@ -18,7 +18,7 @@ prepr2.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function
 featsel = ssveptoolkit.featselection.FEAST;
 
 
-classif = ssveptoolkit.classification.ML;
+classif = ssveptoolkit.classification.LIBSVMFast;
 
 experiment = ssveptoolkit.experiment.Experimenter;
 experiment.session = sess;
