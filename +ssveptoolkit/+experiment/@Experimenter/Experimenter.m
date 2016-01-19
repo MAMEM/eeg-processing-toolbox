@@ -30,11 +30,11 @@ classdef Experimenter < handle
     properties (Access = public)
         session; % The Session object. Trials must be loaded before run() is executed
         preprocessing;
-        transformer; % A transformer object
+        featextraction; % A transformer object
         aggregator;
-        extractor; % An extractor object
+        featselection; % An extractor object
         evalMethod; % The evaluation method
-        classifier; % A classifier object
+        classification; % A classifier object
         results; % A cell array containing objects of the 'ResultEvaluator' class.
         subjectids;
     end
@@ -60,30 +60,27 @@ classdef Experimenter < handle
                 end
             end
             disp('transform ...');
-            if iscell(E.transformer)
-                numTransf = length(E.transformer);
-                for i=1:numTransf
-                    E.transformer{i}.trials = trials;
-                    E.transformer{i}.transform;    
+            if iscell(E.featextraction)
+                numExtract = length(E.featextraction);
+                for i=1:numExtract
+                    E.featextraction{i}.trials = trials;
+                    E.featextraction{i}.extract;    
                 end
-                E.aggregator.transformers = E.transformer;
+                E.aggregator.featextractors = E.featextraction;
                 E.aggregator.aggregate;
                 instanceSet = E.aggregator.instanceSet;
             else
-                E.transformer.trials = trials;
-                E.transformer.transform;
-                instanceSet = E.transformer.getInstanceSet;
+                E.featextraction.trials = trials;
+                E.featextraction.extract;
+                instanceSet = E.featextraction.getInstanceSet;
             end
-            if ~isempty(E.extractor)
-                E.extractor.originalInstanceSet = instanceSet;
-                if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter')
-                    E.extractor.pff = E.transformer.pff;
-                end
+            if ~isempty(E.featselection)
+                E.featselection.originalInstanceSet = instanceSet;
                 disp('extract ...');
-                E.extractor.filter;
-                E.classifier.instanceSet = E.extractor.filteredInstanceSet;
+                E.featselection.compute;
+                E.classification.instanceSet = E.featselection.filteredInstanceSet;
             else
-                E.classifier.instanceSet = instanceSet;
+                E.classification.instanceSet = instanceSet;
             end
             disp('evaluating..');
             switch E.evalMethod
@@ -91,13 +88,13 @@ classdef Experimenter < handle
                     E.leaveOneOutCV();
                 case E.EVAL_METHOD_LOSO
                     subjects = unique(E.subjectids);
-                    instanceSet = E.classifier.instanceSet;
-                    if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
-                        instanceSet.K = instanceSet.computeKernel(E.classifier.kernel,E.classifier.gamma,E.classifier.maxlag,E.classifier.scaleopt);
+                    instanceSet = E.classification.instanceSet;
+                    if isa(E.classification,'ssveptoolkit.classification.LIBSVMFast')
+                        instanceSet.K = instanceSet.computeKernel(E.classification.kernel,E.classification.gamma,E.classification.maxlag,E.classification.scaleopt);
                     end
                     for i=1:length(subjects)
                         fprintf('leaving subject #%d out\n', i);
-                        if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast')
+                        if isa(E.classification,'ssveptoolkit.classification.LIBSVMFast')
                             E.leaveOneSubjectOutFast(subjects(i), instanceSet);
                         else
                             E.leaveOneSubjectOut(subjects(i), instanceSet);
@@ -117,14 +114,14 @@ classdef Experimenter < handle
                     info = strcat(info, ' seconds \n');
                 end
             end
-            if ~isempty(E.transformer)
-                info = strcat(info, 'Transformation:\n');
-                if ~iscell(E.transformer)
-                    info = strcat(info, num2str(E.transformer.getTime));
+            if ~isempty(E.featextraction)
+                info = strcat(info, 'Feature Extraction:\n');
+                if ~iscell(E.featextraction)
+                    info = strcat(info, num2str(E.featextraction.getTime));
                     info = strcat(info, ' seconds \n');
                 else
-                    for i=1:length(E.transformer)
-                        info = strcat(info, num2str(E.transformer{i}.getTime));
+                    for i=1:length(E.featextraction)
+                        info = strcat(info, num2str(E.featextraction{i}.getTime));
                         info = strcat(info,' seconds \n');
                     end
                 end
@@ -134,14 +131,14 @@ classdef Experimenter < handle
                 info = strcat(info, num2str(E.aggregator.getTime));
                 info = strcat(info, ' seconds \n');
             end
-            if ~isempty(E.extractor)
-                info = strcat(info, 'Extractor:\n');
-                info = strcat(info, num2str(E.extractor.getTime));
+            if ~isempty(E.featselection)
+                info = strcat(info, 'FeatureSelection:\n');
+                info = strcat(info, num2str(E.featselection.getTime));
                 info = strcat(info, ' seconds \n');
             end
-            if ~isempty(E.classifier)
-                info = strcat(info, 'Classifier (Prediction):\n');
-                info = strcat(info, num2str(E.classifier.getTime));
+            if ~isempty(E.classification)
+                info = strcat(info, 'Classification (Prediction):\n');
+                info = strcat(info, num2str(E.classification.getTime));
                 info = strcat(info, ' seconds \n');
             end
             time = sprintf(info);
@@ -156,13 +153,13 @@ classdef Experimenter < handle
                     info = strcat(info,'\n');
                 end
             end
-            if ~isempty(E.transformer)
-                if ~iscell(E.transformer)
-                    info = strcat(info, E.transformer.getConfigInfo);
+            if ~isempty(E.featextraction)
+                if ~iscell(E.featextraction)
+                    info = strcat(info, E.featextraction.getConfigInfo);
                     info = strcat(info,'\n');
                 else
-                    for i=1:length(E.transformer)
-                        info = strcat(info, E.transformer{i}.getConfigInfo);
+                    for i=1:length(E.featextraction)
+                        info = strcat(info, E.featextraction{i}.getConfigInfo);
                         info = strcat(info,'\n');
                     end
                 end
@@ -171,12 +168,12 @@ classdef Experimenter < handle
                 info = strcat(info, E.aggregator.getConfigInfo);
                 info = strcat(info, '\n');
             end
-            if ~isempty(E.extractor)
-                info = strcat(info, E.extractor.getConfigInfo);
+            if ~isempty(E.featselection)
+                info = strcat(info, E.featselection.getConfigInfo);
                 info = strcat(info, '\n');
             end
-            if ~isempty(E.classifier)
-                info = strcat(info, E.classifier.getConfigInfo);
+            if ~isempty(E.classification)
+                info = strcat(info, E.classification.getConfigInfo);
                 info = strcat(info, '\n');
             end
             info = sprintf(info);
@@ -187,23 +184,19 @@ classdef Experimenter < handle
     methods (Access = private)
         
         function E = checkCompatibility(E)
-            if iscell(E.transformer)
+            if iscell(E.featextraction)
                 if isempty(E.aggregator)
                     error ('Provided many transformers but not an Aggregator');
                 end
             end
-            if isa(E.classifier,'ssveptoolkit.classifier.LIBSVMClassifierFast') && E.evalMethod == 0
-                error('LIBSVMClassifierFast not supported for LOOCV eval method');
-            end
-            if isa(E.extractor, 'ssveptoolkit.extractor.FrequencyFilter') && ...
-                    ~isa(E.transformer,'ssveptoolkit.transformer.PSDTransformerBase')
-                error('FrequencyFilter only supported with PSD based transformers');
+            if isa(E.classification,'ssveptoolkit.classification.LIBSVMFast') && E.evalMethod == 0
+                error('LIBSVMFast not supported for LOOCV eval method');
             end
         end
             
         function E = leaveOneOutCV(E)
             %leave one out cross validation
-            instanceSet = E.classifier.instanceSet;
+            instanceSet = E.classification.instanceSet;
             numInstances = instanceSet.getNumInstances;
             outputLabels = zeros(numInstances,1);
             outputScores = zeros(numInstances,1);
@@ -212,10 +205,10 @@ classdef Experimenter < handle
             for i=1:numInstances
                 waitbar(i/numInstances,h,sprintf('Cross-validating fold: %d/%d', i, numInstances));
                 %train the classifier without 1 instance
-                E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(i);
-                E.classifier.build();
+                E.classification.instanceSet = instanceSet.removeInstancesWithIndices(i);
+                E.classification.build();
                 %predict the label of the omitted instance
-                [outputLabels(i,1), outputScores(i,1), outputRanking(i,:)] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(i));
+                [outputLabels(i,1), outputScores(i,1), outputRanking(i,:)] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(i));
             end
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
@@ -224,21 +217,21 @@ classdef Experimenter < handle
         
         function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)
             testingset = find(E.subjectids == subjectid);
-            E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
-            E.classifier.build();
-            [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+            E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+            E.classification.build();
+            [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
         end
         
         function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
             testingset = E.subjectids == subjectid;
-            E.classifier.Ktrain = instanceSet.getTrainKernel(~testingset);
-            E.classifier.Ktest = instanceSet.getTestKernel(~testingset,testingset);
+            E.classification.Ktrain = instanceSet.getTrainKernel(~testingset);
+            E.classification.Ktest = instanceSet.getTestKernel(~testingset,testingset);
             testingset = find(E.subjectids == subjectid);
-            E.classifier.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
-            E.classifier.build();
-            [outputLabels, outputScores, outputRanking] = E.classifier.classifyInstance();
+            E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+            E.classification.build();
+            [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance();
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
         end

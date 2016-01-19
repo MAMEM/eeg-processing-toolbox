@@ -11,15 +11,15 @@ classdef ChannelConcat < ssveptoolkit.aggregation.AggregatorBase;
         end
         
         function CC = aggregate(CC)
-            numTransf = length(CC.transformers);
+            numExtract = length(CC.featextractors);
             fused = [];
-            for i=1:numTransf
-                fused = horzcat(fused,CC.transformers{i}.getInstances);
+            for i=1:numExtract
+                fused = horzcat(fused,CC.featextractors{i}.getInstances);
             end
 %             [~,y] = size(fused);
 %             ind = randperm(y);
 %             fused = fused(:,ind);
-            CC.instanceSet = ssveptoolkit.util.InstanceSet(fused,CC.transformers{1}.getLabels);
+            CC.instanceSet = ssveptoolkit.util.InstanceSet(fused,CC.featextractors{1}.getLabels);
         end
         
         function configInfo = getConfigInfo(CC)

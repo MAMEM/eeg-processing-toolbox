@@ -3,7 +3,7 @@ classdef (Abstract) AggregatorBase < handle
     %   Detailed explanation goes here
     
     properties
-        transformers;
+        featextractors;
         instanceSet;
     end
     

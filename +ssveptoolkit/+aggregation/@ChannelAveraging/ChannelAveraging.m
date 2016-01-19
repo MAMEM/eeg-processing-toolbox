@@ -11,15 +11,15 @@ classdef ChannelAveraging < ssveptoolkit.aggregation.AggregatorBase;
         end
         
         function CA = aggregate(CA)
-            numTransf = length(CA.transformers);
-            numInstances = CA.transformers{1}.getInstanceSet.getNumInstances;
-            numFeatures = CA.transformers{1}.getInstanceSet.getNumFeatures;
-            fused = zeros(numInstances,numFeatures,numTransf);
-            for i=1:numTransf
-                fused(:,:,i) = CA.transformers{i}.getInstances;
+            numExtr = length(CA.featextractors);
+            numInstances = CA.featextractors{1}.getInstanceSet.getNumInstances;
+            numFeatures = CA.featextractors{1}.getInstanceSet.getNumFeatures;
+            fused = zeros(numInstances,numFeatures,numExtr);
+            for i=1:numExtr
+                fused(:,:,i) = CA.featextractors{i}.getInstances;
             end
             fusedMean = mean(fused,3);
-            CA.instanceSet = ssveptoolkit.util.InstanceSet(fusedMean,CA.transformers{1}.getLabels);
+            CA.instanceSet = ssveptoolkit.util.InstanceSet(fusedMean,CA.featextractors{1}.getLabels);
         end
         
         function configInfo = getConfigInfo(CA)
