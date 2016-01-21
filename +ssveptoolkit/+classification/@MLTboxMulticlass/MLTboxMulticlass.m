@@ -1,4 +1,4 @@
-classdef ML < ssveptoolkit.classification.ClassifierBase
+classdef MLTboxMulticlass < ssveptoolkit.classification.ClassifierBase
     
     properties (Constant)
         
@@ -14,7 +14,7 @@ classdef ML < ssveptoolkit.classification.ClassifierBase
     end
     
     methods (Access = public)
-        function MLC = ML(instanceSet, learners, coding, fitPosterior, prior)
+        function MLC = MLTboxMulticlass(instanceSet, learners, coding, fitPosterior, prior)
             %set default parameters
             MLC.Learners = 'svm';
             MLC.Coding='onevsall';
@@ -83,7 +83,7 @@ classdef ML < ssveptoolkit.classification.ClassifierBase
         end
         
         function configInfo = getConfigInfo(MLC)
-            configInfo=sprintf('ML\tCoding:%s\tFitPosterior:%s\tPrior:%s\n\tLearners:', MLC.Coding, MLC.FitPosterior,MLC.Prior);
+            configInfo=sprintf('MLTboxMulticlass\tCoding:%s\tFitPosterior:%s\tPrior:%s\n\tLearners:', MLC.Coding, MLC.FitPosterior,MLC.Prior);
             disp(MLC.Learners)
             %configInfo = 'MLSVMClassifier (Config info not supported yet)';
         end
