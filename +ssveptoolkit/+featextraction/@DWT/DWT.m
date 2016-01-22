@@ -5,6 +5,7 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
         seconds;
         levelWT;
         WavFamily;
+        avgTime;
     end
     
     methods (Access = public)
@@ -47,6 +48,7 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
             else
                 error('invalid number of arguments');
             end
+            mDWT.avgTime = 0;
         end
         
         function extract(mDWT)
@@ -70,6 +72,7 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
             else
                 error('invalid seconds parameter');
             end
+            tic
             for i=1:numTrials
                 if length(mDWT.seconds) == 1
                     numsamples = mDWT.trials{i}.samplingRate * mDWT.seconds;
@@ -101,6 +104,7 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
                 instances(i,:) = C;
                 labels(i,1) = floor(mDWT.trials{i}.label);
             end
+            mDWT.avgTime = toc/numTrials;
             mDWT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
         
@@ -110,7 +114,7 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
         
                         
         function time = getTime(mDWT)
-            time = 0;
+            time = mDWT.avgTime;
         end
     end
     

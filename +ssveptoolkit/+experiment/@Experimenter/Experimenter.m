@@ -107,40 +107,49 @@ classdef Experimenter < handle
         end
         function time = getTime(E)
             info = 'Average time elapsed for trial:\n';
+            total = 0;
             if ~isempty(E.preprocessing)
                 info = strcat(info, 'Preprocessing:\n');
                 for i=1:length(E.preprocessing)
                     info = strcat(info, num2str(E.preprocessing{i}.getTime));
-                    info = strcat(info, ' seconds \n');
+                    total = total + E.preprocessing{i}.getTime;
+                    info = strcat(info, '\n');
                 end
             end
             if ~isempty(E.featextraction)
                 info = strcat(info, 'Feature Extraction:\n');
                 if ~iscell(E.featextraction)
                     info = strcat(info, num2str(E.featextraction.getTime));
-                    info = strcat(info, ' seconds \n');
+                    total = total + E.featextraction.getTime;
+                    info = strcat(info, '\n');
                 else
                     for i=1:length(E.featextraction)
                         info = strcat(info, num2str(E.featextraction{i}.getTime));
-                        info = strcat(info,' seconds \n');
+                        total = total + E.featextraction{i}.getTime;
+                        info = strcat(info,'\n');
                     end
                 end
             end
             if ~isempty(E.aggregator)
                 info = strcat(info, 'Aggregation:\n');
                 info = strcat(info, num2str(E.aggregator.getTime));
-                info = strcat(info, ' seconds \n');
+                total = total + E.aggregator.getTime;
+                info = strcat(info, '\n');
             end
             if ~isempty(E.featselection)
                 info = strcat(info, 'FeatureSelection:\n');
                 info = strcat(info, num2str(E.featselection.getTime));
-                info = strcat(info, ' seconds \n');
+                total = total + E.featselection.getTime;
+                info = strcat(info, '\n');
             end
             if ~isempty(E.classification)
                 info = strcat(info, 'Classification (Prediction):\n');
                 info = strcat(info, num2str(E.classification.getTime));
-                info = strcat(info, ' seconds \n');
+                total = total + E.classification.getTime;
+                info = strcat(info, '\n');
             end
+            info = strcat(info, 'Total:\n');
+            info = strcat(info, num2str(total));
             time = sprintf(info);
         end
         

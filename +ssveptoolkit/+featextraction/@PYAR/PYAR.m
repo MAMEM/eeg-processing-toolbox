@@ -5,6 +5,7 @@ classdef PYAR < ssveptoolkit.featextraction.FeatureExtractionBase
         seconds;
         order;
         nfft;
+        avgTime;
     end
     
     methods (Access = public)
@@ -54,6 +55,7 @@ classdef PYAR < ssveptoolkit.featextraction.FeatureExtractionBase
             numTrials = length(mAR.trials);
             instances = zeros(numTrials, NUM_FEATURES);
             labels = zeros(numTrials,1);
+            tic
             for i=1:numTrials
                 if length(mAR.seconds) ==1
                 numsamples = mAR.trials{i}.samplingRate * mAR.seconds;
@@ -77,6 +79,7 @@ classdef PYAR < ssveptoolkit.featextraction.FeatureExtractionBase
                 instances(i,:) = pyy;
                 labels(i,1) = floor(mAR.trials{i}.label);
             end
+            mAR.avgTime = toc/numTrials;
             mAR.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
         
@@ -86,7 +89,7 @@ classdef PYAR < ssveptoolkit.featextraction.FeatureExtractionBase
         
                         
         function time = getTime(mAR)
-            time = 0;
+            time = mAR.avgTime;
         end
     end
    

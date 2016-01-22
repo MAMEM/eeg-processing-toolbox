@@ -12,7 +12,9 @@ classdef MLTREE < ssveptoolkit.classification.ClassifierBase
        NumVariablesToSample; % Number of predictors to select at random for each split 'all' | positive integer value
        ScoreTransform % 'none' (default). Score transform function. Check http://www.mathworks.com/help/stats/fitcdiscr.html
        Prior; % Prior probabilities 'empirical' (default) | 'uniform' | vector of scalar values | structure
-       models; 
+       models;
+       totalTime;
+       totalCount;
     end
     
     methods (Access = public)
@@ -89,8 +91,10 @@ classdef MLTREE < ssveptoolkit.classification.ClassifierBase
             scores = zeros(numModels,numinstance);
              
             % ---- Multi-class ----- %
+            tic
             [label,scores,cost] = predict(MLTREE.models{1},instance); 
-            
+            MLTREE.totalTime = MLTREE.totalTime + toc;
+            MLTREE.totalCount = MLTREE.totalCount + numinstance;
             % ---- One (vs) All -----%
 %              for i=1:numModels
 %                  %predict using the stored models
@@ -126,7 +130,7 @@ classdef MLTREE < ssveptoolkit.classification.ClassifierBase
         
                         
         function time = getTime(MLTREE)
-            time = 0;
+            time = MLTREE.totalTime/MLTREE.totalCount;
         end
                 
     end

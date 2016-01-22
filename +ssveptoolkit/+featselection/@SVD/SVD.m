@@ -1,6 +1,7 @@
 classdef SVD < ssveptoolkit.featselection.FeatureSelectionBase;
     properties (Access = public)
         modes;
+        avgTime;
     end
     methods
         function SVD = SVD(instanceSet,modes)
@@ -13,8 +14,11 @@ classdef SVD < ssveptoolkit.featselection.FeatureSelectionBase;
         end
         
         function SVD = compute(SVD)
+            tic
             [U, S, V] = svd(SVD.originalInstanceSet.getInstances);
             data_svd = U*S(:,1:SVD.modes)*V(1:SVD.modes,1:SVD.modes)';
+            [numInst, ~] = size(data_svd);
+            SVD.avgTime = toc/numInst;
             SVD.filteredInstanceSet = ssveptoolkit.util.InstanceSet(data_svd, SVD.originalInstanceSet.getLabels);
         end
         function configInfo = getConfigInfo(SVD)
@@ -22,7 +26,7 @@ classdef SVD < ssveptoolkit.featselection.FeatureSelectionBase;
         end
         
         function time = getTime(SVD)
-            time = 0;
+            time = SVD.avgTime;
         end
     end
 end

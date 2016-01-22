@@ -11,7 +11,9 @@ classdef MLDA < ssveptoolkit.classification.ClassifierBase
        FillCoeffs % on (default) Coeffs property flag, specified as the comma-separated pair consisting of 'FillCoeffs' and 'on' or 'off
        ScoreTransform % 'none' (default). Score transform function. Check http://www.mathworks.com/help/stats/fitcdiscr.html
        Prior % 'empirical' (default) or 'uniform'.  Prior probabilities for each class. 
-       models; 
+       models;
+       totalTime;
+       totalCount;
     end
     
     methods (Access = public)
@@ -84,8 +86,10 @@ classdef MLDA < ssveptoolkit.classification.ClassifierBase
             scores = zeros(numModels,numinstance);
              
             % ---- Multi-class ----- %
+            tic
             [label,scores,cost] = predict(MLDA.models{1},instance); 
-            
+            MLDA.totalTime = MLDA.totalTime + toc;
+            MLDA.totalCount = MLDA.totalCount  + numinstance;
             % ---- One (vs) All -----%
 %              for i=1:numModels
 %                  %predict using the stored models
@@ -121,7 +125,7 @@ classdef MLDA < ssveptoolkit.classification.ClassifierBase
         
                         
         function time = getTime(MLDA)
-            time = 0;
+            time = MLDA.totalTime/MLDA.totalCount;
         end
                 
     end

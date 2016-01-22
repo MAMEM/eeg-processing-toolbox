@@ -11,6 +11,8 @@ classdef MLTboxMulticlass < ssveptoolkit.classification.ClassifierBase
         FitPosterior; % Flag indicating whether to transform scores to posterior probabilities false or 0 (default) | true or 1
         Prior % 'empirical' (default) or 'uniform'.  Prior probabilities for each class.
         models;
+        totalTime;
+        totalCount;
     end
     
     methods (Access = public)
@@ -60,8 +62,10 @@ classdef MLTboxMulticlass < ssveptoolkit.classification.ClassifierBase
             %scores = zeros(numModels,numinstance);
             
             % ---- Multi-class ----- %
+            tic
             [label,scores,loss] = predict(MLC.models{1},instance);
-            
+            MLC.totalTime = MLC.totalTime + toc;
+            MLC.totalCount = MLC.totalCount + numinstance;
             output = zeros(numinstance,1);
             probabilities = zeros(numinstance,1);
             %we need these for ranking metrics (e.g. mAP)
@@ -90,7 +94,7 @@ classdef MLTboxMulticlass < ssveptoolkit.classification.ClassifierBase
         
                         
         function time = getTime(MLC)
-            time = 0;
+            time = MLC.totalTime/MLC.totalCount;
         end
         
     end

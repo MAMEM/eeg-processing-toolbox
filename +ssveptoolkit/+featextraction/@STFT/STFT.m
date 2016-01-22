@@ -4,6 +4,7 @@ classdef STFT < ssveptoolkit.featextraction.FeatureExtractionBase
         channel;
         seconds;
         Frange;
+        avgTime;
     end
     
     methods (Access = public)   
@@ -60,7 +61,7 @@ classdef STFT < ssveptoolkit.featextraction.FeatureExtractionBase
             if (numsamples == 0)                    
                 numsamples = size(mSTFT.trials{1}.signal(mSTFT.channel,:),2);                             
             end
-            
+            tic
             numTrials = length(mSTFT.trials);
             y = mSTFT.trials{1}.signal(mSTFT.channel, 1:numsamples);
             [S,F,T,P]=spectrogram(y,[],[],[mSTFT.Frange(1):0.5:mSTFT.Frange(2)],mSTFT.trials{1}.samplingRate);
@@ -78,6 +79,7 @@ classdef STFT < ssveptoolkit.featextraction.FeatureExtractionBase
                 instances(i,:) = P(:);
                 labels(i,1) = floor(mSTFT.trials{i}.label);
             end
+            mSTFT.avgTime = toc/numTrials;
             mSTFT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
         
@@ -91,7 +93,7 @@ classdef STFT < ssveptoolkit.featextraction.FeatureExtractionBase
         
                         
         function time = getTime(mSTFT)
-            time = 0;
+            time = mSTFT.avgTime;
         end
     end
    

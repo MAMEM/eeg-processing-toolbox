@@ -8,7 +8,9 @@ classdef Adaboost < ssveptoolkit.classification.ClassifierBase
         Method % AdaboostM2 (default), TotalBoost, LPBoost, Subspace, etc
         NLearn % Number of learners (default 100)
         Learners % Tree (default), KNN (only for Subspace), Discriminant(recommended for subspace), Custom
-        models; 
+        models;
+        totalTime;
+        totalCount;
     end
     
     methods (Access = public)
@@ -87,8 +89,10 @@ classdef Adaboost < ssveptoolkit.classification.ClassifierBase
             scores = zeros(numModels,numinstance);
              
             % ---- Multi-class ----- %
+            tic
             [label,scores] = predict(BOOST.models{1},instance); 
-            
+            BOOST.totalTime = BOOST.totalTime + toc;
+            BOOST.totalCount = BOOST.totalCount + numinstance;
 
              output = zeros(numinstance,1);
              probabilities = zeros(numinstance,1);
@@ -117,7 +121,7 @@ classdef Adaboost < ssveptoolkit.classification.ClassifierBase
         
                         
         function time = getTime(BOOST)
-            time = 0;
+            time = BOOST.totalTime / BOOST.totalCount;
         end
                 
     end

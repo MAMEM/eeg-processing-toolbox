@@ -78,7 +78,7 @@ classdef LIBSVMFast < ssveptoolkit.classification.ClassifierBase
                 [~, ~, t] = svmpredict(eye(numinstance,1),...
                     [(1:numinstance)', LSVM.Ktest], LSVM.models{i},'-b 1 -q');
                 LSVM.predictTotalTime = LSVM.predictTotalTime + toc;
-                LSVM.predictCount = LSVM.predictCount + 1;
+                LSVM.predictCount = LSVM.predictCount + numinstance;
                 %svmpredict(labels(~idx), [(1:sum(~idx))', K(~idx,idx)], model);
                 %store probability for each class
                 scores(i,:) = t(:,1);

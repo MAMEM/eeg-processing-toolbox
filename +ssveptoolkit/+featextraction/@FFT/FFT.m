@@ -4,6 +4,7 @@ classdef FFT < ssveptoolkit.featextraction.FeatureExtractionBase
         channel;
         seconds;
         nfft;
+        avgTime;
     end
     
     methods (Access = public)
@@ -41,6 +42,7 @@ classdef FFT < ssveptoolkit.featextraction.FeatureExtractionBase
             numTrials = length(mFFT.trials);
             instances = zeros(numTrials, NUM_FEATURES);
             labels = zeros(numTrials,1);
+            tic
             for i=1:numTrials
                 if length(mFFT.seconds) == 1
                 numsamples = mFFT.trials{i}.samplingRate * mFFT.seconds;
@@ -69,6 +71,7 @@ classdef FFT < ssveptoolkit.featextraction.FeatureExtractionBase
                 instances(i,:) = pyy;
                 labels(i,1) = floor(mFFT.trials{i}.label);
             end
+            mFFT.avgTime = toc/numTrials;
             mFFT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
         
@@ -78,7 +81,7 @@ classdef FFT < ssveptoolkit.featextraction.FeatureExtractionBase
         
                         
         function time = getTime(mFFT)
-            time = 0;
+            time = mFFT.avgTime;
         end
     end
    
