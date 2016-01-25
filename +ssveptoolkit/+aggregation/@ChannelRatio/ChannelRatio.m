@@ -11,14 +11,14 @@ classdef ChannelRatio < ssveptoolkit.aggregation.AggregatorBase;
         end
         
         function CR = aggregate(CR)
-            numTransf = length(CR.transformers);
-            if numTransf ~=2
+            numExtract = length(CR.featextractors);
+            if numExtract ~=2
                 error ('ChannelRatio: Number of transformers should be 2');
             end
-            in1 = CR.transformers{1}.getInstances;
-            in2 = CR.transformers{2}.getInstances;
+            in1 = CR.featextractors{1}.getInstances;
+            in2 = CR.featextractors{2}.getInstances;
             ratio = in1./in2;
-            CR.instanceSet = ssveptoolkit.util.InstanceSet(ratio,CR.transformers{1}.getLabels);
+            CR.instanceSet = ssveptoolkit.util.InstanceSet(ratio,CR.featextractors{1}.getLabels);
         end
         
         function configInfo = getConfigInfo(CR)
