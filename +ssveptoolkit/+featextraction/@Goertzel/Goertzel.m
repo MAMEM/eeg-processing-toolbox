@@ -28,16 +28,16 @@ classdef Goertzel < ssveptoolkit.featextraction.FeatureExtractionBase
             if nargin == 0
                 GT.trials = {};
                 GT.seconds = 0;
-                GT.channel = 126;
+                GT.channel = 1;
                 GT.nfft = 512;
             elseif nargin == 1
                 GT.trials = trials;
                 GT.seconds = 0;
-                GT.channel = 126;
+                GT.channel = 1;
                 GT.nfft = 512;
             elseif nargin == 2
                 GT.trials = trials;
-                GT.channel = 126;
+                GT.channel = 1;
                 GT.seconds = seconds;
                 GT.nfft = 512;
             elseif nargin == 3
@@ -55,7 +55,7 @@ classdef Goertzel < ssveptoolkit.featextraction.FeatureExtractionBase
             end
         end
         
-        function transform(GT)
+        function extract(GT)
            
             numFeatures = length(GT.nfft);
             numTrials = length(GT.trials);
