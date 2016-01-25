@@ -13,25 +13,25 @@ classdef PYAR < ssveptoolkit.featextraction.FeatureExtractionBase
             if nargin == 0
                 mAR.seconds = 0;
                 mAR.channel = 1;
-                mAR.order = 2;
+                mAR.order = 20;
                 mAR.nfft = 512;
             elseif nargin == 1
                 mAR.trials = trials;
                 mAR.seconds = 0;
                 mAR.channel = 1;
-                mAR.order = 2;
+                mAR.order = 20;
                 mAR.nfft = 512;
             elseif nargin == 2
                 mAR.trials = trials;
                 mAR.channel = 1;
                 mAR.seconds = seconds;
-                mAR.order = 2;
+                mAR.order = 20;
                 mAR.nfft = 512;
             elseif nargin == 3
                 mAR.trials = trials;
                 mAR.channel = channel;
                 mAR.seconds = seconds;
-                mAR.order=2;
+                mAR.order=20;
                 mAR.nfft = 512;
             elseif nargin == 4
                 mAR.trials = trials;

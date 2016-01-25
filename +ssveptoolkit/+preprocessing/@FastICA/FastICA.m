@@ -26,7 +26,7 @@ classdef FastICA < ssveptoolkit.preprocessing.PreprocessingBase
 %                 [W,~,yest] = amuse(signal);
 %                 signal = pinv(W(ICA.first:ICA.last,:))*yest(ICA.first:ICA.last,: );
                 [icasig, A, W] = fastica (signal);
-                signal = A(:,ICA.first:ICA.last)*icasig(ICA.first:ICA.last,:);
+                signal = A(:,ICA.first:end)*icasig(ICA.first:end,:);
                 total = total + toc;
 %                 in{i}.signal = signal;
                 out{i} = ssveptoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
