@@ -31,6 +31,8 @@ classdef Adaboost < ssveptoolkit.classification.ClassifierBase
             if nargin > 3
                 BOOST.Learners = Learners;
             end
+            BOOST.totalTime = 0;
+            BOOST.totalCount = 0;
         end
         
         function BOOST = build(BOOST)
