@@ -59,7 +59,7 @@ classdef Experimenter < handle
 %                     trials = E.preprocessing{i}.processedTrials;
                 end
             end
-            disp('transform ...');
+            disp('feature extraction ...');
             if iscell(E.featextraction)
                 numExtract = length(E.featextraction);
                 for i=1:numExtract
@@ -76,7 +76,7 @@ classdef Experimenter < handle
             end
             if ~isempty(E.featselection)
                 E.featselection.originalInstanceSet = instanceSet;
-                disp('extract ...');
+                disp('feature selection ...');
                 E.featselection.compute;
                 E.classification.instanceSet = E.featselection.filteredInstanceSet;
             else
@@ -195,7 +195,7 @@ classdef Experimenter < handle
         function E = checkCompatibility(E)
             if iscell(E.featextraction)
                 if isempty(E.aggregator)
-                    error ('Provided many transformers but not an Aggregator');
+                    error ('Provided many feature extractors but not an Aggregator');
                 end
             end
             if isa(E.classification,'ssveptoolkit.classification.LIBSVMFast') && E.evalMethod == 0

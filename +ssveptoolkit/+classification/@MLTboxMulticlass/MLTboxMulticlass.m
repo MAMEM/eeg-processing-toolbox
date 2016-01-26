@@ -38,6 +38,8 @@ classdef MLTboxMulticlass < ssveptoolkit.classification.ClassifierBase
             if nargin > 4
                 MLC.Prior=prior;
             end
+            MLC.totalTime = 0;
+            MLC.totalCount = 0;
         end
         
         function MLC = build(MLC)

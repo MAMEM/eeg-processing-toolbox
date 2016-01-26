@@ -44,6 +44,8 @@ classdef MLTREE < ssveptoolkit.classification.ClassifierBase
             if nargin > 7
                 MLTREE.Prior = prior;
             end
+            MLTREE.totalTime = 0;
+            MLTREE.totalCount = 0;
         end
         
         function MLTREE = build(MLTREE)

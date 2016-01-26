@@ -5,7 +5,10 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
     properties
         channels;
         sampleRange;
-        meanSignal;
+        %0:no prepr
+        %1: zero mean
+        %2: CAR
+        meanSignal; 
     end
     
     methods
@@ -20,7 +23,6 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
             if nargin > 1
                 CS.sampleRange = sampleRange;
             end
-            CS.meanSignal = 1;
         end
         
         function out = process(CS,in)
@@ -47,11 +49,6 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
                     else
                         %NOTHING (?)
                         disp('Warning: No parameter specified for SampleSelection, using all channels and samples');
-                    end
-                end
-                if CS.meanSignal == 1
-                    for j=1:length(CS.channels)
-                        out{i}.signal(j,:) = out{i}.signal(j,:) - mean(out{i}.signal(j,:));
                     end
                 end
             end
