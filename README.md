@@ -15,7 +15,6 @@ The usage of some classes of the framework is also limited by the following requ
 
 | Package | Class | Description |
 | --- | --- | --- |
-| preprocessing | Amuse | .. |
 | preprocessing | FastICA | Requires the [FastICA](http://research.ics.aalto.fi/ica/fastica/code/dlcode.shtml) library 
 | aggregation | Vlad | Requires the [vlfeat](http://www.vlfeat.org/) library
 | aggregation | Fisher | Requires the [vlfeat](http://www.vlfeat.org/) library
