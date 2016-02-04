@@ -51,7 +51,11 @@ classdef Experimenter < handle
             % Runs an experiment
             E.checkCompatibility;
             E.subjectids = E.session.subjectids;
-            trials = E.session.trials;
+            trials = {};
+            for i=1:length(E.session.trials)
+                trials{i} = ssveptoolkit.util.Trial(E.session.trials{i}.signal,...
+                            E.session.trials{i}.label,E.session.trials{i}.samplingRate,E.session.trials{i}.subjectid);
+            end
             if ~isempty(E.preprocessing)
                 for i=1:length(E.preprocessing)
 %                     E.preprocessing{i}.originalTrials = trials;
@@ -97,6 +101,7 @@ classdef Experimenter < handle
                         if isa(E.classification,'ssveptoolkit.classification.LIBSVMFast')
                             E.leaveOneSubjectOutFast(subjects(i), instanceSet);
                         else
+                            
                             E.leaveOneSubjectOut(subjects(i), instanceSet);
                         end
                         

@@ -1,6 +1,4 @@
 classdef ChannelRatio < ssveptoolkit.aggregation.AggregatorBase;
-    %CHANNELRATIO Summary of this class goes here
-    %   This is probably 
     
     properties
     end
