@@ -1,14 +1,7 @@
 classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
-    %CHANNELSELECTION Summary of this class goes here
-    %   Detailed explanation goes here
-    
     properties
         channels;
         sampleRange;
-        %0:no prepr
-        %1: zero mean
-        %2: CAR
-        meanSignal; 
     end
     
     methods

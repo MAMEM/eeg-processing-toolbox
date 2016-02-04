@@ -1,7 +1,4 @@
 classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
-    %FILTER Summary of this class goes here
-    %   Detailed explanation goes here
-    
     properties
         filt;
         info;
@@ -18,6 +15,7 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
         function out = process(DF,in )
             tic;
             for i=1:length(in)
+%                 i
                 signal = in{i}.signal;
                 [numChannels, ~] = size(signal);
                 for j=1:numChannels
@@ -27,8 +25,9 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
                         signal(j,:) = filtfilt(DF.filt.Numerator,1,signal(j,:));
                     end
                 end
-                out{i} = ssveptoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
+                  in{i}.signal = signal;
             end
+            out = in;
             total = toc;
             DF.avgTime = total/length(in);
         end

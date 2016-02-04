@@ -1,12 +1,10 @@
 classdef Rereferencing < ssveptoolkit.preprocessing.PreprocessingBase
-    %CHANNELSELECTION Summary of this class goes here
-    %   Detailed explanation goes here
     
     properties
-        %0:no prepr
-        %1: zero mean
-        %2: CAR
-        meanSignal; 
+        %meanSignal=1: Subtract the mean from the signal
+        %meanSignal=2: Average rereferencing
+        meanSignal;
+        avgTime;
     end
     
     methods
@@ -16,34 +14,29 @@ classdef Rereferencing < ssveptoolkit.preprocessing.PreprocessingBase
         
         function out = process(RR,in)
             out = {};
-            
+            tic;
             for i=1:length(in)
                 if RR.meanSignal == 1
-%                     out{i} = ssveptoolkit.util.Trial(in{i}.signal - mean(in{i}.signal),...
-%                         in{i}.label,in{i}.samplingRate,in{i}.subjectid);
                     [numChannels,~] = size(in{i}.signal);
-                    out{i} = ssveptoolkit.util.Trial(in{i}.signal,...
-                            in{i}.label,in{i}.samplingRate,in{i}.subjectid);
                     for j=1:numChannels
-                        out{i}.signal(j,:) = out{i}.signal(j,:) - mean(out{i}.signal(j,:));
-%                         out{i}.signal(j,:) = out{i}.signal(j,:) - mean(out{i}.signal(j,:));
+                        in{i}.signal(j,:) = in{i}.signal(j,:) - mean(in{i}.signal(j,:));
                     end
                 elseif RR.meanSignal == 2
                     meanChann = mean(in{i}.signal);
-                    out{i} = ssveptoolkit.util.Trial(in{i}.signal-repmat(meanChann,257,1),...
-                        in{i}.label,in{i}.samplingRate,in{i}.subjectid);
-%                     out{i}.signal = in{i}.signal-repmat(meanChann,257,1);
+                      in{i}.signal = in{i}.signal-repmat(meanChann,257,1);
                 end
+                out = in;
             end
+            RR.avgTime = toc/length(in);
         end
         
-        function configInfo = getConfigInfo(CS)
-            configInfo = ' ';
+        function configInfo = getConfigInfo(RR)
+            configInfo = sprintf('Rereferencing:\tmeanSignal:%d',RR.meanSignal);
         end
         
                         
-        function time = getTime(CS)
-            time = 0;
+        function time = getTime(RR)
+            time = RR.avgTime;
         end
         
     end

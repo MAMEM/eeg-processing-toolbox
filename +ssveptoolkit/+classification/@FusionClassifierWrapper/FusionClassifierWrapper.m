@@ -1,6 +1,4 @@
 classdef FusionClassifierWrapper < ssveptoolkit.classification.ClassifierBase & ssveptoolkit.experiment.Experimenter;
-    %FUSIONCLASSIFIERWRAPPER Summary of this class goes here
-    %   Detailed explanation goes here
     
     properties
         baseClassifier;

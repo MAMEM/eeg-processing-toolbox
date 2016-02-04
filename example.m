@@ -1,52 +1,46 @@
-% Leave one subject out testing
-% sess = ssveptoolkit.util.Session(Hhp);
+% Load the data. Call this once outside of the script so you dont have to
+% load the data again and again. Make sure the dataset is included in your
+% Matlab path
+% sess = ssveptoolkit.util.Session;
 % sess.loadAll(); %its best to do this once, outside the script (too much
 % time)
-extr = ssveptoolkit.featextraction.PWelch;
-% extr.nfft = [4:0.4883:44.529];
-extr.nfft = 512;
-% extr.win_len = 400;
-% extr.over_len = 0.75;
 
-% prepr0 = ssveptoolkit.preprocessing.Amuse;
-% prepr0.first = 15;
-% prepr0.last = 252;
+%Load a filter from the samples
+load filters/filt_IIRChebI.mat;
 
-prepr0 = ssveptoolkit.preprocessing.Rereferencing;
-prepr0.meanSignal = 1;
+%Extract features with the pwelch method
+extr = ssveptoolkit.featextraction.PWelchExperimental;
 
-prepr1 = ssveptoolkit.preprocessing.SampleSelection;
-prepr1.sampleRange = [1,1250]; % Specify the sample range to be used for each Trial
-prepr1.channels = 126; % Specify the channel(s) to be used
+refer = ssveptoolkit.preprocessing.Rereferencing;
+%Subtract the mean from the signal
+refer.meanSignal = 1;
 
-prepr2 = ssveptoolkit.preprocessing.DigitalFilter;
-prepr2.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function
+ss = ssveptoolkit.preprocessing.SampleSelection;
+ss.sampleRange = [1,1250]; % Specify the sample range to be used for each Trial
+ss.channels = 126; % Specify the channel(s) to be used
 
+df = ssveptoolkit.preprocessing.DigitalFilter; % Apply a filter to the raw data
+df.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function
+
+%Configure the classifier
 classif = ssveptoolkit.classification.LIBSVMFast;
 classif.kernel = 'linear';
-classif.cost = 1.0;
-
-
-% classif.kernel = 'linear';
-% classif.cost = 1;
+classif.cost = 1;
 
 experiment = ssveptoolkit.experiment.Experimenter;
 experiment.session = sess;
-experiment.preprocessing = {prepr0, prepr1,prepr2};
+experiment.preprocessing = {ss,refer,df};
 experiment.featextraction = extr;
-% experiment.featselection = featsel;
-% experiment.featsel = ssveptoolkit.featselection.FEAST;
 experiment.classification = classif;
 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)
-%run the experiment
 experiment.run();
-accuracies = [];
 for i=1:length(experiment.results)
     accuracies(i) = experiment.results{i}.getAccuracy();
 end
+
 accuracies'
 %mean accuracy for all subjects
 fprintf('mean acc = %f\n', mean(accuracies));
 %get the configuration used (for reporting)
-% experiment.getExperimentInfo
+experiment.getExperimentInfo
 experiment.getTime

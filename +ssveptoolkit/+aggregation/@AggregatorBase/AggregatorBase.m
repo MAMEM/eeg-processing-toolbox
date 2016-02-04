@@ -1,6 +1,4 @@
 classdef (Abstract) AggregatorBase < handle
-    %AGGREGATORBASE Summary of this class goes here
-    %   Detailed explanation goes here
     
     properties
         featextractors;
