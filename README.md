@@ -19,7 +19,7 @@ The usage of some classes of the framework is also limited by the following requ
 | preprocessing | FastICA | Requires the [FastICA](http://research.ics.aalto.fi/ica/fastica/code/dlcode.shtml) library 
 | aggregation | Vlad | Requires the [vlfeat](http://www.vlfeat.org/) library
 | aggregation | Fisher | Requires the [vlfeat](http://www.vlfeat.org/) library
-| featselection | FEAST | .. |
+| featselection | FEAST | Requires the [FEAST](http://mloss.org/software/view/386/) library (download link is next to "Archive" somewhere in the middle of the page) and MIToolbox (included in the FEAST zip file) |
 | classification | LIBSVMFast | Requires the [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) library|
 | classification | ... | ... |
 
