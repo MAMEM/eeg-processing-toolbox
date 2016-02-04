@@ -24,5 +24,6 @@ The usage of some classes of the framework is also limited by the following requ
 | classification | MLTboxMulticlass | Requires Matlab version r2015a or newer |
 | classification | MLDA | Requires Matlab version r2014 or newer |
 
-
+## References
+[\[1\]](http://arxiv.org/abs/1602.00904) Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs 
 
