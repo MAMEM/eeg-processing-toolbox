@@ -27,8 +27,10 @@ classif = ssveptoolkit.classification.LIBSVMFast;
 classif.kernel = 'linear';
 classif.cost = 1;
 
+%Set the Experimenter wrapper class
 experiment = ssveptoolkit.experiment.Experimenter;
 experiment.session = sess;
+% Add the preprocessing steps (order is taken into account)
 experiment.preprocessing = {ss,refer,df};
 experiment.featextraction = extr;
 experiment.classification = classif;
