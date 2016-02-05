@@ -24,5 +24,5 @@ The usage of some classes of the framework is also limited by the following requ
 | classification | MLDA | Requires Matlab version r2014 or newer |
 
 ## References
-[\[1\]](http://arxiv.org/abs/1602.00904) Vangelis P. Oikonomou, Georgios Liaros, Kostantinos Georgiadis, Elisavet Chatzilari, Katerina Adam, Spiros Nikolopoulos and Ioannis Kompatsiaris, Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs, Technical Report - eprint arXiv:1602.00904, February 2016 
+[\[1\]](http://arxiv.org/abs/1602.00904) Vangelis P. Oikonomou, Georgios Liaros, Kostantinos Georgiadis, Elisavet Chatzilari, Katerina Adam, Spiros Nikolopoulos and Ioannis Kompatsiaris, "Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs", Technical Report - eprint arXiv:1602.00904, February 2016 
 
