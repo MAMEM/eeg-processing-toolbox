@@ -13,7 +13,6 @@ classdef Amuse < ssveptoolkit.preprocessing.PreprocessingBase
         end
         
         function out = process(AM,in )
-            save('filtered','in','-v7.3');
             out = {};
             total = 0;
             for i=1:length(in)
@@ -43,7 +42,7 @@ classdef Amuse < ssveptoolkit.preprocessing.PreprocessingBase
     end
     
     methods (Access = private)
-        function [W,D1,y] = amuse(X)
+        function [W,D1,y] = amuse(AM,X)
             % BSS using eigenvalue value decomposition
             % Program written by A. Cichocki and R. Szupiluk
             %
@@ -56,7 +55,7 @@ classdef Amuse < ssveptoolkit.preprocessing.PreprocessingBase
             % First stage: Standard prewhitening
             
             [m,N]=size(X);
-            if nargin==1,
+            if nargin==2,
                 n=m; %
             end;
             
