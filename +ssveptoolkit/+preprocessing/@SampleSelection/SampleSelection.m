@@ -26,19 +26,19 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
                         %channels AND sampleRange
                         signal = in{i}.signal(CS.channels,CS.sampleRange(1):CS.sampleRange(2));
                         out{i} = ssveptoolkit.util.Trial(signal ...
-                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
+                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
                     else
                         %ONLY channels
                         signal = in{i}.signal(CS.channels,:);
                         out{i} = ssveptoolkit.util.Trial(signal ...
-                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
+                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
                     end
                 else
                     if(length(CS.sampleRange) > 0)
                         %ONLY sampleRange
                         signal = in{i}.signal(:,CS.sampleRange(1):CS.sampleRange(2));
                         out{i} = ssveptoolkit.util.Trial(signal ...
-                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
+                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
                     else
                         %NOTHING (?)
                         disp('Warning: No parameter specified for SampleSelection, using all channels and samples');

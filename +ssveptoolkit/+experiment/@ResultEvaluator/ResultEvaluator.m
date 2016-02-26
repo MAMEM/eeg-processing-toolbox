@@ -3,7 +3,8 @@
 classdef  ResultEvaluator < handle
     properties
         resultSet; % A 'ResultSet' object containing the results of an experiment
-        subjectid; % The subject ids corresponding 
+        subjectid; % The subject ids corresponding
+        sessionid;
     end
     
     methods 
@@ -24,6 +25,18 @@ classdef  ResultEvaluator < handle
             %access the confusionMatrix property of the resultSet directly
             labels = unique(RE.resultSet.getLabels);
             confusionMatrix = horzcat(RE.resultSet.confusionMatrix, labels);
+        end
+        
+        function acc = getAccuracyForSession(RE,session)
+            conf = RE.resultSet.subset(RE.sessionid==session).confusionMatrix;
+            acc = sum(diag(conf))/sum(sum(conf))*100;
+        end
+        
+        function accuracies = getAccuracyBySession(RE)
+            unsessions = unique(RE.sessionid);
+            for i=1:length(unsessions)
+                accuracies(i) = RE.getAccuracyForSession(unsessions(i));
+            end
         end
         
 %         function TP = getNumTruePositives(RE)

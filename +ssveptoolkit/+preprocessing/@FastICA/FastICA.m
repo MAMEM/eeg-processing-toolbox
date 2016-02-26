@@ -27,7 +27,7 @@ classdef FastICA < ssveptoolkit.preprocessing.PreprocessingBase
                 signal = A(:,ICA.first:end)*icasig(ICA.first:end,:);
                 total = total + toc;
 %                 in{i}.signal = signal;
-                out{i} = ssveptoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid);
+                out{i} = ssveptoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
             end
 %             out = in;
 %             total = toc;

@@ -54,7 +54,7 @@ classdef Experimenter < handle
             trials = {};
             for i=1:length(E.session.trials)
                 trials{i} = ssveptoolkit.util.Trial(E.session.trials{i}.signal,...
-                            E.session.trials{i}.label,E.session.trials{i}.samplingRate,E.session.trials{i}.subjectid);
+                            E.session.trials{i}.label,E.session.trials{i}.samplingRate,E.session.trials{i}.subjectid,E.session.trials{i}.sessionid);
             end
             if ~isempty(E.preprocessing)
                 for i=1:length(E.preprocessing)
@@ -247,7 +247,10 @@ classdef Experimenter < handle
             E.classification.build();
             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance();
             resultSet = ssveptoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
-            E.results{length(E.results)+1} = ssveptoolkit.experiment.ResultEvaluator(resultSet);
+            resultEvaluator = ssveptoolkit.experiment.ResultEvaluator(resultSet);
+            resultEvaluator.subjectid = E.subjectids(E.subjectids==subjectid);
+            resultEvaluator.sessionid = E.session.sessionids(E.subjectids==subjectid);
+            E.results{length(E.results)+1} = resultEvaluator;
         end
     end
     

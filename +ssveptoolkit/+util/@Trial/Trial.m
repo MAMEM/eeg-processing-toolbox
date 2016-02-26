@@ -7,15 +7,17 @@ classdef Trial < handle
         duration; % the duration of the trial in seconds
         samplingRate; % the samling rate used to capture the signal
         subjectid; %the subject from
+        sessionid; %the session id
     end
     
     methods (Access = public)
-        function T = Trial(signal, label, samplingRate, subjectID)
+        function T = Trial(signal, label, samplingRate, subjectID, sessionID)
             T.signal = signal;
             T.label = label;
             T.samplingRate = samplingRate;
             T.duration = length(signal)/samplingRate;
             T.subjectid = subjectID;
+            T.sessionid = sessionID;
         end
     end
     

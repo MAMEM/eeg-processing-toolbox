@@ -41,6 +41,19 @@ classdef ResultSet < ssveptoolkit.util.InstanceSet
                 RS.outputRanking = ranking;
             end
         end
+        
+        function RSSubset = subset(RS,indices)
+            sOutputLabels = RS.outputLabels(indices);
+            sOutputProbabilities = RS.outputProbabilities(indices);
+            sInstanceSet = RS.getDatasetWithIndices(indices);
+            if isempty(RS.outputProbabilities)
+                RSSubset = ssveptoolkit.util.ResultSet(sInstanceSet,sOutputLabels,sOutputProbabilities);
+            else
+                sOutputRanking = RS.outputRanking(indices);
+                RSSubset = ssveptoolkit.util.ResultSet(sInstanceSet,sOutputLabels,sOutputProbabilities,sOutputRanking);
+            end
+        end
+            
     end
     
 end
