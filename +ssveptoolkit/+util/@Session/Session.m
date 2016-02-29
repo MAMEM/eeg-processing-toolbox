@@ -29,6 +29,7 @@ classdef Session < handle
         filt; % Filter to be applied when data is loaded
         sessions; % Filenames of the dataset
         subjectids; % The subject ids corresponding to the loaded trials
+        sessionids;
         skipSamples; % Number of samples to skip, at the beginning of each Trial
     end
     
@@ -68,143 +69,144 @@ classdef Session < handle
             %             S.sessions{4,2} = 'G12';
             %             S.sessions{4,3} = 'G13';
             %             S.sessions{4,4} = 'G14';
+            S.sessions{2,1,1} = 'T001a';
+            S.sessions{2,1,2} = 'T001b';
+            S.sessions{2,1,3} = 'T001c';
+            S.sessions{2,1,4} = 'T001d';
+            S.sessions{2,1,5} = 'T001e';
+            S.sessions{2,2,1} = 'T002a';
+            S.sessions{2,2,2} = 'T002b';
+            S.sessions{2,2,3} = 'T002c';
+            S.sessions{2,2,4} = 'T002d';
+            S.sessions{2,2,5} = 'T002e';
+            S.sessions{2,3,1} = 'T003a';
+            S.sessions{2,3,2} = 'T003b';
+            S.sessions{2,3,3} = 'T003c';
+            S.sessions{2,3,4} = 'T003d';
+            S.sessions{2,3,5} = 'T003e';
+            S.sessions{2,4,1} = 'T004a';
+            S.sessions{2,4,2} = 'T004b';
+            S.sessions{2,4,3} = 'T004c';
+            S.sessions{2,4,4} = 'T004d';
+            S.sessions{2,4,5} = 'T004e';
+            S.sessions{2,5,1} = 'T005a';
+            S.sessions{2,5,2} = 'T005b';
+            S.sessions{2,5,3} = 'T005c';
+            S.sessions{2,5,4} = 'T005d';
+            S.sessions{2,5,5} = 'T005e';
+            S.sessions{2,6,1} = 'T006a';
+            S.sessions{2,6,2} = 'T006b';
+            S.sessions{2,6,3} = 'T006c';
+            S.sessions{2,6,4} = 'T006d';
+            S.sessions{2,6,5} = 'T006e';
+            S.sessions{2,7,1} = 'T007a';
+            S.sessions{2,7,2} = 'T007b';
+            S.sessions{2,7,3} = 'T007c';
+            S.sessions{2,7,4} = 'T007d';
+            S.sessions{2,7,5} = 'T007e';
             
-            S.sessions{1,1} = 'T002a';
-            S.sessions{1,2} = 'T002b';
-            S.sessions{1,3} = 'T002c';
-            S.sessions{1,4} = 'T002d';
-            S.sessions{1,5} = 'T002e';
-            S.sessions{2,1} = 'T006a';
-            S.sessions{2,2} = 'T006b';
-            S.sessions{2,3} = 'T006c';
-            S.sessions{2,4} = 'T006d';
-            S.sessions{2,5} = 'T006e';
-            S.sessions{3,1} = 'T008a';
-            S.sessions{3,2} = 'T008b';
-            S.sessions{3,3} = 'T008c';
-            S.sessions{3,4} = 'T008d';
-            S.sessions{3,5} = 'T008e';
-            S.sessions{4,1} = 'T009a';
-            S.sessions{4,2} = 'T009b';
-            S.sessions{4,3} = 'T009c';
-            S.sessions{4,4} = 'T009d';
-            S.sessions{4,5} = 'T009e';
-            S.sessions{5,1} = 'T010a';
-            S.sessions{5,2} = 'T010b';
-            S.sessions{5,3} = 'T010c';
-            S.sessions{5,4} = 'T010d';
-            S.sessions{5,5} = 'T010e';
-            S.sessions{6,1} = 'T012a';
-            S.sessions{6,2} = 'T012b';
-            S.sessions{6,3} = 'T012c';
-            S.sessions{6,4} = 'T012d';
-            S.sessions{6,5} = 'T012e';
-            S.sessions{7,1} = 'T005a';
-            S.sessions{7,2} = 'T005b';
-            S.sessions{7,3} = 'T005c';
-            S.sessions{7,4} = 'T005d';
-            S.sessions{7,5} = 'T005e';
-            S.sessions{8,1} = 'T013a';
-            S.sessions{8,2} = 'T013b';
-            S.sessions{8,3} = 'T013c';
-            S.sessions{8,4} = 'T013d';
-            S.sessions{8,5} = 'T013e';
-            S.sessions{9,1} = 'T003a';
-            S.sessions{9,2} = 'T003b';
-            S.sessions{9,3} = 'T003c';
-            S.sessions{9,4} = 'T003d';
-            S.sessions{9,5} = 'T003e';
-            S.sessions{10,1} = 'T004a';
-            S.sessions{10,2} = 'T004b';
-            S.sessions{10,3} = 'T004c';
-            S.sessions{10,4} = 'T004d';
-            S.sessions{10,5} = 'T004e';
-            S.sessions{11,1} = 'T007a';
-            S.sessions{11,2} = 'T007b';
-            S.sessions{11,3} = 'T007c';
-            S.sessions{11,4} = 'T007d';
-            S.sessions{11,5} = 'T007e';
+            S.sessions{2,8,1} = 'T008a';
+            S.sessions{2,8,2} = 'T008b';
+            S.sessions{2,8,3} = 'T008c';
+            S.sessions{2,8,4} = 'T008d';
+            S.sessions{2,8,5} = 'T008e';
+            S.sessions{2,9,1} = 'T009a';
+            S.sessions{2,9,2} = 'T009b';
+            S.sessions{2,9,3} = 'T009c';
+            S.sessions{2,9,4} = 'T009d';
+            S.sessions{2,9,5} = 'T009e';
+            S.sessions{2,10,1} = 'T010a';
+            S.sessions{2,10,2} = 'T010b';
+            S.sessions{2,10,3} = 'T010c';
+            S.sessions{2,10,4} = 'T010d';
+            S.sessions{2,10,5} = 'T010e';
+            S.sessions{2,11,1} = 'T011a';
+            S.sessions{2,11,2} = 'T011b';
+            S.sessions{2,11,3} = 'T011c';
+            S.sessions{2,11,4} = 'T011d';
+            S.sessions{2,11,5} = 'T011e';
+            S.sessions{2,12,1} = 'T012a';
+            S.sessions{2,12,2} = 'T012b';
+            S.sessions{2,12,3} = 'T012c';
+            S.sessions{2,12,4} = 'T012d';
+            S.sessions{2,12,5} = 'T012e';
             
-            S.sessions{12,1} = 'T001a';
-            S.sessions{12,2} = 'T001b';
-            S.sessions{12,3} = 'T001c';
-            S.sessions{12,4} = 'T001d';
-            S.sessions{12,5} = 'T001e';
-            %             S.sessions{1,1} = 'S001a';
-            %             S.sessions{1,2} = 'S001b';
-            %             S.sessions{1,3} = 'S001c';
-            %             S.sessions{2,1} = 'S002a';
-            %             S.sessions{2,2} = 'S002b';
-            %             S.sessions{2,3} = 'S002c';
-            %             S.sessions{2,4} = 'S002d';
-            %             S.sessions{2,5} = 'S002e';
-            %             S.sessions{3,1} = 'S003a';
-            %             S.sessions{3,2} = 'S003b';
-            %             S.sessions{3,3} = 'S003c';
-            %             S.sessions{4,1} = 'S004a';
-            %             S.sessions{4,2} = 'S004b';
-            %             S.sessions{4,3} = 'S004c';
-            %             S.sessions{4,4} = 'S004d';
-            %             S.sessions{5,1} = 'S005a';
-            %             S.sessions{5,2} = 'S005b';
-            %             S.sessions{5,3} = 'S005c';
-            %             S.sessions{5,4} = 'S005d';
-            %             S.sessions{5,5} = 'S005e';
-            %             S.sessions{6,1} = 'S006a';
-            %             S.sessions{6,2} = 'S006b';
-            %             S.sessions{6,3} = 'S006c';
-            %             S.sessions{6,4} = 'S006d';
-            %             S.sessions{6,5} = 'S006e';
-            %             S.sessions{7,1} = 'S007a';
-            %             S.sessions{7,2} = 'S007b';
-            %             S.sessions{7,3} = 'S007c';
-            %             S.sessions{7,4} = 'S007d';
-            %             S.sessions{7,5} = 'S007e';
-            %             S.sessions{8,1} = 'S008a';
-            %             S.sessions{8,2} = 'S008b';
-            %             S.sessions{8,3} = 'S008c';
-            %             S.sessions{9,1} = 'S009a';
-            %             S.sessions{9,2} = 'S009b';
-            %             S.sessions{9,3} = 'S009c';
-            %             S.sessions{9,4} = 'S009d';
-            %             S.sessions{9,5} = 'S009e';
-            %             S.sessions{10,1} = 'S010a';
-            %             S.sessions{10,2} = 'S010b';
-            %             S.sessions{10,3} = 'S010c';
-            %             S.sessions{10,4} = 'S010d';
-            %             S.sessions{10,5} = 'S010e';
-            % %             S.sessions{11,1} = 'S011a';
-            % %             S.sessions{11,2} = 'S011b';
-            % %             S.sessions{11,3} = 'S011c';
-            % %             S.sessions{11,4} = 'S011d';
-            % %             S.sessions{11,5} = 'S011e';
-            % %             S.sessions{12,1} = 'S012a';
-            % %             S.sessions{12,2} = 'S012b';
-            % %             S.sessions{12,3} = 'S012c';
-            % %             S.sessions{12,4} = 'S012d';
-            % %             S.sessions{12,5} = 'S012e';
-            %             S.sessions{11,1} = 'S013a';
-            %             S.sessions{11,2} = 'S013b';
-            %             S.sessions{11,3} = 'S013c';
-            %             S.sessions{11,4} = 'S013d';
-            %             S.sessions{11,5} = 'S013e';
+            S.sessions{2,13,1} = 'T013a';
+            S.sessions{2,13,2} = 'T013b';
+            S.sessions{2,13,3} = 'T013c';
+            S.sessions{2,13,4} = 'T013d';
+            S.sessions{2,13,5} = 'T013e';
+            
+            
+            
+            
+            
+            S.sessions{1,1,1} = 'S001a';
+            S.sessions{1,1,2} = 'S001b';
+            S.sessions{1,1,3} = 'S001c';
+            S.sessions{1,2,1} = 'S002a';
+            S.sessions{1,2,2} = 'S002b';
+            S.sessions{1,2,3} = 'S002c';
+            S.sessions{1,2,4} = 'S002d';
+            S.sessions{1,2,5} = 'S002e';
+            S.sessions{1,3,1} = 'S003a';
+            S.sessions{1,3,2} = 'S003b';
+            S.sessions{1,3,3} = 'S003c';
+            S.sessions{1,4,1} = 'S004a';
+            S.sessions{1,4,2} = 'S004b';
+            S.sessions{1,4,3} = 'S004c';
+            S.sessions{1,4,4} = 'S004d';
+            S.sessions{1,5,1} = 'S005a';
+            S.sessions{1,5,2} = 'S005b';
+            S.sessions{1,5,3} = 'S005c';
+            S.sessions{1,5,4} = 'S005d';
+            S.sessions{1,5,5} = 'S005e';
+            S.sessions{1,6,1} = 'S006a';
+            S.sessions{1,6,2} = 'S006b';
+            S.sessions{1,6,3} = 'S006c';
+            S.sessions{1,6,4} = 'S006d';
+            S.sessions{1,6,5} = 'S006e';
+            S.sessions{1,7,1} = 'S007a';
+            S.sessions{1,7,2} = 'S007b';
+            S.sessions{1,7,3} = 'S007c';
+            S.sessions{1,7,4} = 'S007d';
+            S.sessions{1,7,5} = 'S007e';
+            S.sessions{1,8,1} = 'S008a';
+            S.sessions{1,8,2} = 'S008b';
+            S.sessions{1,8,3} = 'S008c';
+            S.sessions{1,9,1} = 'S009a';
+            S.sessions{1,9,2} = 'S009b';
+            S.sessions{1,9,3} = 'S009c';
+            S.sessions{1,9,4} = 'S009d';
+            S.sessions{1,9,5} = 'S009e';
+            S.sessions{1,10,1} = 'S010a';
+            S.sessions{1,10,2} = 'S010b';
+            S.sessions{1,10,3} = 'S010c';
+            S.sessions{1,10,4} = 'S010d';
+            S.sessions{1,10,5} = 'S010e';
+            S.sessions{1,11,1} = 'S013a';
+            S.sessions{1,11,2} = 'S013b';
+            S.sessions{1,11,3} = 'S013c';
+            S.sessions{1,11,4} = 'S013d';
+            S.sessions{1,11,5} = 'S013e';
             S.skipSamples = 0;
             S.subjectids = [];
+            S.sessionids = [];
         end
         
-        function S = loadSubjectSession(S,subject,session)
+        function S = loadSubjectSession(S,experiment,subject,session)
             %loads all trials for a specific session
             %
             %Example:
             %   session.loadSubjectSession(1,2);
             %loads the 2nd session of the 1st subject
             %
-            load(S.sessions{subject,session});
+            load(S.sessions{experiment,subject,session});
             signal = eval('eeg');
             if(exist('labels'))
-                curTrials = S.split(signal, DIN_1,subject,labels);
+                curTrials = S.split(signal, DIN_1,subject,session,labels);
             else
-                curTrials = S.split(signal, DIN_1, subject);
+                curTrials = S.split(signal, DIN_1, subject,session);
             end
             numTrials = length(S.trials) + 1;
             for i=1:length(curTrials)
@@ -212,26 +214,26 @@ classdef Session < handle
                 numTrials = numTrials + 1;
             end
         end
-        function S = loadSubject(S,subject)
+        function S = loadSubject(S,experiment,subject)
             %loads all trials for a specific subject
             %
             %Example:
             %   session.loadSubject(1);
             %loads all the trials of the 1st subject
-            [~, y] = size(S.sessions);
+            [~,~, y] = size(S.sessions);
             for i=1:y
-                if ~isempty(S.sessions{subject,i})
-                    S.loadSubjectSession(subject,i);
+                if ~isempty(S.sessions{experiment,subject,i})
+                    S.loadSubjectSession(experiment,subject,i);
                 end
             end
         end
-        function S = loadAll(S)
+        function S = loadAll(S,experiment)
             %loads everything
-            [l,~] = size(S.sessions);
+            [~,l,~] = size(S.sessions);
             h = waitbar(0,'Loading...');
             for i=1:l
                 waitbar(i/l,h,'Loading...');
-                S.loadSubject(i);
+                S.loadSubject(experiment,i);
             end
             close(h);
         end
@@ -240,6 +242,7 @@ classdef Session < handle
             %clears loaded data
             S.trials = {};
             S.subjectids = [];
+            S.sessionids = [];
         end
         
         function applyFilter(S, filt)
@@ -259,7 +262,7 @@ classdef Session < handle
     end
     
     methods (Access = private)
-        function trials = split(S, signal, dins, subjectid, labels)
+        function trials = split(S, signal, dins, subjectid, session,labels)
             timestamps = cell2mat(dins(2,:));
             samples = cell2mat(dins(4,:));
             [a numDins ]= size(dins);
@@ -278,7 +281,6 @@ classdef Session < handle
                     sampleB = samples(i-1);
                     timeB = timestamps(i-1);
                     freqs = [freqs; (sum/count)];
-                    sampleB - sampleA
                     if(sampleB - sampleA>800)
                         ranges = [ranges ; [sampleA (sampleA+1249)]];
                         times = [times; [timeA timeB]];
@@ -306,18 +308,22 @@ classdef Session < handle
             trials = {};
             i = 1;
             for i=1:numSplits
-                if(nargin>4)
-                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), labels{i}, S.SAMPLING_RATE, subjectid,1);
-                else
-                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid,1);
+                if(nargin>5)
+                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), labels{i}, S.SAMPLING_RATE, subjectid,session);
                     S.subjectids = [S.subjectids subjectid];
+                    S.sessionids = [S.sessionids session];
+                else
+                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid,session);
+                    S.subjectids = [S.subjectids subjectid];
+                    S.sessionids = [S.sessionids session];
                 end
             end
             i = i +1;
             if(S.rest > 0)
                 for i=i:(numSplits*2)
-                    trials{i} = ssveptoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE, subjectid,1);
+                    trials{i} = ssveptoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE, subjectid,session);
                     S.subjectids = [S.subjectids subjectid];
+                    S.sessionids = [S.sessionids session];
                 end
             end
             %filter the trials (if a filter is set)
@@ -334,31 +340,4 @@ classdef Session < handle
         
     end
 end
-
-%         1406        2655
-%         4029        5278
-%         6781        8030
-%         9529       10778
-%        12281       13530
-%        15041       16290
-%        17780       19029
-%        20528       21777
-%        23284       24533
-%        26028       27277
-%        28780       30029
-%        31528       32777
-%        50387       51636
-%        53014       54263
-%        55762       57011
-%        58514       59763
-%        61262       62511
-%        64014       65263
-%        66762       68011
-%        69514       70763
-%        72265       73514
-%        75013       76262
-%        77761       79010
-%        80513       81762
-%        83261       84510
-
 
