@@ -281,7 +281,8 @@ classdef Session < handle
                     sampleB = samples(i-1);
                     timeB = timestamps(i-1);
                     freqs = [freqs; (sum/count)];
-                    if(sampleB - sampleA>800)
+                    % don't ask why
+                    if(sampleB - sampleA>382)
                         ranges = [ranges ; [sampleA (sampleA+1249)]];
                         times = [times; [timeA timeB]];
                     end
