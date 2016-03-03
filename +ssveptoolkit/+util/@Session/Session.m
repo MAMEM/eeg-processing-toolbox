@@ -120,22 +120,22 @@ classdef Session < handle
             S.sessions{2,10,3} = 'T010c';
             S.sessions{2,10,4} = 'T010d';
             S.sessions{2,10,5} = 'T010e';
-            S.sessions{2,11,1} = 'T011a';
-            S.sessions{2,11,2} = 'T011b';
-            S.sessions{2,11,3} = 'T011c';
-            S.sessions{2,11,4} = 'T011d';
-            S.sessions{2,11,5} = 'T011e';
-            S.sessions{2,12,1} = 'T012a';
-            S.sessions{2,12,2} = 'T012b';
-            S.sessions{2,12,3} = 'T012c';
-            S.sessions{2,12,4} = 'T012d';
-            S.sessions{2,12,5} = 'T012e';
+            % S.sessions{2,11,1} = 'T011a';
+            % S.sessions{2,11,2} = 'T011b';
+            % S.sessions{2,11,3} = 'T011c';
+            % S.sessions{2,11,4} = 'T011d';
+            % S.sessions{2,11,5} = 'T011e';
+            % S.sessions{2,12,1} = 'T012a';
+            % S.sessions{2,12,2} = 'T012b';
+            % S.sessions{2,12,3} = 'T012c';
+            % S.sessions{2,12,4} = 'T012d';
+            % S.sessions{2,12,5} = 'T012e';
             
-            S.sessions{2,13,1} = 'T013a';
-            S.sessions{2,13,2} = 'T013b';
-            S.sessions{2,13,3} = 'T013c';
-            S.sessions{2,13,4} = 'T013d';
-            S.sessions{2,13,5} = 'T013e';
+            S.sessions{2,11,1} = 'T013a';
+            S.sessions{2,11,2} = 'T013b';
+            S.sessions{2,11,3} = 'T013c';
+            S.sessions{2,11,4} = 'T013d';
+            S.sessions{2,11,5} = 'T013e';
             
             
             
