@@ -9,7 +9,7 @@
 load filters/filt_IIRChebI.mat;
 
 %Extract features with the pwelch method
-extr = ssveptoolkit.featextraction.PWelchExperimental;
+extr = ssveptoolkit.featextraction.PWelch;
 
 refer = ssveptoolkit.preprocessing.Rereferencing;
 %Subtract the mean from the signal
