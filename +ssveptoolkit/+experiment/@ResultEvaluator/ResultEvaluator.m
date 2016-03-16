@@ -42,7 +42,7 @@ classdef  ResultEvaluator < handle
         function accuracies = getAccuracyByLabel(RE)
             [rows,~] = size(RE.resultSet.confusionMatrix);
             for i=1:rows
-                accuracies(i) = RE.resultSet.confusionMatrix(i,i)/sum(RE.resultSet.confusionMatrix(i,:));
+                accuracies(i) = RE.resultSet.confusionMatrix(i,i)/sum(RE.resultSet.confusionMatrix(i,:))*100;
             end
         end
         
