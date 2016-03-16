@@ -110,6 +110,21 @@ classdef Experimenter < handle
                     error ('eval method not set or invalid');
             end
         end
+        
+        function itrs = getITR(E)
+            for i=1:length(E.preprocessing)
+                if isa(E.preprocessing{i},'ssveptoolkit.preprocessing.SampleSelection')
+                    %T = time in seconds;
+                    T = (E.preprocessing{i}.sampleRange(2)-E.preprocessing{i}.sampleRange(1)+1)/E.preprocessing{i}.samplingRate;
+                end
+            end
+            if isempty(T)
+                error('to calculate ITR the SampleSelection preprocessing step must be added to the experiment');
+            end
+            for i=1:length(E.results)
+                itrs(i) = E.results{i}.getITR(T);
+            end
+        end
         function time = getTime(E)
             info = 'Average time elapsed for trial:\n';
             total = 0;

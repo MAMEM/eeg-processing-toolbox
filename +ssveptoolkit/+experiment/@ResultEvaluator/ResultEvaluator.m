@@ -46,6 +46,17 @@ classdef  ResultEvaluator < handle
             end
         end
         
+        
+        function ITR = getITR(RE,T)
+            P = RE.getAccuracy/100;
+            M = RE.resultSet.getNumLabels;
+%             fprintf('T = %f',T);
+%             fprintf('P = %f',P);
+%             fprintf('M = %f',M);
+%             fprintf('\n');
+            ITR = (log2(M) + P*log2(P)+(1-P)*log2((1-P)/(M-1)))/T;
+        end
+        
 %         function TP = getNumTruePositives(RE)
 %             conf = RE.resultSet.confusionMatrix;
 %             TP = diag(conf)';

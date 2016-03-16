@@ -2,6 +2,7 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
     properties
         channels;
         sampleRange;
+        samplingRate;
     end
     
     methods
@@ -20,6 +21,7 @@ classdef SampleSelection < ssveptoolkit.preprocessing.PreprocessingBase
         
         function out = process(CS,in)
             out = {};
+            CS.samplingRate = in{1}.samplingRate;
             for i=1:length(in)
                 if(length(CS.channels) > 0)
                     if(length(CS.sampleRange) > 0)
