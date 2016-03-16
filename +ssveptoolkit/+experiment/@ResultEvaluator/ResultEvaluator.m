@@ -39,6 +39,13 @@ classdef  ResultEvaluator < handle
             end
         end
         
+        function accuracies = getAccuracyByLabel(RE)
+            [rows,~] = size(RE.resultSet.confusionMatrix);
+            for i=1:rows
+                accuracies(i) = RE.resultSet.confusionMatrix(i,i)/sum(RE.resultSet.confusionMatrix(i,:));
+            end
+        end
+        
 %         function TP = getNumTruePositives(RE)
 %             conf = RE.resultSet.confusionMatrix;
 %             TP = diag(conf)';
