@@ -19,6 +19,7 @@ classdef Trial < handle
             T.subjectid = subjectID;
             T.sessionid = sessionID;
         end
+        
     end
     
 end
