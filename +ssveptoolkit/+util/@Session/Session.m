@@ -238,6 +238,19 @@ classdef Session < handle
             close(h);
         end
         
+        function S = loadEpoc(S,filename)
+            load(filename);
+            events = eval('events');
+            marks = events(events(:,2)==32779,3);
+            stops = events(events(:,2)==32780,3);
+            numTrials = length(S.trials) + 1;
+            for i=1:length(marks)
+                signal = eeg(:,marks(i):stops(i)-1);
+                label = labels{i};
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,1,1);
+                numTrials = numTrials +1;
+            end
+        end
         function S = clearData(S)
             %clears loaded data
             S.trials = {};
