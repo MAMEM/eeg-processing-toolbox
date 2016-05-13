@@ -31,7 +31,8 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
                 data = CCA.trials{i}.signal(CCA.channel,:);
                 features=NaN*ones(NumStim,1);
                 for j=1:NumStim
-                    [wx1,wy1,r1] = CCA.cca(data,refSignals(:,:,j));
+                    %                     [wx1,wy1,r1] = CCA.cca(data,refSignals(:,:,j));
+                    [wx1,wy1,r1] = canoncorr(data',refSignals(:,:,j)');
                     features(j) = max(r1);
                 end
                 instances(i,:) = features(:);
@@ -53,57 +54,57 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
             configInfo = sprintf('CCA');
         end
         
-        function [Wx, Wy, r] = cca(CCA,X,Y)
-            
-            % CCA calculate canonical correlations
-            %
-            % [Wx Wy r] = cca(X,Y) where Wx and Wy contains the canonical correlation
-            
-            % vectors as columns and r is a vector with corresponding canonical
-            % correlations. The correlations are sorted in descending order. X and Y
-            % are matrices where each column is a sample. Hence, X and Y must have
-            % the same number of columns.
-            %
-            % Example: If X is M*K and Y is N*K there are L=MIN(M,N) solutions. Wx is
-            % then M*L, Wy is N*L and r is L*1.
-            %
-            %
-            % ?? 2000 Magnus Borga, Link?pings universitet
-            
-            % --- Calculate covariance matrices ---??????????????
-            
-            z = [X;Y];
-            C = cov(z.');
-            sx = size(X,1);   %X??????(??),
-            sy = size(Y,1);
-            Cxx = C(1:sx, 1:sx) + 10^(-8)*eye(sx);
-            Cxy = C(1:sx, sx+1:sx+sy);
-            Cyx = Cxy';
-            Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + 10^(-8)*eye(sy);%eye()????????
-            invCyy = inv(Cyy);
-            
-            % --- Calcualte Wx and r ---
-            
-            [Wx,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); % Basis in X eig????????????
-            r = sqrt(real(r));      % Canonical correlations
-            
-            % --- Sort correlations ---
-            
-            V = fliplr(Wx);		% reverse order of eigenvectors??????????????????????i??????????i??????
-            r = flipud(diag(r));	% extract eigenvalues and reverse their order
-            [r,I]= sort((real(r)));	% sort reversed eigenvalues in ascending order
-            r = flipud(r);		% restore sorted eigenvalues into descending order??????????????
-            for j = 1:length(I)
-                Wx(:,j) = V(:,I(j));  % sort reversed eigenvectors in ascending order
-            end
-            Wx = fliplr(Wx);	% restore sorted eigenvectors into descending order
-            
-            % --- Calcualte Wy  ---
-            
-            Wy = invCyy*Cyx*Wx;     % Basis in Y
-            % Wy = Wy./repmat(sqrt(sum(abs(Wy).^2)),sy,1); % Normalize Wy
-            
-        end
+%         function [Wx, Wy, r] = cca(CCA,X,Y)
+%             
+%             % CCA calculate canonical correlations
+%             %
+%             % [Wx Wy r] = cca(X,Y) where Wx and Wy contains the canonical correlation
+%             
+%             % vectors as columns and r is a vector with corresponding canonical
+%             % correlations. The correlations are sorted in descending order. X and Y
+%             % are matrices where each column is a sample. Hence, X and Y must have
+%             % the same number of columns.
+%             %
+%             % Example: If X is M*K and Y is N*K there are L=MIN(M,N) solutions. Wx is
+%             % then M*L, Wy is N*L and r is L*1.
+%             %
+%             %
+%             % ?? 2000 Magnus Borga, Link?pings universitet
+%             
+%             % --- Calculate covariance matrices ---??????????????
+%             
+%             z = [X;Y];
+%             C = cov(z.');
+%             sx = size(X,1);   %X??????(??),
+%             sy = size(Y,1);
+%             Cxx = C(1:sx, 1:sx) + 10^(-8)*eye(sx);
+%             Cxy = C(1:sx, sx+1:sx+sy);
+%             Cyx = Cxy';
+%             Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + 10^(-8)*eye(sy);%eye()????????
+%             invCyy = inv(Cyy);
+%             
+%             % --- Calcualte Wx and r ---
+%             
+%             [Wx,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); % Basis in X eig????????????
+%             r = sqrt(real(r));      % Canonical correlations
+%             
+%             % --- Sort correlations ---
+%             
+%             V = fliplr(Wx);		% reverse order of eigenvectors??????????????????????i??????????i??????
+%             r = flipud(diag(r));	% extract eigenvalues and reverse their order
+%             [r,I]= sort((real(r)));	% sort reversed eigenvalues in ascending order
+%             r = flipud(r);		% restore sorted eigenvalues into descending order??????????????
+%             for j = 1:length(I)
+%                 Wx(:,j) = V(:,I(j));  % sort reversed eigenvectors in ascending order
+%             end
+%             Wx = fliplr(Wx);	% restore sorted eigenvectors into descending order
+%             
+%             % --- Calcualte Wy  ---
+%             
+%             Wy = invCyy*Cyx*Wx;     % Basis in Y
+%             % Wy = Wy./repmat(sqrt(sum(abs(Wy).^2)),sy,1); % Normalize Wy
+%             
+%         end
         
         function refSignal=ck_signalTrans(CCA,f,mLen,FreqSamp,NumHarm)
             
@@ -118,13 +119,6 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
                     tempComp = [tempComp; Sinh1;Cosh1;];
                 end
                 refSignal(:,:,j)=tempComp;
-                %     Sinh2=sin(2*pi*2*f(j)*TP);
-                %     Cosh2=cos(2*pi*2*f(j)*TP);
-                %     Sinh3=sin(2*pi*3*f(j)*TP);
-                %     Cosh3=cos(2*pi*3*f(j)*TP);
-                %     Sinh4=sin(2*pi*4*f(j)*TP);
-                %     Cosh4=cos(2*pi*4*f(j)*TP);
-                %     refSignal(:,:,j)=[Sinh1;Cosh1;Sinh2; Cosh2;Sinh3;Cosh3;Sinh4; Cosh4];
             end
         end
         function time = getTime(CCA)

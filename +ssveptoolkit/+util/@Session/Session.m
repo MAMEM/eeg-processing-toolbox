@@ -163,6 +163,11 @@ classdef Session < handle
             S.sessions{2,11,5} = 'T013e';
             
             %Dataset III (Epoc)
+            S.sessions{3,2,1} = 'U002a';
+            S.sessions{3,2,2} = 'U002b';
+            S.sessions{3,2,3} = 'U002c';
+            S.sessions{3,2,4} = 'U002d';
+            S.sessions{3,2,5} = 'U002e';
             S.sessions{3,4,1} = 'U004a';
             S.sessions{3,4,2} = 'U004b';
             S.sessions{3,4,3} = 'U004c';
@@ -263,6 +268,9 @@ classdef Session < handle
             end
         end
         function S = loadAll(S,experiment)
+            if(experiment==3)
+                error('Experiment:3 not supported yet.. load each available subject separately');
+            end
             %loads everything
             [~,l,~] = size(S.sessions);
             h = waitbar(0,'Loading...');

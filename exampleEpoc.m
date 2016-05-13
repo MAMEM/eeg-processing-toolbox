@@ -18,7 +18,7 @@ refer.meanSignal = 1;
 
 ss = ssveptoolkit.preprocessing.SampleSelection;
 ss.sampleRange = [1,640]; % Specify the sample range to be used for each Trial
-ss.channels = 7; % Specify the channel(s) to be used
+ss.channels = 8; % Specify the channel(s) to be used
 
 df = ssveptoolkit.preprocessing.DigitalFilter; % Apply a filter to the raw data
 df.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function
