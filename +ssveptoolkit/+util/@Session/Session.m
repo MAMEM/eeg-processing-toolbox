@@ -173,6 +173,11 @@ classdef Session < handle
             S.sessions{3,4,3} = 'U004c';
             S.sessions{3,4,4} = 'U004d';
             S.sessions{3,4,5} = 'U004e';
+            S.sessions{3,6,1} = 'U006a';
+            S.sessions{3,6,2} = 'U006b';
+            S.sessions{3,6,3} = 'U006c';
+            S.sessions{3,6,4} = 'U006d';
+            S.sessions{3,6,5} = 'U006e';
             S.sessions{3,9,1} = 'U009a';
             S.sessions{3,9,2} = 'U009b';
             S.sessions{3,9,3} = 'U009c';
