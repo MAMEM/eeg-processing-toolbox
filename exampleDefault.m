@@ -8,6 +8,10 @@
 %Load a filter from the samples
 load filters/filt_IIRChebI;
 
+<<<<<<< HEAD:exampleDefault.m
+=======
+%Extract features with the pwelch method
+>>>>>>> 14ef776519f90615780a3532f9616681593fcf01:example.m
 extr = ssveptoolkit.featextraction.PWelch;
 
 refer = ssveptoolkit.preprocessing.Rereferencing;
