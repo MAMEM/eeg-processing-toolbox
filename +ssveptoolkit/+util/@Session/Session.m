@@ -163,6 +163,11 @@ classdef Session < handle
             S.sessions{2,11,5} = 'T013e';
             
             %Dataset III (Epoc)
+            S.sessions{3,1,1} = 'U001a';
+            S.sessions{3,1,2} = 'U001b';
+            S.sessions{3,1,3} = 'U001c';
+            S.sessions{3,1,4} = 'U001d';
+            S.sessions{3,1,5} = 'U001e';
             S.sessions{3,2,1} = 'U002a';
             S.sessions{3,2,2} = 'U002b';
             S.sessions{3,2,3} = 'U002c';
@@ -183,11 +188,31 @@ classdef Session < handle
             S.sessions{3,6,3} = 'U006c';
             S.sessions{3,6,4} = 'U006d';
             S.sessions{3,6,5} = 'U006e';
+            S.sessions{3,7,1} = 'U007a';
+            S.sessions{3,7,2} = 'U007b';
+            S.sessions{3,7,3} = 'U007c';
+            S.sessions{3,7,4} = 'U007d';
+            S.sessions{3,7,5} = 'U007e';
+            S.sessions{3,8,1} = 'U008a';
+            S.sessions{3,8,2} = 'U008b';
+            S.sessions{3,8,3} = 'U008c';
+            S.sessions{3,8,4} = 'U008d';
+            S.sessions{3,8,5} = 'U008e';
             S.sessions{3,9,1} = 'U009a';
             S.sessions{3,9,2} = 'U009b';
             S.sessions{3,9,3} = 'U009c';
             S.sessions{3,9,4} = 'U009d';
             S.sessions{3,9,5} = 'U009e';
+            S.sessions{3,10,1} = 'U010a';
+            S.sessions{3,10,2} = 'U010b';
+            S.sessions{3,10,3} = 'U010c';
+            S.sessions{3,10,4} = 'U010d';
+            S.sessions{3,10,5} = 'U010e';
+            S.sessions{3,11,1} = 'U011a';
+            S.sessions{3,11,2} = 'U011b';
+            S.sessions{3,11,3} = 'U011c';
+            S.sessions{3,11,4} = 'U011d';
+            S.sessions{3,11,5} = 'U011e';
             
             S.skipSamples = 0;
             S.subjectids = [];
