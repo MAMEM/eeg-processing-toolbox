@@ -2,8 +2,7 @@
 % load the data again and again. Make sure the dataset is included in your
 % Matlab path
 % sess = ssveptoolkit.util.Session;
-% sess.loadAll(); %its best to do this once, outside the script (too much
-% time)
+% sess.loadAll(1); %Loads dataset I
 
 %Load a filter from the samples
 load filters/filt_IIRChebI;
