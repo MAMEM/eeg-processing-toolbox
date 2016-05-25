@@ -55,92 +55,7 @@ classdef Session < handle
                 S.rest = 0;
                 S.filt = 0;
             end
-            %             S.sessions{1,1} = 'G1';
-            %             S.sessions{1,2} = 'G2';
-            %             S.sessions{1,3} = 'G3';
-            %             S.sessions{2,1} = 'G4';
-            %             S.sessions{2,2} = 'G5';
-            %             S.sessions{2,3} = 'G6';
-            %             S.sessions{2,4} = 'G7';
-            %             S.sessions{3,1} = 'G8';
-            %             S.sessions{3,2} = 'G9';
-            %             S.sessions{3,3} = 'G10';
-            %             S.sessions{4,1} = 'G11';
-            %             S.sessions{4,2} = 'G12';
-            %             S.sessions{4,3} = 'G13';
-            %             S.sessions{4,4} = 'G14';
-            S.sessions{2,1,1} = 'T001a';
-            S.sessions{2,1,2} = 'T001b';
-            S.sessions{2,1,3} = 'T001c';
-            S.sessions{2,1,4} = 'T001d';
-            S.sessions{2,1,5} = 'T001e';
-            S.sessions{2,2,1} = 'T002a';
-            S.sessions{2,2,2} = 'T002b';
-            S.sessions{2,2,3} = 'T002c';
-            S.sessions{2,2,4} = 'T002d';
-            S.sessions{2,2,5} = 'T002e';
-            S.sessions{2,3,1} = 'T003a';
-            S.sessions{2,3,2} = 'T003b';
-            S.sessions{2,3,3} = 'T003c';
-            S.sessions{2,3,4} = 'T003d';
-            S.sessions{2,3,5} = 'T003e';
-            S.sessions{2,4,1} = 'T004a';
-            S.sessions{2,4,2} = 'T004b';
-            S.sessions{2,4,3} = 'T004c';
-            S.sessions{2,4,4} = 'T004d';
-            S.sessions{2,4,5} = 'T004e';
-            S.sessions{2,5,1} = 'T005a';
-            S.sessions{2,5,2} = 'T005b';
-            S.sessions{2,5,3} = 'T005c';
-            S.sessions{2,5,4} = 'T005d';
-            S.sessions{2,5,5} = 'T005e';
-            S.sessions{2,6,1} = 'T006a';
-            S.sessions{2,6,2} = 'T006b';
-            S.sessions{2,6,3} = 'T006c';
-            S.sessions{2,6,4} = 'T006d';
-            S.sessions{2,6,5} = 'T006e';
-            S.sessions{2,7,1} = 'T007a';
-            S.sessions{2,7,2} = 'T007b';
-            S.sessions{2,7,3} = 'T007c';
-            S.sessions{2,7,4} = 'T007d';
-            S.sessions{2,7,5} = 'T007e';
-            
-            S.sessions{2,8,1} = 'T008a';
-            S.sessions{2,8,2} = 'T008b';
-            S.sessions{2,8,3} = 'T008c';
-            S.sessions{2,8,4} = 'T008d';
-            S.sessions{2,8,5} = 'T008e';
-            S.sessions{2,9,1} = 'T009a';
-            S.sessions{2,9,2} = 'T009b';
-            S.sessions{2,9,3} = 'T009c';
-            S.sessions{2,9,4} = 'T009d';
-            S.sessions{2,9,5} = 'T009e';
-            S.sessions{2,10,1} = 'T010a';
-            S.sessions{2,10,2} = 'T010b';
-            S.sessions{2,10,3} = 'T010c';
-            S.sessions{2,10,4} = 'T010d';
-            S.sessions{2,10,5} = 'T010e';
-            % S.sessions{2,11,1} = 'T011a';
-            % S.sessions{2,11,2} = 'T011b';
-            % S.sessions{2,11,3} = 'T011c';
-            % S.sessions{2,11,4} = 'T011d';
-            % S.sessions{2,11,5} = 'T011e';
-            % S.sessions{2,12,1} = 'T012a';
-            % S.sessions{2,12,2} = 'T012b';
-            % S.sessions{2,12,3} = 'T012c';
-            % S.sessions{2,12,4} = 'T012d';
-            % S.sessions{2,12,5} = 'T012e';
-            
-            S.sessions{2,11,1} = 'T013a';
-            S.sessions{2,11,2} = 'T013b';
-            S.sessions{2,11,3} = 'T013c';
-            S.sessions{2,11,4} = 'T013d';
-            S.sessions{2,11,5} = 'T013e';
-            
-            
-            
-            
-            
+            %Dataset I
             S.sessions{1,1,1} = 'S001a';
             S.sessions{1,1,2} = 'S001b';
             S.sessions{1,1,3} = 'S001c';
@@ -189,9 +104,170 @@ classdef Session < handle
             S.sessions{1,11,3} = 'S013c';
             S.sessions{1,11,4} = 'S013d';
             S.sessions{1,11,5} = 'S013e';
+            
+            %Dataset II
+            S.sessions{2,1,1} = 'T001a';
+            S.sessions{2,1,2} = 'T001b';
+            S.sessions{2,1,3} = 'T001c';
+            S.sessions{2,1,4} = 'T001d';
+            S.sessions{2,1,5} = 'T001e';
+            S.sessions{2,2,1} = 'T002a';
+            S.sessions{2,2,2} = 'T002b';
+            S.sessions{2,2,3} = 'T002c';
+            S.sessions{2,2,4} = 'T002d';
+            S.sessions{2,2,5} = 'T002e';
+            S.sessions{2,3,1} = 'T003a';
+            S.sessions{2,3,2} = 'T003b';
+            S.sessions{2,3,3} = 'T003c';
+            S.sessions{2,3,4} = 'T003d';
+            S.sessions{2,3,5} = 'T003e';
+            S.sessions{2,4,1} = 'T004a';
+            S.sessions{2,4,2} = 'T004b';
+            S.sessions{2,4,3} = 'T004c';
+            S.sessions{2,4,4} = 'T004d';
+            S.sessions{2,4,5} = 'T004e';
+            S.sessions{2,5,1} = 'T005a';
+            S.sessions{2,5,2} = 'T005b';
+            S.sessions{2,5,3} = 'T005c';
+            S.sessions{2,5,4} = 'T005d';
+            S.sessions{2,5,5} = 'T005e';
+            S.sessions{2,6,1} = 'T006a';
+            S.sessions{2,6,2} = 'T006b';
+            S.sessions{2,6,3} = 'T006c';
+            S.sessions{2,6,4} = 'T006d';
+            S.sessions{2,6,5} = 'T006e';
+            S.sessions{2,7,1} = 'T007a';
+            S.sessions{2,7,2} = 'T007b';
+            S.sessions{2,7,3} = 'T007c';
+            S.sessions{2,7,4} = 'T007d';
+            S.sessions{2,7,5} = 'T007e';
+            S.sessions{2,8,1} = 'T008a';
+            S.sessions{2,8,2} = 'T008b';
+            S.sessions{2,8,3} = 'T008c';
+            S.sessions{2,8,4} = 'T008d';
+            S.sessions{2,8,5} = 'T008e';
+            S.sessions{2,9,1} = 'T009a';
+            S.sessions{2,9,2} = 'T009b';
+            S.sessions{2,9,3} = 'T009c';
+            S.sessions{2,9,4} = 'T009d';
+            S.sessions{2,9,5} = 'T009e';
+            S.sessions{2,10,1} = 'T010a';
+            S.sessions{2,10,2} = 'T010b';
+            S.sessions{2,10,3} = 'T010c';
+            S.sessions{2,10,4} = 'T010d';
+            S.sessions{2,10,5} = 'T010e';
+            S.sessions{2,11,1} = 'T013a';
+            S.sessions{2,11,2} = 'T013b';
+            S.sessions{2,11,3} = 'T013c';
+            S.sessions{2,11,4} = 'T013d';
+            S.sessions{2,11,5} = 'T013e';
+            
+            %Dataset III (Epoc)
+            S.sessions{3,1,1} = 'U001a';
+            S.sessions{3,1,2} = 'U001b';
+            S.sessions{3,1,3} = 'U001c';
+            S.sessions{3,1,4} = 'U001d';
+            S.sessions{3,1,5} = 'U001e';
+            S.sessions{3,2,1} = 'U002a';
+            S.sessions{3,2,2} = 'U002b';
+            S.sessions{3,2,3} = 'U002c';
+            S.sessions{3,2,4} = 'U002d';
+            S.sessions{3,2,5} = 'U002e';
+            S.sessions{3,3,1} = 'U003a';
+            S.sessions{3,3,2} = 'U003b';
+            S.sessions{3,3,3} = 'U003c';
+            S.sessions{3,3,4} = 'U003d';
+            S.sessions{3,3,5} = 'U003e';
+            S.sessions{3,4,1} = 'U004a';
+            S.sessions{3,4,2} = 'U004b';
+            S.sessions{3,4,3} = 'U004c';
+            S.sessions{3,4,4} = 'U004d';
+            S.sessions{3,4,5} = 'U004e';
+            S.sessions{3,5,1} = 'U005a';
+            S.sessions{3,5,2} = 'U005b';
+            S.sessions{3,5,3} = 'U005c';
+            S.sessions{3,5,4} = 'U005d';
+            S.sessions{3,5,5} = 'U005e';
+            S.sessions{3,6,1} = 'U006a';
+            S.sessions{3,6,2} = 'U006b';
+            S.sessions{3,6,3} = 'U006c';
+            S.sessions{3,6,4} = 'U006d';
+            S.sessions{3,6,5} = 'U006e';
+            S.sessions{3,7,1} = 'U007a';
+            S.sessions{3,7,2} = 'U007b';
+            S.sessions{3,7,3} = 'U007c';
+            S.sessions{3,7,4} = 'U007d';
+            S.sessions{3,7,5} = 'U007e';
+            S.sessions{3,8,1} = 'U008a';
+            S.sessions{3,8,2} = 'U008b';
+            S.sessions{3,8,3} = 'U008c';
+            S.sessions{3,8,4} = 'U008d';
+            S.sessions{3,8,5} = 'U008e';
+            S.sessions{3,9,1} = 'U009a';
+            S.sessions{3,9,2} = 'U009b';
+            S.sessions{3,9,3} = 'U009c';
+            S.sessions{3,9,4} = 'U009d';
+            S.sessions{3,9,5} = 'U009e';
+            S.sessions{3,10,1} = 'U010a';
+            S.sessions{3,10,2} = 'U010b';
+            S.sessions{3,10,3} = 'U010c';
+            S.sessions{3,10,4} = 'U010d';
+            S.sessions{3,10,5} = 'U010e';
+            S.sessions{3,11,1} = 'U011a';
+            S.sessions{3,11,2} = 'U011b';
+            S.sessions{3,11,3} = 'U011c';
+            S.sessions{3,11,4} = 'U011d';
+            S.sessions{3,11,5} = 'U011e';
+            
             S.skipSamples = 0;
             S.subjectids = [];
             S.sessionids = [];
+        end
+        
+        function S = loadEpocData(S,experiment,subject,session)
+            %load part 1
+            load(strcat(S.sessions{experiment,subject,session},'i'));
+            events = eval('events');
+            marks = events(events(:,2)==32779,3);
+            stops = events(events(:,2)==32780,3);
+            numTrials = length(S.trials) + 1;
+            labels = {4,2,3,5,1,2,5,4,2,3,1,5};
+            for i=1:length(marks)
+                signal = eeg(:,marks(i):stops(i) -1);
+                label = labels{i};
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,subject,session);
+                numTrials = numTrials + 1;
+                S.subjectids = [S.subjectids subject];
+                S.sessionids = [S.sessionids session];
+            end
+            %load part 2
+            load(strcat(S.sessions{experiment,subject,session},'ii'));
+            events = eval('events');
+            marks = events(events(:,2)==32779,3);
+            stops = events(events(:,2)==32780,3);
+            numTrials = length(S.trials) + 1;
+            labels = {4,3,2,4,1,2,5,3,4,1,3,1,3};
+            for i=1:length(marks)
+                signal = eeg(:,marks(i):stops(i) -1);
+                label = labels{i};
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,subject,session);
+                numTrials = numTrials + 1;
+                S.subjectids = [S.subjectids subject];
+                S.sessionids = [S.sessionids session];
+            end
+        end
+        function S = loadEpoc(S,filename)
+            load(filename);
+            events = eval('events');
+            marks = events(events(:,2)==32779,3);
+            stops = events(events(:,2)==32780,3);
+            numTrials = length(S.trials) + 1;
+            for i=1:length(marks)
+                signal = eeg(:,marks(i):stops(i)-1);
+                label = labels{i};
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,1,1);
+                numTrials = numTrials +1;
+            end
         end
         
         function S = loadSubjectSession(S,experiment,subject,session)
@@ -201,17 +277,21 @@ classdef Session < handle
             %   session.loadSubjectSession(1,2);
             %loads the 2nd session of the 1st subject
             %
-            load(S.sessions{experiment,subject,session});
-            signal = eval('eeg');
-            if(exist('labels'))
-                curTrials = S.split(signal, DIN_1,subject,session,labels);
+            if(experiment==3)
+                S.loadEpocData(experiment,subject,session);
             else
-                curTrials = S.split(signal, DIN_1, subject,session);
-            end
-            numTrials = length(S.trials) + 1;
-            for i=1:length(curTrials)
-                S.trials{numTrials} = curTrials{i};
-                numTrials = numTrials + 1;
+                load(S.sessions{experiment,subject,session});
+                signal = eval('eeg');
+                if(exist('labels'))
+                    curTrials = S.split(signal, DIN_1,subject,session,labels);
+                else
+                    curTrials = S.split(signal, DIN_1, subject,session);
+                end
+                numTrials = length(S.trials) + 1;
+                for i=1:length(curTrials)
+                    S.trials{numTrials} = curTrials{i};
+                    numTrials = numTrials + 1;
+                end
             end
         end
         function S = loadSubject(S,experiment,subject)
