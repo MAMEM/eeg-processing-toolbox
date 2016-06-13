@@ -21,5 +21,20 @@ classdef Trial < handle
         end
     end
     
+    methods (Static)
+        function trialsMat = trialsCellToMat(trials)
+            numTrials = length(trials);
+            for i=1:numTrials
+                labels(i) = trials{i}.label;
+            end
+            numLabels = length(unique(labels));
+            [numChannels, numSamples] = size(trials{1}.signal);
+            trialsMat = zeros(numChannels,numSamples,numTrials,numLabels);
+            for i=1:numTrials
+                trialsMat(:,:,i,trials{i}.label) = trials{i}.signal;
+            end
+        end
+    end
+    
 end
 
