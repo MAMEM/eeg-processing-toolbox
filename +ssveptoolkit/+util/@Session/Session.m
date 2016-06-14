@@ -279,19 +279,19 @@ classdef Session < handle
             end
         end
         
-        function S = loadERRPAll(S,range)
+        function S = loadERRPAll(S,range,notch,bp)
             [~,numSessions] = size(S.errpSessions);
             for i=1:numSessions
                 if nargin==1
                     S.loadERRPSession(i);
                 else
-                    S.loadERRPSession(i,range);
+                    S.loadERRPSession(i,range,notch,bp);
                 end
             end
                 
         end
         
-        function S = loadERRPSession(S,session,range)
+        function S = loadERRPSession(S,session,range,notch,bp)
             samplingRate = 256;
             if(nargin<3)
                 range = [-200,1000];
@@ -299,6 +299,10 @@ classdef Session < handle
             xstart = round(range(1)*samplingRate/1000);
             xend = round(range(2)*samplingRate/1000);
             load(S.errpSessions{1,session});
+            for i=1:16
+                EEG.signal(:,i) = filter(notch,EEG.signal(:,i));
+                EEG.signal(:,i) = filtfilt(bp.Numerator,1,EEG.signal(:,i));
+            end
             events = {'correct_movement', 'error_movement'};
             numTrials = length(S.trials) + 1;
             for ev=1:length(events)

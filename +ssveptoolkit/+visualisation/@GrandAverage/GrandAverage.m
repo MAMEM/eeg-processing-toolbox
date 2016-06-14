@@ -15,15 +15,22 @@ classdef GrandAverage < handle
         
         function GA = plotGrandAverageForChannel(GA,channel)
             close all;
+            labels = ssveptoolkit.util.Trial.getLabelsVectorForTrials(GA.trials);
+            uniqlabels = unique(labels);
             plots = {};
-            [~,~,~,numLabels] = size(GA.trialsMat);
-            for i=1:numLabels
-                plots{i} = mean(GA.trialsMat(channel,:,:,i),3);
+            for i=1:length(uniqlabels)
+                mat = ssveptoolkit.util.Trial.trialsCellToMatForLabel(GA.trials,uniqlabels(i));
+                ga = mean(mat,3);
+                plots{i} = ga(channel,:);
             end
             hold on;
-            for i=1:numLabels
-                plot(plots{i});
+            ms = -200:3.8961:999;
+            for i=1:length(uniqlabels);
+                plot(ms,plots{i});
             end
+            ylabel('Amplitude (uV)');
+            xlabel('Time (ms)');
+            title(sprintf('Channel: %d',channel));
             hold off;
         end
             
