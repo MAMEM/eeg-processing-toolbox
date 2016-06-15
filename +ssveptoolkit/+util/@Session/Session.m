@@ -224,6 +224,7 @@ classdef Session < handle
             S.sessionids = [];
         end
         
+        
         function S = loadEpocData(S,experiment,subject,session)
             %load part 1
             load(strcat(S.sessions{experiment,subject,session},'i'));
@@ -235,7 +236,7 @@ classdef Session < handle
             for i=1:length(marks)
                 signal = eeg(:,marks(i):stops(i) -1);
                 label = labels{i};
-                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,subject,session);
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,subject,session,ssveptoolkit.util.Trial.SSVEP);
                 numTrials = numTrials + 1;
                 S.subjectids = [S.subjectids subject];
                 S.sessionids = [S.sessionids session];
@@ -250,7 +251,7 @@ classdef Session < handle
             for i=1:length(marks)
                 signal = eeg(:,marks(i):stops(i) -1);
                 label = labels{i};
-                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,subject,session);
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,subject,session,ssveptoolkit.util.Trial.SSVEP);
                 numTrials = numTrials + 1;
                 S.subjectids = [S.subjectids subject];
                 S.sessionids = [S.sessionids session];
@@ -265,7 +266,7 @@ classdef Session < handle
             for i=1:length(marks)
                 signal = eeg(:,marks(i):stops(i)-1);
                 label = labels{i};
-                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,1,1);
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal,label,128,1,1,ssveptoolkit.util.Trial.SSVEP);
                 numTrials = numTrials +1;
             end
         end
@@ -339,6 +340,7 @@ classdef Session < handle
             close(h);
         end
         
+        
     end
     
     methods (Access = private)
@@ -390,11 +392,11 @@ classdef Session < handle
             i = 1;
             for i=1:numSplits
                 if(nargin>5)
-                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), labels{i}, S.SAMPLING_RATE, subjectid,session);
+                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), labels{i}, S.SAMPLING_RATE, subjectid,session,ssveptoolkit.util.Trial.SSVEP);
                     S.subjectids = [S.subjectids subjectid];
                     S.sessionids = [S.sessionids session];
                 else
-                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid,session);
+                    trials{i} = ssveptoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid,session,ssveptoolkit.util.Trial.SSVEP);
                     S.subjectids = [S.subjectids subjectid];
                     S.sessionids = [S.sessionids session];
                 end
@@ -402,7 +404,7 @@ classdef Session < handle
             i = i +1;
             if(S.rest > 0)
                 for i=i:(numSplits*2)
-                    trials{i} = ssveptoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE, subjectid,session);
+                    trials{i} = ssveptoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE, subjectid,session,ssveptoolkit.util.Trial.SSVEP);
                     S.subjectids = [S.subjectids subjectid];
                     S.sessionids = [S.sessionids session];
                 end
