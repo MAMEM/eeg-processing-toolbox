@@ -223,8 +223,6 @@ classdef Session < handle
             S.subjectids = [];
             S.sessionids = [];
         end
-        
-        
         function S = loadEpocData(S,experiment,subject,session)
             %load part 1
             load(strcat(S.sessions{experiment,subject,session},'i'));
