@@ -59,7 +59,7 @@ classdef MLR < ssveptoolkit.classification.ClassifierBase
         end
         
         function configInfo = getConfigInfo(MLR)
-            configInfo = sprintf('MLR_Classifier');
+            configInfo = sprintf('MLR');
         end
         
         
