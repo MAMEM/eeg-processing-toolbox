@@ -80,7 +80,7 @@ classdef SBLR < ssveptoolkit.classification.ClassifierBase
         end
         
         function time = getTime(MLR_Classifier)
-            
+            time = 0;
         end
                 
     end
