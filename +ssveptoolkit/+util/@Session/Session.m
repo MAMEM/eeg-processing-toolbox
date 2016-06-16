@@ -223,6 +223,18 @@ classdef Session < handle
             S.subjectids = [];
             S.sessionids = [];
         end
+        
+        function S = loadBCICompData(S)
+            load('dataset_BCIcomp1.mat');
+            [~,~,n] = size(x_train);
+            numTrials = length(S.trials) + 1;
+            for i=1:n
+                signal = squeeze(x_train(:,:,i));
+                label = y_train(i);
+                S.trials{numTrials} = ssveptoolkit.util.Trial(signal',label,128,1,1,ssveptoolkit.util.Trial.MI);
+                numTrials = numTrials + 1;
+            end
+        end
         function S = loadEpocData(S,experiment,subject,session)
             %load part 1
             load(strcat(S.sessions{experiment,subject,session},'i'));
