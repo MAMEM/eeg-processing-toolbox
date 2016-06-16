@@ -20,9 +20,9 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
             instances = zeros(numTrials,4);
             labels = zeros(numTrials,1);
             for i=1:numTrials
-                [a1 d1] = dwt(DWT.trials{i}.signal(DWT.channel,:),DWT.wavFamily);
-                [a2 d2] = dwt(a1,DWT.wavFamily);
-                [a3 d3] = dwt(a2,DWT.wavFamily);
+                [a1,d1] = dwt(DWT.trials{i}.signal(DWT.channel,:),DWT.wavFamily);
+                [a2,d2] = dwt(a1,DWT.wavFamily);
+                [a3,d3] = dwt(a2,DWT.wavFamily);
                 instances(i,1) = mean(abs(d2));
                 instances(i,2) = std(d2);
                 instances(i,3) = mean(abs(d3));
@@ -32,12 +32,12 @@ classdef DWT < ssveptoolkit.featextraction.FeatureExtractionBase
             DWT.instanceSet = ssveptoolkit.util.InstanceSet(instances,labels);
         end
         
-        function configInfo = getConfigInfo(WD)
-            configInfo = sprintf('WD\tchannel:%d\tseconds:%d\tlevelWT:%d\tWavFamily:%s',WD.channel,WD.seconds,WD.levelWT,WD.WavFamily);
+        function configInfo = getConfigInfo(DWT)
+            configInfo = sprintf('DWT\tchannel:%d\tseconds:%d\tlevelWT:%d\tWavFamily:%s',DWT.channel,DWT.seconds,DWT.levelWT,DWT.WavFamily);
         end
         
                         
-        function time = getTime(WD)
+        function time = getTime(DWT)
             time = WD.avgTime;
         end
     end
