@@ -8,6 +8,7 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
         stimulus_freqs;
         FreqSamp;
         NumHarm;
+        allFeatures;
     end
     methods (Access = public)
         function CCA = CCA(sti_f,chans,fs,numH)
@@ -18,6 +19,7 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
                 CCA.channel = chans;
                 CCA.FreqSamp = fs;
                 CCA.NumHarm = numH;
+                CCA.allFeatures = 0;
             end
         end
         
@@ -29,14 +31,28 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
             numTrials = length(CCA.trials);
             for i=1:numTrials
                 data = CCA.trials{i}.signal(CCA.channel,:);
-                features=NaN*ones(NumStim,1);
-                for j=1:NumStim
-                    %                     [wx1,wy1,r1] = CCA.cca(data,refSignals(:,:,j));
-                    [wx1,wy1,r1] = canoncorr(data',refSignals(:,:,j)');
-                    features(j) = max(r1);
+                if(CCA.allFeatures == 1)
+                    features=NaN*ones(NumStim,min(rank(data),CCA.NumHarm*2));
+                    for j=1:NumStim
+                        [wx1,wy1,r1] = canoncorr(data',refSignals(:,:,j)');
+                        features(j,:) = r1;
+                    end
+                    tempfeatures = features(1,:);
+                    for j=2:NumStim
+                        tempfeatures = horzcat(tempfeatures,features(j,:));
+                    end
+                    instances(i,:) = tempfeatures(:);
+                    labels(i,1) = floor(CCA.trials{i}.label);
+                else
+                    features=NaN*ones(NumStim,1);
+                    for j=1:NumStim
+                        %                     [wx1,wy1,r1] = CCA.cca(data,refSignals(:,:,j));
+                        [wx1,wy1,r1] = canoncorr(data',refSignals(:,:,j)');
+                        features(j) = max(r1);
+                    end
+                    instances(i,:) = features(:);
+                    labels(i,1) = floor(CCA.trials{i}.label);
                 end
-                instances(i,:) = features(:);
-                labels(i,1) = floor(CCA.trials{i}.label);
             end
             unique(labels)
             if (sum(unique(labels)) > 40)
