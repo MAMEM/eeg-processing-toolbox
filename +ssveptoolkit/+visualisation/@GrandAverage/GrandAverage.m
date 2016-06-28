@@ -21,12 +21,12 @@ classdef GrandAverage < handle
             for i=1:length(uniqlabels)
                 mat = ssveptoolkit.util.Trial.trialsCellToMatForLabel(GA.trials,uniqlabels(i));
                 ga = mean(mat,3);
-                plots{i} = ga(channel,:);
+                plots{i} = ga(channel,2000:end);
             end
             hold on;
             ms = -200:3.8961:999;
             for i=1:length(uniqlabels);
-                plot(ms,plots{i});
+                plot(plots{i});
             end
             ylabel('Amplitude (uV)');
             xlabel('Time (ms)');

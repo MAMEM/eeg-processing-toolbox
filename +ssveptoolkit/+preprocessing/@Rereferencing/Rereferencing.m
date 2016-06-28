@@ -42,4 +42,3 @@ classdef Rereferencing < ssveptoolkit.preprocessing.PreprocessingBase
     end
     
 end
-
