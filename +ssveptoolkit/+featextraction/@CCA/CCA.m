@@ -143,4 +143,3 @@ classdef CCA < ssveptoolkit.featextraction.PSDExtractionBase%FeatureExtractionBa
     end
     
 end
-

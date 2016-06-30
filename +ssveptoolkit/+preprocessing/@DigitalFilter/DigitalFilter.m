@@ -47,4 +47,3 @@ classdef DigitalFilter < ssveptoolkit.preprocessing.PreprocessingBase
     end
     
 end
-

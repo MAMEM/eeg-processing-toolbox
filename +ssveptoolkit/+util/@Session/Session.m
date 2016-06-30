@@ -28,6 +28,7 @@ classdef Session < handle
         trials = {}; % Trials of the loaded sessions.
         filt; % Filter to be applied when data is loaded
         sessions; % Filenames of the dataset
+        errpSessions;
         subjectids; % The subject ids corresponding to the loaded trials
         sessionids;
         skipSamples; % Number of samples to skip, at the beginning of each Trial
@@ -231,6 +232,15 @@ classdef Session < handle
             S.sessions{4,9,1} = 's9';
             S.sessions{4,10,1} = 's10';
             
+            S.errpSessions{1,1} = 'EEG_s1.mat';
+            S.errpSessions{1,2} = 'EEG_s2.mat';
+            S.errpSessions{1,3} = 'EEG_s3.mat';
+            S.errpSessions{1,4} = 'EEG_s4.mat';
+            S.errpSessions{1,5} = 'EEG_s5.mat';
+            S.errpSessions{1,6} = 'EEG_s6.mat';
+            S.errpSessions{1,7} = 'EEG_s7.mat';
+            S.errpSessions{1,8} = 'EEG_s8.mat';
+            
             S.skipSamples = 0;
             S.subjectids = [];
             S.sessionids = [];
@@ -280,6 +290,7 @@ classdef Session < handle
                 numTrials = numTrials +1;
             end
         end
+
         function S = loadTestSCCN(S,subjectid,signal)
             [x,y,z,zz] = size(signal);
             numTrials = length(S.trials) + 1;
@@ -292,6 +303,55 @@ classdef Session < handle
                 end 
             end
         end
+
+        
+        function S = loadERRPAll(S,range,notch,bp)
+            [~,numSessions] = size(S.errpSessions);
+            for i=1:numSessions
+                if nargin==1
+                    S.loadERRPSession(i);
+                else
+                    S.loadERRPSession(i,range,notch,bp);
+                end
+            end
+                
+        end
+        
+        function S = loadERRPSession(S,session,range,notch,bp)
+            samplingRate = 256;
+            if(nargin<3)
+                range = [-200,1000];
+            end
+            xstart = round(range(1)*samplingRate/1000)-2000;
+            xend = round(range(2)*samplingRate/1000);
+            load(S.errpSessions{1,session});
+%             for i=1:16
+%                 EEG.signal(:,i) = filter(notch,EEG.signal(:,i));
+%                 EEG.signal(:,i) = filtfilt(bp.Numerator,1,EEG.signal(:,i));
+%             end
+            events = {'correct_movement', 'error_movement'};
+            numTrials = length(S.trials) + 1;
+            for ev=1:length(events)
+                idxev = find(strcmp(EEG.events.name, events{ev}));
+                epochs.(events{ev}) = zeros(length(xstart:xend), size(EEG.signal,2), length(idxev));
+                for i=1:length(idxev)
+                    epochs.(events{ev})(:,:,i) = EEG.signal(EEG.events.position(idxev(i))+xstart:EEG.events.position(idxev(i))+xend,:);
+                end
+                GrandAverages.(events{ev}) = mean(epochs.(events{ev}),3);
+            end
+            [~,~,numCorrect] = size(epochs.correct_movement);
+            [~,~,numError] = size(epochs.error_movement);
+            for i=1:numCorrect
+                S.trials{numTrials} = ssveptoolkit.util.Trial(squeeze(epochs.correct_movement(:,:,i))',1,samplingRate,session,1);
+                numTrials = numTrials + 1;
+            end
+            for i=1:numError
+                S.trials{numTrials} = ssveptoolkit.util.Trial(squeeze(epochs.error_movement(:,:,i))',2,samplingRate,session,1);
+                numTrials = numTrials + 1;
+            end
+        end
+        
+
         function S = loadSubjectSession(S,experiment,subject,session)
             %loads all trials for a specific session
             %
@@ -346,6 +406,7 @@ classdef Session < handle
             close(h);
         end
         
+
         function S = clearData(S)
             %clears loaded data
             S.trials = {};

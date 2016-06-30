@@ -32,5 +32,38 @@ classdef Trial < handle
         end
     end
     
+    methods (Static)
+        function trialsMat = trialsCellToMat(trials)
+            numTrials = length(trials);
+            for i=1:numTrials
+                labels(i) = trials{i}.label;
+            end
+            numLabels = length(unique(labels));
+            [numChannels, numSamples] = size(trials{1}.signal);
+            trialsMat = zeros(numChannels,numSamples,numTrials,numLabels);
+            for i=1:numTrials
+                trialsMat(:,:,i,trials{i}.label) = trials{i}.signal;
+            end
+        end
+        
+        function trialsMat = trialsCellToMatForLabel(trials,label)
+            labels = ssveptoolkit.util.Trial.getLabelsVectorForTrials(trials);
+            numTrialsForLabel = sum(labels==label);
+            [numChannels, numSamples] = size(trials{1}.signal);
+            trialsMat = zeros(numChannels,numSamples,numTrialsForLabel);
+            count = 0;
+            for i=find(labels==label)
+                count = count + 1;
+                trialsMat(:,:,count) = trials{i}.signal;
+            end
+        end
+        function labels = getLabelsVectorForTrials(trials)
+            numTrials = length(trials);
+            for i=1:numTrials
+                labels(i) = trials{i}.label;
+            end
+        end
+    end
+    
 end
 
