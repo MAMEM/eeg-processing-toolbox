@@ -322,12 +322,16 @@ classdef Session < handle
             if(nargin<3)
                 range = [-200,1000];
             end
-            xstart = round(range(1)*samplingRate/1000)-2000;
+            xstart = round(range(1)*samplingRate/1000)-1500;
             xend = round(range(2)*samplingRate/1000);
             load(S.errpSessions{1,session});
 %             for i=1:16
-%                 EEG.signal(:,i) = filter(notch,EEG.signal(:,i));
+% %                 EEG.signal(:,i) = filter(notch,EEG.signal(:,i));
+% 
 %                 EEG.signal(:,i) = filtfilt(bp.Numerator,1,EEG.signal(:,i));
+% %                 EEG.signal(:,i) = filtfilt(bp.sosMatrix,bp.ScaleValues,EEG.signal(:,i));
+%                 
+% %                 EEG.signal(:,i) = filter(bp,EEG.signal(:,i));
 %             end
             events = {'correct_movement', 'error_movement'};
             numTrials = length(S.trials) + 1;
