@@ -21,7 +21,7 @@ classdef GrandAverage < handle
             for i=1:length(uniqlabels)
                 mat = ssveptoolkit.util.Trial.trialsCellToMatForLabel(GA.trials,uniqlabels(i));
                 ga = mean(mat,3);
-                plots{i} = ga(channel,2000:end);
+                plots{i} = ga(channel,:);
             end
             hold on;
             ms = -200:3.8961:999;
@@ -32,6 +32,14 @@ classdef GrandAverage < handle
             xlabel('Time (ms)');
             title(sprintf('Channel: %d',channel));
             hold off;
+        end
+        
+        function GA = plotGrandAverageForChannelAndLabel(GA,channel,label)
+            close all;
+            labels = ssveptoolkit.util.Trial.getLabelsVectorForTrials(GA.trials);
+            mat = ssveptoolkit.util.Trial.trialsCellToMatForLabel(GA.trials,label);
+            ga = mean(mat,3);
+            plot(ga(channel,:));
         end
             
     end
