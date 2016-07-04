@@ -348,10 +348,15 @@ classdef Session < handle
             for i=1:numCorrect
                 S.trials{numTrials} = ssveptoolkit.util.Trial(squeeze(epochs.correct_movement(:,:,i))',1,samplingRate,session,1);
                 numTrials = numTrials + 1;
+                S.subjectids = [S.subjectids session];
+                S.sessionids = [S.sessionids 1];
+                
             end
             for i=1:numError
                 S.trials{numTrials} = ssveptoolkit.util.Trial(squeeze(epochs.error_movement(:,:,i))',2,samplingRate,session,1);
                 numTrials = numTrials + 1;
+                S.subjectids = [S.subjectids session];
+                S.sessionids = [S.sessionids 1];
             end
         end
         
