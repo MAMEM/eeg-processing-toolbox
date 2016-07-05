@@ -318,6 +318,7 @@ classdef Session < handle
                 end
             end
         end
+        
         function S = loadAll(S,experiment)
             %loads everything
             [~,l,~] = size(S.sessions);
@@ -327,6 +328,32 @@ classdef Session < handle
                 S.loadSubject(experiment,i);
             end
             close(h);
+        end
+        
+        function S = loadGeorgeMOTO(S,session)
+            load(session);
+            numDins = length(DIN_1);
+            sum = 0;
+            right = [];
+            left = [];
+            for i=1:numDins
+                if(isequal(DIN_1{1,i},'D223'))
+                    right = [right DIN_1{4,i}];
+                elseif(isequal(DIN_1{1,i},'D191'))
+                    left = [left DIN_1{4,i}];
+                end
+            end
+            xright = zeros(80,257,1250);
+            xleft  = zeros(80,257,1250);
+            numTrials = length(S.trials) + 1;
+            for i=1:80
+                rightSignal = eeg(:,right(i):right(i)+1249);
+                leftSignal = eeg(:,left(i):left(i) +1249);
+                S.trials{numTrials} = ssveptoolkit.util.Trial(rightSignal,1,250,1,1,ssveptoolkit.util.Trial.MI);
+                numTrials = numTrials + 1;
+                S.trials{numTrials} = ssveptoolkit.util.Trial(leftSignal,2,250,1,1,ssveptoolkit.util.Trial.MI);
+                numTrials = numTrials + 1;
+            end
         end
         
         function S = clearData(S)
