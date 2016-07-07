@@ -30,6 +30,7 @@ classdef Trial < handle
                 T.type = type;
             end
         end
+        
     end
     
 end
