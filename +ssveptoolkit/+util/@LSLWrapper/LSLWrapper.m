@@ -6,10 +6,14 @@ classdef LSLWrapper < handle
         lib;
         datastreaminfo;
         datainlet;
+        dataoutlet;
         eventstreaminfo;
         eventinlet;
+        eventoutlet;
         preprocessing;
         featextraction;
+        results;
+        trials;
         classification; %pre-trained object required
     end
     
@@ -40,9 +44,37 @@ classdef LSLWrapper < handle
             else
                 error('Cannot resolve event stream');
             end
+            eventoutletInfo = lsl_streaminfo(LSL.lib,'CommandStream','Markers',1,0,'cf_int32','myuniquesourceid23442');
+            LSL.eventoutlet = lsl_outlet(eventoutletInfo);
             LSL.streamsOK = 1;
         end
-        
+        function LSL = runExperiment(LSL)
+            if(LSL.streamsOK ~=1)
+                error('error: Did you call \"resolveStreams\"?');
+            end
+            strings = {'abstract','concept','objectives','structure','consortium'};
+            labels = {4,2,3,5,1,2,5,4,2,3,1,5,4,3,2,4,1,2,5,3,4,1,3,1,3};
+            [12 6.66 7.5 8.57 10];
+            8.57,6.66,7.5,10,12
+            %structure,concept,objectives,consortiu,abstract
+            LSL.trials = {};
+            [y,Fs] = audioread('beep-07.wav');
+            tts('get ready');
+            pause(10);
+            for i=1:length(labels)
+                tts(strings{labels{i}});
+                pause(1);
+                sound(y,Fs);
+                pause(5);
+                
+                chunk = LSL.datainlet.pull_chunk;
+                trial = ssveptoolkit.util.Trial(chunk,0,128,0,0);
+                LSL.trials{length(LSL.trials)+1} = trial;
+                tts('ok');
+                pause(4);
+            end
+        end
+                
         function LSL = run(LSL,eventStopCode)
             if (LSL.streamsOK ~=1)
                 error('error: Did you call \"resolveStreams\" ?');
@@ -51,6 +83,9 @@ classdef LSLWrapper < handle
                 sample = LSL.eventinlet.pull_sample;
                 disp(['sample = ', num2str(sample)]);
                 if(sample==eventStopCode)
+%                     disp('Collecting signal...');
+                    pause(5);
+%                     disp('Processing...');
                     chunk = LSL.datainlet.pull_chunk;
                     trial = {ssveptoolkit.util.Trial(chunk,0,128,0,0)};
                     for i=1:length(LSL.preprocessing)
@@ -59,9 +94,14 @@ classdef LSLWrapper < handle
                     LSL.featextraction.trials = trial;
                     LSL.featextraction.extract;
                     [output, prob, rank] = LSL.classification.classifyInstance(LSL.featextraction.getInstances);
+                    result = 0;
+%                     plot(chunk')
                     rank
+                    LSL.results = [LSL.results,output];
                     disp(['classif output = ', num2str(output)]);
-                    disp(['prob = ', num2str(prob)]);
+%                     LSL.eventoutlet.push_sample(output);
+                    LSL.eventoutlet.push_sample(output-1);
+%                     disp(['prob = ', num2str(prob)]);
                 end
             end
         end
