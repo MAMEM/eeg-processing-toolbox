@@ -1,6 +1,6 @@
-# ssvep-eeg-processing-toolbox
+# eeg-processing-toolbox
 ## Description
-This software is released as part of the EU-funded research project [MAMEM](https://www.mamem.eu/) for supporting experimentation in EEG signals generated using a SSVEP-based protocol.
+This software is released as part of the EU-funded research project [MAMEM](https://www.mamem.eu/) for supporting experimentation in EEG signals.
 It follows a modular architecture that allows the fast execution of experiments of different configurations with minimal adjustments of the code. The experimental pipeline consists of the **Experimenter** class which acts as a wrapper of five more underlying parts;
 
 - The **Session** object: Used for loading the dataset and segmenting the signal according to the periods that the SSVEP stimuli were presented during the experiment. The signal parts are also annotated with a label according to the stimulus frequency.
@@ -10,8 +10,7 @@ It follows a modular architecture that allows the fast execution of experiments 
 - The **Classification** object: Trains a classification model for predicting the label of unknown samples.
 
 ## Instructions
-To use this framework you must have included the published [dataset files](http://www.mamem.eu/results/datasets/) in your Matlab path.
-The usage of some classes of the framework is also limited by the following requirements.
+The usage of some classes of the framework is limited by the following requirements.
 
 | Package | Class | Description |
 | --- | --- | --- |
@@ -23,6 +22,12 @@ The usage of some classes of the framework is also limited by the following requ
 | classification | MLTboxMulticlass | Requires Matlab version r2015a or newer |
 | classification | MLDA | Requires Matlab version r2014 or newer |
 | util | LSLWrapper | Requires the [Labstreaminglayer](https://github.com/sccn/labstreaminglayer) library|
+
+Some examples are available that are based on the datasets that can be found below.
+- exampleDefault, performs a simple experiment on Dataset I & II
+- exampleOptimal, performs an experiment with the optimal settings for Dataset I & II
+- exampleEpoc, performs an experiment for the dataset that was recorded with an EPOC device (Dataset III)
+- exampleLSL, an example on how to perform online classification of EEG signals with the help of the [Labstreaminglayer](https://github.com/sccn/labstreaminglayer) interface for Matlab.
 
 ## Datasets
 
