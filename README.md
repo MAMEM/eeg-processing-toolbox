@@ -1,4 +1,4 @@
-# EEG-processing-toolbox
+# EEG processing toolbox
 ## Description
 This software is released as part of the EU-funded research project [MAMEM](https://www.mamem.eu/) for supporting experimentation in EEG signals.
 It follows a modular architecture that allows the fast execution of experiments of different configurations with minimal adjustments of the code. The experimental pipeline consists of the **Experimenter** class which acts as a wrapper of five more underlying parts;
