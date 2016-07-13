@@ -1,4 +1,4 @@
-classdef Dummy < ssveptoolkit.classification.ClassifierBase
+classdef MaxChooser < ssveptoolkit.classification.ClassifierBase
     
     properties (Constant)
 
@@ -9,18 +9,18 @@ classdef Dummy < ssveptoolkit.classification.ClassifierBase
     end
     
     methods (Access = public)
-        function Dummy =Dummy(instanceSet)
+        function MaxChooser =MaxChooser(instanceSet)
             if nargin > 0
-                Dummy.instanceSet = instanceSet;
+                MaxChooser.instanceSet = instanceSet;
             end
            
         end
         
-        function Dummy = build(Dummy)
+        function MaxChooser = build(MaxChooser)
             
         end
         
-        function [output, probabilities, ranking] = classifyInstance(Dummy,instance)
+        function [output, probabilities, ranking] = classifyInstance(MaxChooser,instance)
             
             dd_ins=instance;
             N = size(instance,1);
@@ -35,16 +35,16 @@ classdef Dummy < ssveptoolkit.classification.ClassifierBase
             ranking=zeros(N,1);
         end
         
-        function Dummy = reset(Dummy)
+        function MaxChooser = reset(MaxChooser)
             %delete all stored models           
         end
         
-        function configInfo = getConfigInfo(Dummy)
-            configInfo = sprintf('Dummy');
+        function configInfo = getConfigInfo(MaxChooser)
+            configInfo = sprintf('MaxChooser');
         end
         
                         
-        function time = getTime(Dummy)
+        function time = getTime(MaxChooser)
             time = 0;
         end
                 

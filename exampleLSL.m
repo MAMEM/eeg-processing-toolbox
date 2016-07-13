@@ -8,8 +8,8 @@ datastream = 'EMOTIVStream';
 eventstream = 'MyEventStream';
 % eventstream = 'openvibeMarkers';
 bufferSize = 5; %in seconds
-stopCode = 32779;
-% stopCode = 700;
+% stopCode = 32779;
+stopCode = 700;
 sti_f = [12 10 8.57 7.50 6.66];
 % sti_f = [12 6.66 7.5 8.57 10];
 
@@ -33,4 +33,4 @@ lsl.resolveStreams(datastream,bufferSize,eventstream);
 disp('waiting for 5 seconds');
 pause(5); 
 disp('ready');
-lsl.run(stopCode);
+lsl.runSSVEP(stopCode);
