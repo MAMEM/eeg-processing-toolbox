@@ -126,6 +126,18 @@ classdef LSLWrapper < handle
                 %                 pause(0.01)
             end
         end
+        
+        function streams = findStreams(LSL,timeout)
+            streams = {};
+            if(nargin>1)
+                allInfo = lsl_resolve_all(LSL.lib,timeout);
+            else
+                allInfo = lsl_resolve_all(LSL.lib);
+            end
+            for i=1:length(allInfo)
+                streams{i} = allInfo{i}.name;
+            end
+        end
         function LSL = runSSVEP(LSL,eventStopCode)
             if (LSL.streamsOK ~=1)
                 error('error: Did you call \"resolveStreams\" ?');
