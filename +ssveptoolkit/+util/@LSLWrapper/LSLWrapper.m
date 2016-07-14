@@ -116,6 +116,7 @@ classdef LSLWrapper < handle
                 maxBuff = max(buffer(buffer~=0));
                 plot(timestampBuffer,buffer);
                 axis([ timestampBuffer(1), timestampBuffer(end)+1, minBuff , maxBuff+1 ]);
+                xlabel('Seconds');
                 %                 axis([ timestampBuffer(1), timestampBuffer(end), minBuff , maxBuff ]);
                 grid
                 
