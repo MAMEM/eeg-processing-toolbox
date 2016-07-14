@@ -4,7 +4,7 @@ addpath liblsl-Matlab\;
 addpath liblsl-Matlab\bin\;
 addpath liblsl-Matlab\mex\;
 %Initialize LSL Wrapper class
-lsl = ssveptoolkit.util.LSLWrapper;
+lsl = eegtoolkit.util.LSLWrapper;
 %Declare the name of the stream that will contain the EEG data
 datastream = 'EMOTIVStream';
 %Declare the name of the stream through which the events will be
@@ -22,12 +22,12 @@ eventCode = 100;
 stimulus_frequencies = [12 10 8.57 7.5 6.66];
  
 %Filtering the eeg data
-% df = ssveptoolkit.preprocessing.DigitalFilter;
+% df = eegtoolkit.preprocessing.DigitalFilter;
 % %This filter was created via the 'filterbuilder' method of Matlab
 % df.filt = Hbp; 
  
 %Indicate which channels of the data (different electrodes) will be used
-ss = ssveptoolkit.preprocessing.SampleSelection;
+ss = eegtoolkit.preprocessing.SampleSelection;
 %We will use all EPOC channels for this example
 channels = 1:1:14;
 ss.channels = channels;
@@ -40,11 +40,11 @@ samplingRate = 128;
 numberOfHarmonics = 4;
 %Initialize the Canonical Correlation Analysis class for the stimuli
 %recognition
-cca = ssveptoolkit.featextraction.CCA(stimulus_frequencies,channels,samplingRate,numberOfHarmonics);
+cca = eegtoolkit.featextraction.CCA(stimulus_frequencies,channels,samplingRate,numberOfHarmonics);
  
 %Simple classifier that uses the max value of the features to assign the
 %label
-maxC = ssveptoolkit.classification.MaxChooser;
+maxC = eegtoolkit.classification.MaxChooser;
  
 %Assign the algorithm configuration to the LSL Wrapper class
 lsl.preprocessing = {ss};

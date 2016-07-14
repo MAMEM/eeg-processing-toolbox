@@ -1,31 +1,31 @@
 % Load the data. Call this once outside of the script so you dont have to
 % load the data again and again. Make sure the dataset is included in your
 % Matlab path
-% sess = ssveptoolkit.util.Session;
+% sess = eegtoolkit.util.Session;
 % sess.loadAll(1); %Loads dataset I
 
 %Load a filter from the samples
 load filters/filt_IIRChebI;
 
 %Extract features with the pwelch method
-extr = ssveptoolkit.featextraction.PWelch;
+extr = eegtoolkit.featextraction.PWelch;
 
-refer = ssveptoolkit.preprocessing.Rereferencing;
+refer = eegtoolkit.preprocessing.Rereferencing;
 %Subtract the mean from the signal
 refer.meanSignal = 1;
 
-ss = ssveptoolkit.preprocessing.SampleSelection;
+ss = eegtoolkit.preprocessing.SampleSelection;
 ss.sampleRange = [1,1250]; % Specify the sample range to be used for each Trial
 ss.channels = 126; % Specify the channel(s) to be used
 
-df = ssveptoolkit.preprocessing.DigitalFilter; % Apply a filter to the raw data
+df = eegtoolkit.preprocessing.DigitalFilter; % Apply a filter to the raw data
 df.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function
 
 %Configure the classifier
-classif = ssveptoolkit.classification.LIBSVMFast;
+classif = eegtoolkit.classification.LIBSVMFast;
 
 %Set the Experimenter wrapper class
-experiment = ssveptoolkit.experiment.Experimenter;
+experiment = eegtoolkit.experiment.Experimenter;
 experiment.session = sess;
 % Add the preprocessing steps (order is taken into account)
 experiment.preprocessing = {ss,refer,df};
