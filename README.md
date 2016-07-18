@@ -18,7 +18,7 @@ The usage of some classes of the framework is limited by the following requireme
 | aggregation | Vlad | Requires the [vlfeat](http://www.vlfeat.org/) library
 | aggregation | Fisher | Requires the [vlfeat](http://www.vlfeat.org/) library
 | featselection | FEAST | Requires the [FEAST](http://mloss.org/software/view/386/) library (download link is next to "Archive" somewhere in the middle of the page) and MIToolbox (included in the FEAST zip file) |
-| classification | L1MCCA | Required the [tensor] (http://www.sandia.gov/~tgkolda/TensorToolbox/index-2.6.html) toolbox|
+| classification | L1MCCA | Requires the [tensor] (http://www.sandia.gov/~tgkolda/TensorToolbox/index-2.6.html) toolbox|
 | classification | LIBSVMFast | Requires the [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) library|
 | classification | MLTboxMulticlass | Requires Matlab version r2015a or newer |
 | classification | MLDA | Requires Matlab version r2014 or newer |
