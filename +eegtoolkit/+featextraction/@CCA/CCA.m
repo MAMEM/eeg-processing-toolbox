@@ -54,15 +54,15 @@ classdef CCA < eegtoolkit.featextraction.PSDExtractionBase%FeatureExtractionBase
                     labels(i,1) = floor(CCA.trials{i}.label);
                 end
             end
-            unique(labels)
-            if (sum(unique(labels)) > 40)
+%             unique(labels)
+            if (sum(unique(labels)) == 41)
                 labels(labels==6)=1;
                 labels(labels==7)=2;
                 labels(labels==8)=3;
                 labels(labels==9)=4;
                 labels(labels==11)=5;
             end
-            unique(labels)
+%             unique(labels)
             CCA.instanceSet = eegtoolkit.util.InstanceSet(instances, labels);
         end
         
