@@ -218,6 +218,20 @@ classdef Session < handle
             S.sessions{3,11,3} = 'U011c';
             S.sessions{3,11,4} = 'U011d';
             S.sessions{3,11,5} = 'U011e';
+       
+            %SCCN dataset
+            S.sessions{4,1,1} = 's1';
+            S.sessions{4,2,1} = 's2';
+            S.sessions{4,3,1} = 's3';
+            S.sessions{4,4,1} = 's4';
+            S.sessions{4,5,1} = 's5';
+            S.sessions{4,6,1} = 's6';
+            S.sessions{4,7,1} = 's7';
+            S.sessions{4,8,1} = 's8';
+            S.sessions{4,9,1} = 's9';
+            S.sessions{4,10,1} = 's10';
+            
+            
             
             S.skipSamples = 0;
             S.subjectids = [];
@@ -269,8 +283,21 @@ classdef Session < handle
             end
         end
         
+        function S = loadTestSCCN(S,subjectid,signal)
+            [x,y,z,zz] = size(signal);
+            numTrials = length(S.trials) + 1;
+            for i=1:x
+                for j=1:zz
+                    S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(signal(i,:,:,j)),i,256,subjectid,1);
+                    numTrials = numTrials+1;
+                    S.subjectids = [S.subjectids subjectid];
+                    S.sessionids = [S.sessionids j];
+                end
+            end
+        end
+        
         function S = loadSubjectSession(S,experiment,subject,session)
-            %loads all trials for a specific session
+             %loads all trials for a specific session
             %
             %Example:
             %   session.loadSubjectSession(1,2);
@@ -280,18 +307,25 @@ classdef Session < handle
                 S.loadEpocData(experiment,subject,session);
             else
                 load(S.sessions{experiment,subject,session});
-                signal = eval('eeg');
-                if(exist('labels'))
-                    curTrials = S.split(signal, DIN_1,subject,session,labels);
+                if(exist('sub_i'))
+                    %load
+                    signal = eval('eeg');
+                    S.loadTestSCCN(subject,signal);
                 else
-                    curTrials = S.split(signal, DIN_1, subject,session);
-                end
-                numTrials = length(S.trials) + 1;
-                for i=1:length(curTrials)
-                    S.trials{numTrials} = curTrials{i};
-                    numTrials = numTrials + 1;
+                    signal = eval('eeg');
+                    if(exist('labels'))
+                        curTrials = S.split(signal, DIN_1,subject,session,labels);
+                    else
+                        curTrials = S.split(signal, DIN_1, subject,session);
+                    end
+                    numTrials = length(S.trials) + 1;
+                    for i=1:length(curTrials)
+                        S.trials{numTrials} = curTrials{i};
+                        numTrials = numTrials + 1;
+                    end
                 end
             end
+
         end
         function S = loadSubject(S,experiment,subject)
             %loads all trials for a specific subject

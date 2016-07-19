@@ -24,7 +24,8 @@
 classdef Experimenter < handle
     properties (Constant)
         EVAL_METHOD_LOOCV = 0; % Leave One Out Cross-Validation
-        EVAL_METHOD_LOSO = 1; % Leave One Subject Out 
+        EVAL_METHOD_LOSO = 1; % Leave One Subject Out
+        EVAL_METHOD_LOBO = 2; 
     end
     
     properties (Access = public)
@@ -36,7 +37,9 @@ classdef Experimenter < handle
         evalMethod; % The evaluation method
         classification; % A classifier object
         results; % A cell array containing objects of the 'ResultEvaluator' class.
+        trainresults;
         subjectids;
+        sessionids;
     end
     
     methods
@@ -51,6 +54,7 @@ classdef Experimenter < handle
             % Runs an experiment
             E.checkCompatibility;
             E.subjectids = E.session.subjectids;
+            E.sessionids = E.session.sessionids;
             trials = {};
             for i=1:length(E.session.trials)
                 trials{i} = eegtoolkit.util.Trial(E.session.trials{i}.signal,...
@@ -105,6 +109,13 @@ classdef Experimenter < handle
                             E.leaveOneSubjectOut(subjects(i), instanceSet);
                         end
                         
+                    end
+                case E.EVAL_METHOD_LOBO
+                    sessions = unique(E.sessionids);
+                    instanceSet = E.classification.instanceSet;
+                    for i=1:length(sessions)
+                        fprintf('leaving session #%d out\n', i);
+                        E.leaveOneSessionOut(sessions(i), instanceSet);
                     end
                 otherwise
                     error ('eval method not set or invalid');
@@ -251,6 +262,19 @@ classdef Experimenter < handle
             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+        end
+        
+        function resultSet = leaveOneSessionOut(E, sessionId, instanceSet)
+            testingset = find(E.sessionids == sessionId);
+            trainset = find(E.sessionids ~= sessionId);
+            E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+            E.classification.build();
+            [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+            [trainoutputLabels, trainoutputScores, trainoutputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(trainset));
+            resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+            trainresultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(trainset), trainoutputLabels, trainoutputScores, trainoutputRanking);
+            E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+            E.trainresults{length(E.trainresults)+1} = eegtoolkit.experiment.ResultEvaluator(trainresultSet);
         end
         
         function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)
