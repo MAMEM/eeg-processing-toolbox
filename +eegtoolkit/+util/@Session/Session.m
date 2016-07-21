@@ -21,7 +21,6 @@
 classdef Session < handle
     
     properties (Constant)
-        SAMPLING_RATE = 250; %Sampling Rate of the sessions
         THRESHOLD_SPLIT_MILLIS = 2000; %Threshold for splitting the trials based on DIN data
     end
     properties (Access = public)
@@ -30,31 +29,23 @@ classdef Session < handle
         sessions; % Filenames of the dataset
         subjectids; % The subject ids corresponding to the loaded trials
         sessionids;
-        skipSamples; % Number of samples to skip, at the beginning of each Trial
     end
     
-    properties (Access = private)
-        rest; % Experimental
-    end
-    
+    %DATASETS
+    %1. SSVEP Dataset I (SINGLE)
+    %2. SSVEP Dataset II (MULTI)
+    %3. SSVEP Dataset III (EPOC-MULTI)
+    %4. SSVEP Dataset SCCN
+    %5. ERRP Dataset 
+    %6. MI Dataset
     methods (Access = public)
-        function S = Session(filt, rest)
+        function S = Session()
             %S = eegtoolkit.util.Session();
             %Constructs a session object
             %
             %S = eegtoolkit.util.Session(filt);
             %Constructs a session object. A filter will applied to all
             %loaded trials
-            if(nargin==1)
-                S.filt = filt;
-                S.rest = 0;
-            elseif nargin == 2
-                S.filt = filt;
-                S.rest = rest;
-            else
-                S.rest = 0;
-                S.filt = 0;
-            end
             %Dataset I
             S.sessions{1,1,1} = 'S001a';
             S.sessions{1,1,2} = 'S001b';
@@ -231,102 +222,36 @@ classdef Session < handle
             S.sessions{4,9,1} = 's9';
             S.sessions{4,10,1} = 's10';
             
+            %ERRP dataset
+            S.sessions{5,1,1} = 'EEG_s1.mat';
+            S.sessions{5,2,1} = 'EEG_s2.mat';
+            S.sessions{5,3,1} = 'EEG_s3.mat';
+            S.sessions{5,4,1} = 'EEG_s4.mat';
+            S.sessions{5,5,1} = 'EEG_s5.mat';
+            S.sessions{5,6,1} = 'EEG_s6.mat';
+            S.sessions{5,7,1} = 'EEG_s7.mat';
+            S.sessions{5,8,1} = 'EEG_s8.mat';
+            
+            S.sessions{6,1,1} = 'dataset_BCIcomp1.mat';
+            
+            %MI dataset
+%             S.sessions{6,1,1} = ;
             
             
-            S.skipSamples = 0;
             S.subjectids = [];
             S.sessionids = [];
         end
-        function S = loadEpocData(S,experiment,subject,session)
-            %load part 1
-            load(strcat(S.sessions{experiment,subject,session},'i'));
-            events = eval('events');
-            marks = events(events(:,2)==32779,3);
-            stops = events(events(:,2)==32780,3);
-            numTrials = length(S.trials) + 1;
-            labels = {4,2,3,5,1,2,5,4,2,3,1,5};
-            for i=1:length(marks)
-                signal = eeg(:,marks(i):stops(i) -1);
-                label = labels{i};
-                S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,128,subject,session,eegtoolkit.util.Trial.SSVEP);
-                numTrials = numTrials + 1;
-                S.subjectids = [S.subjectids subject];
-                S.sessionids = [S.sessionids session];
+        function S = loadAll(S,experiment)
+            %loads everything
+            [~,l,~] = size(S.sessions);
+            h = waitbar(0,'Loading...');
+            for i=1:l
+                waitbar(i/l,h,'Loading...');
+                S.loadSubject(experiment,i);
             end
-            %load part 2
-            load(strcat(S.sessions{experiment,subject,session},'ii'));
-            events = eval('events');
-            marks = events(events(:,2)==32779,3);
-            stops = events(events(:,2)==32780,3);
-            numTrials = length(S.trials) + 1;
-            labels = {4,3,2,4,1,2,5,3,4,1,3,1,3};
-            for i=1:length(marks)
-                signal = eeg(:,marks(i):stops(i) -1);
-                label = labels{i};
-                S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,128,subject,session,eegtoolkit.util.Trial.SSVEP);
-                numTrials = numTrials + 1;
-                S.subjectids = [S.subjectids subject];
-                S.sessionids = [S.sessionids session];
-            end
-        end
-        function S = loadEpoc(S,filename)
-            load(filename);
-            events = eval('events');
-            marks = events(events(:,2)==32779,3);
-            stops = events(events(:,2)==32780,3);
-            numTrials = length(S.trials) + 1;
-            for i=1:length(marks)
-                signal = eeg(:,marks(i):stops(i)-1);
-                label = labels{i};
-                S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,128,1,1,eegtoolkit.util.Trial.SSVEP);
-                numTrials = numTrials +1;
-            end
+            close(h);
         end
         
-        function S = loadTestSCCN(S,subjectid,signal)
-            [x,y,z,zz] = size(signal);
-            numTrials = length(S.trials) + 1;
-            for i=1:x
-                for j=1:zz
-                    S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(signal(i,:,:,j)),i,256,subjectid,1);
-                    numTrials = numTrials+1;
-                    S.subjectids = [S.subjectids subjectid];
-                    S.sessionids = [S.sessionids j];
-                end
-            end
-        end
-        
-        function S = loadSubjectSession(S,experiment,subject,session)
-             %loads all trials for a specific session
-            %
-            %Example:
-            %   session.loadSubjectSession(1,2);
-            %loads the 2nd session of the 1st subject
-            %
-            if(experiment==3)
-                S.loadEpocData(experiment,subject,session);
-            else
-                load(S.sessions{experiment,subject,session});
-                if(exist('sub_i'))
-                    %load
-                    signal = eval('eeg');
-                    S.loadTestSCCN(subject,signal);
-                else
-                    signal = eval('eeg');
-                    if(exist('labels'))
-                        curTrials = S.split(signal, DIN_1,subject,session,labels);
-                    else
-                        curTrials = S.split(signal, DIN_1, subject,session);
-                    end
-                    numTrials = length(S.trials) + 1;
-                    for i=1:length(curTrials)
-                        S.trials{numTrials} = curTrials{i};
-                        numTrials = numTrials + 1;
-                    end
-                end
-            end
-
-        end
         function S = loadSubject(S,experiment,subject)
             %loads all trials for a specific subject
             %
@@ -340,43 +265,144 @@ classdef Session < handle
                 end
             end
         end
-        function S = loadAll(S,experiment)
-            %loads everything
-            [~,l,~] = size(S.sessions);
-            h = waitbar(0,'Loading...');
-            for i=1:l
-                waitbar(i/l,h,'Loading...');
-                S.loadSubject(experiment,i);
+        function S = loadSubjectSession(S,experiment,subject,session)
+            %loads all trials for a specific session
+            %
+            %Example:
+            %   session.loadSubjectSession(1,2);
+            %loads the 2nd session of the 1st subject
+            %
+            switch(experiment)
+                case 1
+                    %Load Dataset I (SINGLE)
+                    load(S.sessions{experiment,subject,session});
+                    signal = eval('eeg');
+                    numTrials = length(S.trials) + 1;
+                    curTrials = S.split(signal,DIN_1,subject,session);
+                    for i=1:length(curTrials)
+                        S.trials{numTrials} = curTrials{i};
+                        numTrials = numTrials + 1;
+                    end
+                case 2
+                    %Load Dataset II (MULTI)
+                    load(S.sessions{experiment,subject,session});
+                    signal = eval('eeg');
+                    numTrials = length(S.trials) + 1;
+                    curTrials = S.split(signal,DIN_1,subject,session,labels);
+                    for i=1:length(curTrials)
+                        S.trials{numTrials} = curTrials{i};
+                        numTrials = numTrials + 1;
+                    end
+                case 3
+                    %Dataset III (EPOC-MULTI)
+                    SAMPLING_RATE = 128;
+                    load(strcat(S.sessions{experiment,subject,session},'i'));
+                    events = eval('events');
+                    marks = events(events(:,2)==32779,3);
+                    stops = events(events(:,2)==32780,3);
+                    numTrials = length(S.trials) + 1;
+                    labels = {4,2,3,5,1,2,5,4,2,3,1,5};
+                    for i=1:length(marks)
+                        signal = eeg(:,marks(i):stops(i) -1);
+                        label = labels{i};
+                        S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.SSVEP);
+                        numTrials = numTrials + 1;
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                    end
+                    %load part 2
+                    load(strcat(S.sessions{experiment,subject,session},'ii'));
+                    events = eval('events');
+                    marks = events(events(:,2)==32779,3);
+                    stops = events(events(:,2)==32780,3);
+                    numTrials = length(S.trials) + 1;
+                    labels = {4,3,2,4,1,2,5,3,4,1,3,1,3};
+                    for i=1:length(marks)
+                        signal = eeg(:,marks(i):stops(i) -1);
+                        label = labels{i};
+                        S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.SSVEP);
+                        numTrials = numTrials + 1;
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                    end
+                case 4
+                    %SCCN Dataset
+                    SAMPLING_RATE = 256;
+                    load(S.sessions{experiment,subject,session});
+                    [x,y,z,zz] = size(eeg);
+                    numTrials = length(S.trials) + 1;
+                    for i=1:x
+                        for j=1:zz
+                            S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(eeg(i,:,:,j)),i,SAMPLING_RATE,subject,j);
+                            numTrials = numTrials+1;
+                            S.subjectids = [S.subjectids subject];
+                            S.sessionids = [S.sessionids j];
+                        end
+                    end
+                case 5
+                    %ERRP Dataset
+                    SAMPLING_RATE = 256;                    
+                    %range of trial in milliseconds based on the stimulus
+                    %event
+                    range = [200,800];
+                    xstart = round(range(1)*SAMPLING_RATE/1000)-1500;
+                    xend = round(range(2)*SAMPLING_RATE/1000);
+                    load(S.sessions{experiment,subject,session});
+                    events = {'correct_movement', 'error_movement'};
+                    numTrials = length(S.trials) + 1;
+                    for ev=1:length(events)
+                        idxev = find(strcmp(EEG.events.name, events{ev}));
+                        epochs.(events{ev}) = zeros(length(xstart:xend), size(EEG.signal,2), length(idxev));
+                        for i=1:length(idxev)
+                            epochs.(events{ev})(:,:,i) = EEG.signal(EEG.events.position(idxev(i))+xstart:EEG.events.position(idxev(i))+xend,:);
+                        end
+                        GrandAverages.(events{ev}) = mean(epochs.(events{ev}),3);
+                    end
+                    [~,~,numCorrect] = size(epochs.correct_movement);
+                    [~,~,numError] = size(epochs.error_movement);
+                    for i=1:numCorrect
+                        S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(epochs.correct_movement(:,:,i))',1,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.ERRP);
+                        numTrials = numTrials + 1;
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        
+                    end
+                    for i=1:numError
+                        S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(epochs.error_movement(:,:,i))',2,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.ERRP);
+                        numTrials = numTrials + 1;
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                    end
+                case 6
+                    load(S.sessions{experiment,subject,session});
+                    [~,~,n] = size(x_train);
+                    numTrials = length(S.trials) + 1;
+                    for i=1:n
+                        signal = squeeze(x_train(:,:,i));
+                        label = y_train(i);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(signal',label,128,1,1,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
+                otherwise
+                    error('invalid experiment id');
             end
-            close(h);
         end
         
+
+
         function S = clearData(S)
             %clears loaded data
             S.trials = {};
             S.subjectids = [];
             S.sessionids = [];
         end
-        
-        function applyFilter(S, filt)
-            %apply a filter to the loaded data
-            %supports filter type that was build using 'filterbuilder'
-            h = waitbar(0,'Applying filter..');
-            for i=1:length(S.trials)
-                waitbar(i/length(S.trials),h,'Applying filter..');
-                [numchan,~] = size(S.trials{i}.signal)
-                for j=1:numchan
-                    S.trials{i}.signal(j,:) = filter(filt,S.trials{i}.signal(j,:));
-                end
-            end
-            close(h);
-        end
-        
-        
     end
     
     methods (Access = private)
         function trials = split(S, signal, dins, subjectid, session,labels)
+            SAMPLING_RATE = 250;
             timestamps = cell2mat(dins(2,:));
             samples = cell2mat(dins(4,:));
             [a numDins ]= size(dins);
@@ -424,30 +450,13 @@ classdef Session < handle
             i = 1;
             for i=1:numSplits
                 if(nargin>5)
-                    trials{i} = eegtoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), labels{i}, S.SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
+                    trials{i} = eegtoolkit.util.Trial(signal(:, ranges(i,1):ranges(i,2)), labels{i},SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
                     S.subjectids = [S.subjectids subjectid];
                     S.sessionids = [S.sessionids session];
                 else
-                    trials{i} = eegtoolkit.util.Trial(signal(:, (ranges(i,1)+S.skipSamples):ranges(i,2)), freqs(i), S.SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
+                    trials{i} = eegtoolkit.util.Trial(signal(:,ranges(i,1):ranges(i,2)), freqs(i), SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
                     S.subjectids = [S.subjectids subjectid];
                     S.sessionids = [S.sessionids session];
-                end
-            end
-            i = i +1;
-            if(S.rest > 0)
-                for i=i:(numSplits*2)
-                    trials{i} = eegtoolkit.util.Trial(signal(:,ranges(i-numSplits,1)-S.rest:ranges(i-numSplits,1)), -1, S.SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
-                    S.subjectids = [S.subjectids subjectid];
-                    S.sessionids = [S.sessionids session];
-                end
-            end
-            %filter the trials (if a filter is set)
-            if ~(S.filt==0)
-                for i=1:length(trials)
-                    [numchan, ~] = size(trials{i}.signal);
-                    for j=1:numchan
-                        trials{i}.signal(j,:) = filter(S.filt,trials{i}.signal(j,:));
-                    end
                 end
             end
         end
