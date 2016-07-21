@@ -31,6 +31,12 @@ classdef Session < handle
         sessionids;
     end
     
+    properties (Access = private)
+        curExperiment;
+        curSubject;
+        curSession;
+    end
+    
     %DATASETS
     %1. SSVEP Dataset I (SINGLE)
     %2. SSVEP Dataset II (MULTI)
@@ -39,7 +45,7 @@ classdef Session < handle
     %5. ERRP Dataset 
     %6. MI Dataset
     methods (Access = public)
-        function S = Session()
+        function S = Session(experiment,subject,session)
             %S = eegtoolkit.util.Session();
             %Constructs a session object
             %
@@ -240,6 +246,31 @@ classdef Session < handle
             
             S.subjectids = [];
             S.sessionids = [];
+            S.curExperiment = [];
+            S.curSubject = [];
+            S.curSession = [];
+            if nargin >0
+                S.curExperiment = experiment;
+            end
+            if nargin >1 
+                S.curSubject = subject;
+            end
+            if nargin >2
+                S.curSession = session;
+            end
+        end
+        
+        function S = load(S)
+            b = isempty(S.curExperiment)+isempty(S.curSubject)*2+isempty(S.curSession)*4;
+            if(b==0)
+                S.loadSubjectSession(S.curExperiment,S.curSubject,S.curSession);
+            elseif(b==4)
+                S.loadSubject(S.curExperiment,S.curSubject);
+            elseif(b==6)
+                S.loadAll(S.curExperiment);
+            else
+                error('something is not set');
+            end
         end
         function S = loadAll(S,experiment)
             %loads everything

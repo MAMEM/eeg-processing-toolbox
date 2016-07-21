@@ -23,22 +23,19 @@ classdef FEAST < eegtoolkit.featselection.FeatureSelectionBase
     end
     
     methods
-        function FF = FEAST(instanceSet,algorithm, numtoSelect, param1, param2)
-            if nargin == 0
-                FF.algorithm = 'icap';
-                FF.numToSelect = 85;
-            end
-            if nargin > 1
-                FF.originalInstanceSet = instanceSet;
+        function FF = FEAST(algorithm, numtoSelect, param1, param2)
+            FF.algorithm = 'icap';
+            FF.numToSelect = 85;
+            if nargin > 0
                 FF.algorithm = algorithm;
             end
-            if nargin > 2
+            if nargin > 1
                 FF.numToSelect = numtoSelect;
             end
-            if nargin > 3
+            if nargin > 2
                 FF.parameter1 = param1;
             end
-            if nargin > 4
+            if nargin > 3
                 FF.parameter2 = param2;
             end
         end

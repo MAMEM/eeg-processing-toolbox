@@ -18,16 +18,18 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
     end
     
     methods (Access = public)
-        function LSVM = LIBSVM(instanceSet)
+        function LSVM = LIBSVM(kernel,cost,gamma)
+            kernel = LSVM.KERNEL_LINEAR;
+            cost = 1.0;
+            gamma = 1.0;
             if nargin > 0
-                LSVM.kernel = LSVM.KERNEL_LINEAR;
-                LSVM.cost = 1.0;
-                LSVM.instanceSet = instanceSet;
-                LSVM.gamma = 1/instanceSet.getNumFeatures;
-            else
-                LSVM.kernel = LSVM.KERNEL_LINEAR;
-                LSVM.cost = 1.0;
-                LSVM.gamma = 1;
+                LSVM.kernel = kernel;
+            end
+            if nargin > 1
+                LSVM.cost = cost;
+            end
+            if nargin > 2
+                LSVM.gamma = gamma;
             end
         end
         

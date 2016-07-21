@@ -4,12 +4,9 @@ classdef PCA < eegtoolkit.featselection.FeatureSelectionBase
         avgTime;
     end
     methods
-        function PCA = PCA(instanceSet,componentNum)
-            if nargin == 0
-                PCA.componentNum = 50;
-            else
+        function PCA = PCA(componentNum)
+            if nargin > 0
                 PCA.componentNum = componentNum;
-                PCA.originalInstanceSet = instanceSet;
             end
         end
         

@@ -4,12 +4,9 @@ classdef SVD < eegtoolkit.featselection.FeatureSelectionBase;
         avgTime;
     end
     methods
-        function SVD = SVD(instanceSet,modes)
-            if nargin == 0
-                SVD.modes = 80;
-            else
+        function SVD = SVD(modes)
+            if nargin > 0
                 SVD.modes = modes;
-                SVD.originalInstanceSet = instanceSet;
             end
         end
         

@@ -55,6 +55,8 @@ classdef PWelch < eegtoolkit.featextraction.PSDExtractionBase
             numTrials = length(PW.trials);
             instances = zeros(numTrials, numFeatures);
             labels = zeros(numTrials,1);
+%             PWT.instances = zeros(numTrials, numFeatures);
+%             PWT.labels = zeros(numTrials,1);
             tic;
             for i=1:numTrials
                 if length(PW.seconds) == 1
@@ -71,10 +73,15 @@ classdef PWelch < eegtoolkit.featextraction.PSDExtractionBase
                 else 
                     error('invalid seconds parameter');
                 end
+                if isa(PW.filter,'dfilt.df2sos') || isa(PW.filter,'dfilt.df2')
+                    y = filter(PW.filter,y);
+                elseif isa(PW.filter,'dfilt.dffir')
+                    y = filtfilt(PW.filter.Numerator,1,y);
+                end
                 if length(PW.nfft>1)
-                    [pxx, pff]=pwelch(y,PW.win_len,PW.over_len*PW.win_len,PW.nfft,PW.trials{i}.samplingRate);
+                    [pxx, pff]=pwelch(y,PW.win_len,[],PW.nfft,PW.trials{i}.samplingRate);
                 else
-                    [pxx, pff]=pwelch(y,PW.win_len,PW.over_len*PW.win_len,PW.nfft,PW.trials{i}.samplingRate,'onesided');
+                    [pxx, pff]=pwelch(y,[],[],PW.nfft,PW.trials{i}.samplingRate,'onesided');
                 end
                 instances(i,:) = pxx;
                 labels(i,1) = floor(PW.trials{i}.label);

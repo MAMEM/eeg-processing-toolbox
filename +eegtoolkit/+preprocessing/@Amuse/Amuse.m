@@ -7,9 +7,15 @@ classdef Amuse < eegtoolkit.preprocessing.PreprocessingBase
     end
     
     methods
-        function AM = Amuse()
+        function AM = Amuse(first,last)
             AM.first = 2;
             AM.last = 256;
+            if nargin > 0
+                AM.first = first;
+            end
+            if nargin > 1
+                AM.last = last;
+            end
         end
         
         function out = process(AM,in )

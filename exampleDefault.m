@@ -10,13 +10,9 @@ load filters/filt_IIRChebI;
 %Extract features with the pwelch method
 extr = eegtoolkit.featextraction.PWelch;
 
-refer = eegtoolkit.preprocessing.Rereferencing;
-%Subtract the mean from the signal
-refer.meanSignal = 1;
+refer = eegtoolkit.preprocessing.ZeroMean;
 
-ss = eegtoolkit.preprocessing.SampleSelection;
-ss.sampleRange = [1,1250]; % Specify the sample range to be used for each Trial
-ss.channels = 126; % Specify the channel(s) to be used
+ss = eegtoolkit.preprocessing.SampleSelection(126,[1,1250]);
 
 df = eegtoolkit.preprocessing.DigitalFilter; % Apply a filter to the raw data
 df.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function

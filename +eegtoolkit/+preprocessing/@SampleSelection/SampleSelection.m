@@ -2,29 +2,29 @@ classdef SampleSelection < eegtoolkit.preprocessing.PreprocessingBase
     properties
         channels;
         sampleRange;
-        samplingRate;
     end
     
     methods
         function CS = SampleSelection(channels,sampleRange)
-            if(nargin == 0)
-                CS.channels = 126;
-                CS.sampleRange = [1,1250];
-            end
-            if(nargin > 0)
+            CS.channels = [];
+            CS.sampleRange = [];
+            if nargin==2
                 CS.channels = channels;
-            end
-            if nargin > 1
                 CS.sampleRange = sampleRange;
+            else
+                error('channels and sampleRange parameters are required');
             end
         end
         
         function out = process(CS,in)
             out = {};
-            CS.samplingRate = in{1}.samplingRate;
             for i=1:length(in)
                 if(length(CS.channels) > 0)
-                    if(length(CS.sampleRange) > 0)
+                    if(length(CS.sampleRange) > 2)
+                        signal = in{i}.signal(CS.channels,CS.sampleRange);
+                        out{i} = eegtoolkit.util.Trial(signal ...
+                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
+                    elseif(length(CS.sampleRange) > 0)
                         %channels AND sampleRange
                         signal = in{i}.signal(CS.channels,CS.sampleRange(1):CS.sampleRange(2));
                         out{i} = eegtoolkit.util.Trial(signal ...
@@ -82,4 +82,3 @@ classdef SampleSelection < eegtoolkit.preprocessing.PreprocessingBase
     end
     
 end
-
