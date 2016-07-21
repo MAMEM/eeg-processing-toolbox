@@ -6,27 +6,31 @@ classdef CCA < eegtoolkit.featextraction.PSDExtractionBase%FeatureExtractionBase
         channel;
         avgTime;
         stimulus_freqs;
-        FreqSamp;
         NumHarm;
         allFeatures;
     end
     methods (Access = public)
-        function CCA = CCA(sti_f,chans,fs,numH)
-            if ( nargin ~= 4 )
-                error('It is needed to define the simulus freqs, the channels, frequency sampling and number of harmonics');
-            else
+        function CCA = CCA(sti_f,chans,numH)
+            CCA.stimulus_freq = [12, 10, 8.57, 7.5, 6.66];
+            CCA.channel = 1;
+            CCA.NumHarm = 4;
+            CCA.allFeatures = 0;
+            if nargin > 0
                 CCA.stimulus_freqs = sti_f;
+            end
+            if nargin > 1
                 CCA.channel = chans;
-                CCA.FreqSamp = fs;
+            end
+            if nargin > 2
                 CCA.NumHarm = numH;
-                CCA.allFeatures = 0;
             end
         end
         
         function extract(CCA)
             sti_f = CCA.stimulus_freqs;
+            SAMPLING_RATE = CCA.trials{1}.samplingRate;
             mLen=size(CCA.trials{1}.signal,2);
-            refSignals=CCA.ck_signalTrans(sti_f,mLen,CCA.FreqSamp,CCA.NumHarm);
+            refSignals=CCA.ck_signalTrans(sti_f,mLen,SAMPLING_RATE,CCA.NumHarm);
             NumStim = size(refSignals,3);
             numTrials = length(CCA.trials);
             for i=1:numTrials
