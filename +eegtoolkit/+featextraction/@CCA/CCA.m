@@ -11,7 +11,7 @@ classdef CCA < eegtoolkit.featextraction.PSDExtractionBase%FeatureExtractionBase
     end
     methods (Access = public)
         function CCA = CCA(sti_f,chans,numH)
-            CCA.stimulus_freq = [12, 10, 8.57, 7.5, 6.66];
+            CCA.stimulus_freqs = [12, 10, 8.57, 7.5, 6.66];
             CCA.channel = 1;
             CCA.NumHarm = 4;
             CCA.allFeatures = 0;

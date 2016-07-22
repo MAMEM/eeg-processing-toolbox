@@ -19,9 +19,9 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
     
     methods (Access = public)
         function LSVM = LIBSVM(kernel,cost,gamma)
-            kernel = LSVM.KERNEL_LINEAR;
-            cost = 1.0;
-            gamma = 1.0;
+            LSVM.kernel = LSVM.KERNEL_LINEAR;
+            LSVM.cost = 1.0;
+            LSVM.gamma = 1.0;
             if nargin > 0
                 LSVM.kernel = kernel;
             end
