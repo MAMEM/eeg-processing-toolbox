@@ -25,7 +25,9 @@ classdef Experimenter < handle
     properties (Constant)
         EVAL_METHOD_LOOCV = 0; % Leave One Out Cross-Validation
         EVAL_METHOD_LOSO = 1; % Leave One Subject Out
-        EVAL_METHOD_LOBO = 2; 
+        EVAL_METHOD_LOBO = 2;
+        EVAL_METHOD_SPLIT = 3;
+        EVAL_METHOD_XFOLD_CV = 4;
     end
     
     properties (Access = public)
@@ -50,7 +52,13 @@ classdef Experimenter < handle
             end
             E.results = {};
         end
-        function E = run(E)
+        function E = run(E,varargin)
+            if(length(varargin)==1)
+                numFolds = varargin{1};
+            elseif(length(varargin)==2)
+                trainIDx = varargin{1};
+                testIDx = varargin{2};
+            end
             % Runs an experiment
             E.checkCompatibility;
             E.subjectids = E.session.subjectids;
@@ -117,6 +125,13 @@ classdef Experimenter < handle
                         fprintf('leaving session #%d out\n', i);
                         E.leaveOneSessionOut(sessions(i), instanceSet);
                     end
+                case E.EVAL_METHOD_SPLIT
+                    instanceSet = E.classification.instanceSet;
+                    E.splitTest(trainIDx,testIDx,instanceSet);
+                case E.EVAL_METHOD_XFOLD_CV
+                    instanceSet = E.classification.instanceSet;
+                    E.kfoldCrossValidation(instanceSet,numFolds);
+            
                 otherwise
                     error ('eval method not set or invalid');
             end
@@ -255,6 +270,26 @@ classdef Experimenter < handle
             close(h);
         end
         
+        function E = kfoldCrossValidation(E,instanceSet,numFolds)
+            numInstances = instanceSet.getNumInstances;
+            indices = crossvalind('Kfold', numInstances, numFolds);
+            outputLabels = zeros(numInstances,1);
+            outputScores = zeros(numInstances,1);
+            outputRanking = zeros(numInstances,instanceSet.getNumLabels);
+            h = waitbar(0,'Cross-validating..');
+            for i=1:numFolds
+                waitbar(i/numFolds,h,sprintf('Cross-validating fold: %d/%d',i,numFolds));
+                testSet = find(indices==i);
+                E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testSet);
+                E.classification.build();
+                
+                [outputLabels(testSet,1), outputScores(testSet,1), outputRanking(testSet,:)] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testSet));
+            end
+            resultSet = eegtoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+            E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+            close(h);
+        end
+        
         function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)
             testingset = find(E.subjectids == subjectid);
             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
@@ -291,6 +326,19 @@ classdef Experimenter < handle
             resultEvaluator.sessionid = E.session.sessionids(E.subjectids==subjectid);
             E.results{length(E.results)+1} = resultEvaluator;
         end
+        
+        function resultSet = splitTest(E,trainIDx,testIDx, instanceSet)
+            E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testIDx);
+            E.classification.build();
+            [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testIDx));
+            resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testIDx), outputLabels, outputScores, outputRanking);
+            resultEvaluator = eegtoolkit.experiment.ResultEvaluator(resultSet);
+            E.results{length(E.results) + 1} = resultEvaluator;
+        end
+        
+
+                
+            
     end
     
 end

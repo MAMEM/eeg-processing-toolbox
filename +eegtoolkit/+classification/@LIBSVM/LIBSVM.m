@@ -70,7 +70,7 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
             end
             output = zeros(numinstance,1);
             probabilities = zeros(numinstance,1);
-            ranking = scores;
+            ranking = scores';
             for i=1:numinstance
                 %select the class with the highest probability
                 [prob, idx] = max(scores(:,i));
