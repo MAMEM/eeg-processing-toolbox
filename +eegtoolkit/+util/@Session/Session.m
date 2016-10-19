@@ -390,36 +390,6 @@ classdef Session < handle
             end
         end
         
-        function S = loadMotorEGI(S,filename)
-            load(filename);
-            numDins = length(DIN_1);
-            sum = 0;
-            right = [];
-            left = [];
-            for i=1:numDins
-                if(isequal(DIN_1{1,i},'D223'))
-                    right = [right DIN_1{4,i}];
-                elseif(isequal(DIN_1{1,i},'D191'))
-                    left = [left DIN_1{4,i}];
-                end
-            end
-            numTrials = length(S.trials) + 1;
-            for i=1:80
-                signal = eeg(:,right(i):right(i) + 1249);
-                label = 1;
-                S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,250,1,1,eegtoolkit.util.Trial.MI);
-                numTrials = numTrials + 1;
-                S.subjectids = [S.subjectids 1];
-                S.sessionids = [S.sessionids 1];
-                signal = eeg(:,left(i):left(i) + 1249);
-                label = 2;
-                S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,250,1,1,eegtoolkit.util.Trial.MI);
-                numTrials = numTrials + 1;
-                S.subjectids = [S.subjectids 1];
-                S.sessionids = [S.sessionids 1];
-            end
-        end
-
         function S = clearData(S)
             %clears loaded data
             S.trials = {};

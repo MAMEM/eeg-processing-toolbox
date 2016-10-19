@@ -36,15 +36,18 @@ classdef MLR_Transf < eegtoolkit.featextraction.PSDExtractionBase%FeatureExtract
             for i = 1 : numTrials   %
                 for j=1:m
                     data(j,:,i) = PWT.trials{i}.signal(j,:);%data(j,:,i)./norm(data(j,:,i));
-                    data(j,:,i) = (data(j,:,i) - mean(data(j,:,i)));%./std(data(j,:,i));
-                    %data(j,:,i) = data(j,:,i)./norm(data(j,:,i));
+                    data(j,:,i) = (data(j,:,i) - mean(data(j,:,i)))./std(data(j,:,i));
+%                     data(j,:,i) = data(j,:,i)./norm(data(j,:,i));
                 end%
                 labels(i) = floor(PWT.trials{i}.label);
             end
-            data= reshape(data,m*n,size(data,3));
+            %data= reshape(data,m*n,size(data,3));
+            for i=1:numTrials
+                newData(i,:) = [data(1,:,i) data(2,:,i)];
+            end
             %             MeanTrainData=mean(data,2);
             %             data=data-repmat(MeanTrainData,1,numTrials);
-            data = data';
+            data = newData;
             PWT.instanceSet = eegtoolkit.util.InstanceSet(data, labels);
         end
         

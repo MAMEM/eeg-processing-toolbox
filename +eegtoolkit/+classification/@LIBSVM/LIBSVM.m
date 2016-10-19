@@ -43,9 +43,9 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
                 instances = sparse(LSVM.instanceSet.getInstances);
                 if LSVM.kernel == LSVM.KERNEL_LINEAR;
                     %store the models in an instance variable
-                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -b 1 -q', LSVM.kernel, LSVM.cost));
+                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f  -q', LSVM.kernel, LSVM.cost));
                 elseif LSVM.kernel == LSVM.KERNEL_RBF;
-                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -g %f -b 1 -q', LSVM.kernel, LSVM.cost, LSVM.gamma));
+                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -g %f  -q', LSVM.kernel, LSVM.cost, LSVM.gamma));
                 else
                     error('invalid kernel parameter');
                 end
@@ -64,7 +64,7 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
             scores = zeros(numModels,numinstance);
             for i=1:numModels
                 %predict using the stored models
-                [~, ~, t] = svmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');
+                [~, ~, t] = svmpredict(eye(numinstance,1),instance, LSVM.models{i},' -q');
                 %store probability for each class
                 scores(i,:) = t(:,1);
             end
@@ -100,7 +100,7 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
         end
         
         function newLSVM = copy(LSVM)
-            newLSVM = eegtoolkit.classification.LIBSVMClassifier;
+            newLSVM = eegtoolkit.classification.LIBSVM;
             newLSVM.kernel = LSVM.kernel;
             newLSVM.cost = LSVM.cost;
             newLSVM.gamma = LSVM.gamma;

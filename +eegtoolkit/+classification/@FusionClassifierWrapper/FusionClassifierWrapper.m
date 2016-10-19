@@ -18,12 +18,12 @@ classdef FusionClassifierWrapper < eegtoolkit.classification.ClassifierBase & ee
         function FCW = build(FCW)
             numFusion = FCW.instanceSet.numFusion;
             FCW.reset;
-            if ~isa(FCW.baseClassifier,'eegtoolkit.classifier.LIBSVMClassifier')
+            if ~isa(FCW.baseClassifier,'eegtoolkit.classification.LIBSVM')
                 error ('Only LIBSVMClassifier supported as base classifier');
             else
                 for i=1:numFusion
                     FCW.classifiers{i} = FCW.baseClassifier.copy;
-                    FCW.classifiers{i} = eegtoolkit.classifier.LIBSVMClassifier;
+                    FCW.classifiers{i} = eegtoolkit.classification.LIBSVM;
                     FCW.classifiers{i}.instanceSet = FCW.instanceSet.instanceSets{i};
                     FCW.classifiers{i}.build;
                 end
