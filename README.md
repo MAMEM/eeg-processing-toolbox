@@ -22,6 +22,7 @@ The usage of some classes of the framework is limited by the following requireme
 | classification | LIBSVMFast | Requires the [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) library|
 | classification | MLTboxMulticlass | Requires Matlab version r2015a or newer |
 | classification | MLDA | Requires Matlab version r2014 or newer |
+| classification | SMFA | Requires [SGE-SMFA] (https://github.com/amaronidis/SGE-SMFA) |
 | util | LSLWrapper | Requires the [Labstreaminglayer](https://github.com/sccn/labstreaminglayer) library|
 
 Some examples are available that are based on the datasets that can be found below.
