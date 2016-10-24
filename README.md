@@ -22,13 +22,26 @@ The usage of some classes of the framework is limited by the following requireme
 | classification | LIBSVMFast | Requires the [libsvm](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) library|
 | classification | MLTboxMulticlass | Requires Matlab version r2015a or newer |
 | classification | MLDA | Requires Matlab version r2014 or newer |
+| classification | SMFA | Requires [SGE-SMFA] (https://github.com/amaronidis/SGE-SMFA) |
 | util | LSLWrapper | Requires the [Labstreaminglayer](https://github.com/sccn/labstreaminglayer) library|
 
+## Examples
+
 Some examples are available that are based on the datasets that can be found below.
-- exampleDefault, performs a simple experiment on Dataset I & II
-- exampleOptimal, performs an experiment with the optimal settings for Dataset I & II
-- exampleEpoc, performs an experiment for the dataset that was recorded with an EPOC device (Dataset III)
-- exampleLSL, an example on how to perform online classification of EEG signals with the help of the [Labstreaminglayer](https://github.com/sccn/labstreaminglayer) interface for Matlab.
+- **exampleCSP**, extract common spatial patterns in dataset III of [BCI competition II] (http://www.bbci.de/competition/ii/)
+- **exampleCombiCCA**, SSVEP recognition using the CombinedCCA method from [2]. Based on this [dataset] (ftp://sccn.ucsd.edu/pub/cca_ssvep)
+- **exampleDefault**, performs a simple experiment on Dataset I & II
+- **exampleEPOCCCASVM**, SSVEP recognition using SVM on the CCA coefficients, based on Dataset III
+- **exampleERRP**, recognition of error related potentials, based on the [dataset] (https://github.com/flowersteam/self_calibration_BCI_plosOne_2015) provided by [3]
+- **exampleEarlyFusion**, demonstrates how to merge features extracted by different electrode channels, based on Dataset II.
+- **exampleEpoc**, performs an experiment for the dataset that was recorded with an EPOC device (Dataset III)
+- **exampleITCCA**, SSVEP recognition using the ITCCA method from [2]. Based on this [dataset] (ftp://sccn.ucsd.edu/pub/cca_ssvep)
+- **exampleL1MCCA**, SSVEP recognition using the L1MCCA method from [2]. Based on this [dataset] (ftp://sccn.ucsd.edu/pub/cca_ssvep)
+- **exampleLSL**, Online recognition of SSVEP signals using the [LSL library] (https://github.com/sccn/labstreaminglayer).
+- **exampleLateFusion**, merging the output of different classifiers by majority voting, based on Dataset II.
+- **exampleMotorPWelch**, classification of right/left hand motor imagery based on the dataset III of [BCI competition II] (http://www.bbci.de/competition/ii/)
+- **exampleOptimal**, performs an experiment with the optimal settings for Dataset I & II
+- **exampleSMFA**, SSVEP recognition with using SMFA [4]
 
 ## Datasets
 
@@ -40,4 +53,12 @@ Some examples are available that are based on the datasets that can be found bel
 
 ## References
 [\[1\]](http://arxiv.org/abs/1602.00904) Vangelis P. Oikonomou, Georgios Liaros, Kostantinos Georgiadis, Elisavet Chatzilari, Katerina Adam, Spiros Nikolopoulos and Ioannis Kompatsiaris, "Comparative evaluation of state-of-the-art algorithms for SSVEP-based BCIs", Technical Report - eprint arXiv:1602.00904, February 2016 
+
+\[2\] M. Nakanishi, Y. Wang, Y.T. Wang, and T.P. Jung, “A comparison study of canonical correlation analysis based methods for detecting steady-state visual evoked potentials,” PLoS ONE, p. e0140703, October 2015.
+
+\[3\] Iturrate, Iñaki, Jonathan Grizou, Jason Omedes, Pierre-Yves Oudeyer, Manuel Lopes, and Luis Montesano. "Exploiting task constraints for self-calibrated brain-machine interface control using error-related potentials." PloS one 10, no. 7 (2015): e0131491.
+Harvard
+
+\[4\] Maronidis, Anastasios, Anastasios Tefas, and Ioannis Pitas. "Subclass Marginal Fisher Analysis." In Computational Intelligence, 2015 IEEE Symposium Series on, pp. 1391-1398. IEEE, 2015.
+
 
