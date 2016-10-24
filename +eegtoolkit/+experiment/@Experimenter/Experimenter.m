@@ -28,6 +28,7 @@ classdef Experimenter < handle
         EVAL_METHOD_LOBO = 2;
         EVAL_METHOD_SPLIT = 3;
         EVAL_METHOD_XFOLD_CV = 4;
+        EVAL_METHOD_LOSO_LOBO = 5;
     end
     
     properties (Access = public)
@@ -131,7 +132,9 @@ classdef Experimenter < handle
                 case E.EVAL_METHOD_XFOLD_CV
                     instanceSet = E.classification.instanceSet;
                     E.kfoldCrossValidation(instanceSet,numFolds);
-            
+                case E.EVAL_METHOD_LOSO_LOBO
+                    instanceSet = E.classification.instanceSet;
+                    E.leaveOneSubjectOutLeaveOneBlockOut(instanceSet);
                 otherwise
                     error ('eval method not set or invalid');
             end
@@ -299,6 +302,36 @@ classdef Experimenter < handle
             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
         end
         
+                
+        function resultSet = leaveOneSubjectOutLeaveOneBlockOut(E, instanceSet)
+            subjects = unique(E.subjectids);
+            sessions = unique(E.sessionids);
+            for i=1:length(subjects)
+                numInstancesForSubject = sum(E.subjectids==subjects(i));
+                outputLabels = zeros(numInstancesForSubject,1);
+                outputScores = zeros(numInstancesForSubject,1);
+                outputRanking = zeros(numInstancesForSubject,instanceSet.getNumLabels());
+                for j=1:length(sessions)
+%                     tempResults{j} = E.leaveOneSessionOut(sessions(j),tempInstanceSet);
+                    sessionidsSubset = E.sessionids(E.subjectids==subjects(i));
+                    testIndices = sessionidsSubset==sessions(j)
+                    numInstancesForSession = sum(E.sessionids==sessions(j)&E.subjectids==subjects(i));
+                    testingset = find(E.sessionids==sessions(j)&E.subjectids==subjects(i))
+                    nottrainset = find(E.sessionids==sessions(j)|E.subjectids~=subjects(i))
+                    E.classification.instanceSet = instanceSet.removeInstancesWithIndices(nottrainset);
+                    E.classification.build();
+                    [outputLabels(testIndices,:), outputScores(testIndices,:), outputRanking(testIndices,:)] = ...
+                        E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+                    
+                end
+                sIndices = find(E.subjectids==subjects(i));
+                resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(sIndices),outputLabels,outputScores,outputRanking);
+                E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+                %merge the results
+            end
+        end
+        
+        
         function resultSet = leaveOneSessionOut(E, sessionId, instanceSet)
             testingset = find(E.sessionids == sessionId);
             trainset = find(E.sessionids ~= sessionId);
@@ -326,7 +359,7 @@ classdef Experimenter < handle
             resultEvaluator.sessionid = E.session.sessionids(E.subjectids==subjectid);
             E.results{length(E.results)+1} = resultEvaluator;
         end
-        
+
         function resultSet = splitTest(E,trainIDx,testIDx, instanceSet)
             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testIDx);
             E.classification.build();
