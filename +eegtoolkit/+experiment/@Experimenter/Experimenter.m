@@ -314,10 +314,10 @@ classdef Experimenter < handle
                 for j=1:length(sessions)
 %                     tempResults{j} = E.leaveOneSessionOut(sessions(j),tempInstanceSet);
                     sessionidsSubset = E.sessionids(E.subjectids==subjects(i));
-                    testIndices = sessionidsSubset==sessions(j)
+                    testIndices = sessionidsSubset==sessions(j);
                     numInstancesForSession = sum(E.sessionids==sessions(j)&E.subjectids==subjects(i));
-                    testingset = find(E.sessionids==sessions(j)&E.subjectids==subjects(i))
-                    nottrainset = find(E.sessionids==sessions(j)|E.subjectids~=subjects(i))
+                    testingset = find(E.sessionids==sessions(j)&E.subjectids==subjects(i));
+                    nottrainset = find(E.sessionids==sessions(j)|E.subjectids~=subjects(i));
                     E.classification.instanceSet = instanceSet.removeInstancesWithIndices(nottrainset);
                     E.classification.build();
                     [outputLabels(testIndices,:), outputScores(testIndices,:), outputRanking(testIndices,:)] = ...
