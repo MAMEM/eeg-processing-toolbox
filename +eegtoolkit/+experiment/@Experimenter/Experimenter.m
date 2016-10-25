@@ -71,9 +71,10 @@ classdef Experimenter < handle
             end
             if ~isempty(E.preprocessing)
                 for i=1:length(E.preprocessing)
-%                     E.preprocessing{i}.originalTrials = trials;
+                    if isa(E.preprocessing{i},'eegtoolkit.preprocessing.Windsorize')
+                        E.preprocessing{i}.subjectids = E.subjectids;
+                    end
                     trials = E.preprocessing{i}.process(trials);
-%                     trials = E.preprocessing{i}.processedTrials;
                 end
             end
             disp('feature extraction ...');
