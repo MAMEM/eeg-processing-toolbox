@@ -253,6 +253,19 @@ classdef Session < handle
             S.sessions{7,9,1} = 'B09T.mat';
             S.sessions{7,9,2} = 'B09T.mat';
             
+            S.sessions{8,1,1} = 'Dimitris1Errp.mat';
+            S.sessions{8,2,1} = 'Fotis2Errp.mat';
+            S.sessions{8,3,1} = 'George3Errp.mat';
+            S.sessions{8,4,1} = 'Kostas4Errp.mat';
+            S.sessions{8,5,3} = 'Spiros5EBNErrp.mat';
+            S.sessions{8,5,1} = 'Spiros5Errp.mat';
+            S.sessions{8,5,2} = 'Spiros5GreenErrp.mat';
+            S.sessions{8,6,1} = 'Stathis6Errp.mat';
+            S.sessions{8,7,1} = 'Tasos7Errp.mat';
+            S.sessions{8,8,1} = 'TasosMa8Errp.mat';
+            S.sessions{8,8,2} = 'TasosMa8GreenErrp.mat';
+            
+            
             %MI dataset
 %             S.sessions{6,1,1} = ;
             
@@ -413,6 +426,19 @@ classdef Session < handle
                         signal = squeeze(trialsegm(i,:,:));
                         label = labels(i);
                         S.trials{numTrials} = eegtoolkit.util.Trial(signal',label,250,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
+                case 8
+                    load(S.sessions{experiment,subject,session});
+                    n = length(errpcell);
+                    numTrials = length(S.trials) + 1;
+                    for i=1:n
+                        signal = errpcell{i};
+                        label = labelcell{i}>5;
+                        
+                        S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,128,subject,session,eegtoolkit.util.Trial.ERRP);
                         S.subjectids = [S.subjectids subject];
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
