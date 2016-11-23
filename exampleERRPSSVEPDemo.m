@@ -15,13 +15,13 @@ ss.sampleRange = [1:6:200];
 
 extr = {};
 for i=1:3
-    extr{i} = eegtoolkit.featextraction.PW;
+    extr{i} = eegtoolkit.featextraction.PWelch;
     extr{i}.channel = 1;
 end
 
 aggr = eegtoolkit.aggregation.ChannelConcat;
 
-classif = eegtoolkit.classification.Cl;
+classif = eegtoolkit.classification.LIBSVM;
 classif.kernel = classif.KERNEL_RBF;
 classif.gamma = 1/9;
 classif.cost = 1;
