@@ -2,38 +2,44 @@
 % load the data again and again. Make sure the dataset is included in your
 % Matlab path
 % sess = eegtoolkit.util.Session;
-% sess.loadAll(); %its best to do this once, outside the script (too much
+% sess.loadAll(3); %its best to do this once, outside the script (too much
 % time)
 
 %Load a filter from the samples
-%load filters/filt_IIRChebI;
-load epocfilter;
+load filters/epocfilter;
 % 7 = O1
 % 8 = O2
-extr = eegtoolkit.featextraction.PWelch;
+
+% Stimulus frequencies. The order corresponds to the label id (12Hz=1,
+% 10Hz=2, 8.57Hz=3, 7.5Hz=4, 6.66Hz=5)
+% If the order is wrong, then the "Max" classifier will not work properly
+sti_f = [12,10,8.57,7.5,6.66];
+
+% CCA feat extraction method
+extr = eegtoolkit.featextraction.CCA(sti_f,1:4,128,4);
 
 refer = eegtoolkit.preprocessing.Rereferencing;
 %Subtract the mean from the signal
 refer.meanSignal = 1;
 
 ss = eegtoolkit.preprocessing.SampleSelection;
-ss.sampleRange = [1,640]; % Specify the sample range to be used for each Trial
-ss.channels = 8; % Specify the channel(s) to be used
+ss.sampleRange = [64,640]; % Specify the sample range to be used for each Trial
+ss.channels = 6:9; % Specify the channel(s) to be used
 
 df = eegtoolkit.preprocessing.DigitalFilter; % Apply a filter to the raw data
 df.filt = Hbp; % Hbp is a filter built with "filterbuilder" matlab function
 
 %Configure the classifier
-classif = eegtoolkit.classification.LIBSVM;
+classif = eegtoolkit.classification.MaxChooser;
 
 %Set the Experimenter wrapper class
 experiment = eegtoolkit.experiment.Experimenter;
 experiment.session = sess;
 % Add the preprocessing steps (order is taken into account)
-experiment.preprocessing = {ss,refer,df};
+experiment.preprocessing = {ss,df};
 experiment.featextraction = extr;
 experiment.classification = classif;
-experiment.evalMethod = experiment.EVAL_METHOD_LOOCV; % specify that you want a "leave one subject out" (default is LOOCV)
+experiment.evalMethod = experiment.EVAL_METHOD_LOSO; % specify that you want a "leave one subject out" (default is LOOCV)
 experiment.run();
 for i=1:length(experiment.results)
     accuracies(i) = experiment.results{i}.getAccuracy();
@@ -43,5 +49,5 @@ accuracies'
 %mean accuracy for all subjects
 fprintf('mean acc = %f\n', mean(accuracies));
 %get the configuration used (for reporting)
-experiment.getExperimentInfo
-experiment.getTime
+% experiment.getExperimentInfo
+% experiment.getTime

@@ -27,12 +27,13 @@ classdef MaxChooser < eegtoolkit.classification.ClassifierBase
             pred_lab=zeros(N,1);
             for i=1:N
                 [v,idx]=max(dd_ins(i,:));                
-                pred_lab(i)=idx;                
+                pred_lab(i)=idx;   
+                ranking(i,:) = dd_ins(i,:);
             end
             
             output = pred_lab;%sum(pred_lab)/length(pred_lab)
             probabilities=zeros(N,1);
-            ranking=zeros(N,1);
+%             ranking=zeros(N,1);
         end
         
         function MaxChooser = reset(MaxChooser)

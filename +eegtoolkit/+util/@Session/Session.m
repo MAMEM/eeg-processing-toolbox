@@ -234,6 +234,25 @@ classdef Session < handle
             
             S.sessions{6,1,1} = 'dataset_BCIcomp1.mat';
             
+            S.sessions{7,1,1} = 'B01T.mat';
+            S.sessions{7,1,2} = 'B01T.mat';
+            S.sessions{7,2,1} = 'B02T.mat';
+            S.sessions{7,2,2} = 'B02T.mat';
+            S.sessions{7,3,1} = 'B03T.mat';
+            S.sessions{7,3,2} = 'B03T.mat';
+            S.sessions{7,4,1} = 'B04T.mat';
+            S.sessions{7,4,2} = 'B04T.mat';
+            S.sessions{7,5,1} = 'B05T.mat';
+            S.sessions{7,5,2} = 'B05T.mat';
+            S.sessions{7,6,1} = 'B06T.mat';
+            S.sessions{7,6,2} = 'B06T.mat';
+            S.sessions{7,7,1} = 'B07T.mat';
+            S.sessions{7,7,2} = 'B07T.mat';
+            S.sessions{7,8,1} = 'B08T.mat';
+            S.sessions{7,8,2} = 'B08T.mat';
+            S.sessions{7,9,1} = 'B09T.mat';
+            S.sessions{7,9,2} = 'B09T.mat';
+            
             %MI dataset
 %             S.sessions{6,1,1} = ;
             
@@ -385,13 +404,24 @@ classdef Session < handle
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
                     end
+                case 7
+                    load(S.sessions{experiment,subject,session});
+                    [trialsegm,labels] = segmentGratzB(data{session},0.5,2.5,250);
+                    [n,~,~] = size(trialsegm);
+                    numTrials = length(S.trials) + 1;
+                    for i=1:n
+                        signal = squeeze(trialsegm(i,:,:));
+                        label = labels(i);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(signal',label,250,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
                 otherwise
                     error('invalid experiment id');
             end
         end
         
-
-
         function S = clearData(S)
             %clears loaded data
             S.trials = {};

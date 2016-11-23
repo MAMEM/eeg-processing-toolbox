@@ -24,7 +24,11 @@ classdef SampleSelection < eegtoolkit.preprocessing.PreprocessingBase
             CS.samplingRate = in{1}.samplingRate;
             for i=1:length(in)
                 if(length(CS.channels) > 0)
-                    if(length(CS.sampleRange) > 0)
+                    if(length(CS.sampleRange) > 2)
+                        signal = in{i}.signal(CS.channels,CS.sampleRange);
+                        out{i} = eegtoolkit.util.Trial(signal ...
+                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
+                    elseif(length(CS.sampleRange) > 0)
                         %channels AND sampleRange
                         signal = in{i}.signal(CS.channels,CS.sampleRange(1):CS.sampleRange(2));
                         out{i} = eegtoolkit.util.Trial(signal ...
@@ -36,7 +40,11 @@ classdef SampleSelection < eegtoolkit.preprocessing.PreprocessingBase
                             ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
                     end
                 else
-                    if(length(CS.sampleRange) > 0)
+                    if(length(CS.sampleRange) > 2)
+                        signal = in{i}.signal(:,CS.sampleRange);
+                        out{i} = eegtoolkit.util.Trial(signal ...
+                            ,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid);
+                    elseif(length(CS.sampleRange) > 0)
                         %ONLY sampleRange
                         signal = in{i}.signal(:,CS.sampleRange(1):CS.sampleRange(2));
                         out{i} = eegtoolkit.util.Trial(signal ...
@@ -74,7 +82,7 @@ classdef SampleSelection < eegtoolkit.preprocessing.PreprocessingBase
             end
         end
         
-                        
+        
         function time = getTime(CS)
             time = 0;
         end

@@ -20,7 +20,8 @@ classdef DigitalFilter < eegtoolkit.preprocessing.PreprocessingBase
                 [numChannels, ~] = size(signal);
                 for j=1:numChannels
                     if isa(DF.filt,'dfilt.df2sos') || isa(DF.filt,'dfilt.df2')
-                        signal(j,:) = filter(DF.filt,signal(j,:));
+%                         signal(j,:) = filter(DF.filt,signal(j,:));
+                        signal(j,:) = filtfilt(DF.filt.sosMatrix,DF.filt.ScaleValues,signal(j,:));
                     elseif isa(DF.filt,'dfilt.dffir')
                         signal(j,:) = filtfilt(DF.filt.Numerator,1,signal(j,:));
                     end
