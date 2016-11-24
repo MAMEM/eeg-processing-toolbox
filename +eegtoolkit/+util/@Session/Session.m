@@ -406,7 +406,7 @@ classdef Session < handle
                     end
                 case 7
                     load(S.sessions{experiment,subject,session});
-                    [trialsegm,labels] = segmentGratzB(data{session},0.5,2.5,250);
+                    [trialsegm,labels] = segmentGratzB(data{session},-5,5,250);
                     [n,~,~] = size(trialsegm);
                     numTrials = length(S.trials) + 1;
                     for i=1:n

@@ -28,6 +28,7 @@ classdef CSPWrapper < eegtoolkit.classification.ClassifierBase;
         end
         
         function [output, probabilities, ranking] = classifyInstance(CSP,instance)
+            
 %             instance = CSP.extract
             %input = instance matrix rows = instances, cols = attributes
             %output = predicted class
