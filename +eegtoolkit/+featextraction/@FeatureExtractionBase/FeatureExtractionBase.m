@@ -1,6 +1,5 @@
 % Abstract class for feature extraction. Implement the functions for any
-% preprocessing step (e.g. filtering, artifact removal, sub-sampling,
-% rereferencing, etc.
+% feature extractor (e.g. PWelch, FFT, DWT, PYAR, etc.)
 % 
 % Properties:
 % instanceSet: Output - the features in an InstanceSet structure

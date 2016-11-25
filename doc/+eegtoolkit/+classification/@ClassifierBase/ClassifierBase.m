@@ -1,5 +1,5 @@
 % Abstract class for classification. Implement the functions for any
-% classifier (e.g. LibSVM, LDA, MLR, Decision trees, Adaboost, etc.)
+% classifier (e.g. LibSVM, LDA, MLR, RFs, Adaboost, etc.)
 % 
 % Properties:
 % instanceSet: the training/test set in an InstanceSet structure

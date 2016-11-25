@@ -6,6 +6,7 @@ digraph m2html {
   exampleDefault [URL="exampleDefault.html"];
   exampleEPOCCCASVM [URL="exampleEPOCCCASVM.html"];
   exampleERRP [URL="exampleERRP.html"];
+  exampleERRPSSVEPDemo [URL="exampleERRPSSVEPDemo.html"];
   exampleEarlyFusion [URL="exampleEarlyFusion.html"];
   exampleEpoc [URL="exampleEpoc.html"];
   exampleITCCA [URL="exampleITCCA.html"];
