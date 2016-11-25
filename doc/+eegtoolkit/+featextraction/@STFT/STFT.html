@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of STFT</title>
+  <meta name="keywords" content="STFT">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="#">@STFT</a> &gt; STFT.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+featextraction/@STFT&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>STFT
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="STFT.html" class="code" title="">STFT</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="STFT.html" class="code" title="">STFT</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function mSTFT = STFT(trials, seconds, channel,rangeFreq)</a></li><li><a href="#_sub2" class="code">function extract(mSTFT)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(mSTFT)</a></li><li><a href="#_sub4" class="code">function time = getTime(mSTFT)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="STFT.m">STFT.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="STFT.html" class="code" title="">STFT</a> &lt; eegtoolkit.featextraction.FeatureExtractionBase
+0002     
+0003     properties (Access = public)
+0004         channel;
+0005         seconds;
+0006         Frange;
+0007         avgTime;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods (Access = public)   
+0011         <a name="_sub0" href="#_subfunctions" class="code">function mSTFT = STFT(trials, seconds, channel,rangeFreq)</a>
+0012             <span class="keyword">if</span> nargin == 0
+0013                 mSTFT.seconds = 0;
+0014                 mSTFT.channel = 1;
+0015                 mSTFT.Frange(1) = 0;
+0016 <span class="comment">%                 mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;</span>
+0017             <span class="keyword">elseif</span> nargin == 1
+0018                 mSTFT.trials = trials;
+0019                 mSTFT.seconds = 0;
+0020                 mSTFT.channel = 1;
+0021                 mSTFT.Frange(1) = 0;
+0022                 mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;
+0023             <span class="keyword">elseif</span> nargin == 2
+0024                 mSTFT.trials = trials;
+0025                 mSTFT.channel = 1;
+0026                 mSTFT.seconds = seconds;
+0027                 mSTFT.Frange(1) = 0;
+0028                 mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;
+0029             <span class="keyword">elseif</span> nargin == 3
+0030                 mSTFT.trials = trials;
+0031                 mSTFT.channel = channel;
+0032                 mSTFT.seconds = seconds;
+0033                 mSTFT.Frange(1) = 0;
+0034                 mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;
+0035             <span class="keyword">elseif</span> nargin==4
+0036                 
+0037                 mSTFT.trials = trials;
+0038                 
+0039                 <span class="keyword">if</span> prod(size(rangeFreq)) ~=2
+0040                     error(<span class="string">'vector for frequency range must has two elements'</span>)
+0041                 <span class="keyword">end</span>
+0042                 <span class="keyword">if</span> rangeFreq(1)&gt;=rangeFreq(2)
+0043                     error(<span class="string">'first element must be smaller.'</span>);
+0044                 <span class="keyword">end</span>
+0045                 <span class="keyword">if</span> (rangeFreq(1)&lt;0 || rangeFreq(2)&gt;mSTFT.trials{1}.samplingRate)
+0046                     error(<span class="string">'invalid values for frequency range'</span>);
+0047                 <span class="keyword">end</span>
+0048                 
+0049                 mSTFT.channel = channel;
+0050                 mSTFT.seconds = seconds;
+0051                 mSTFT.Frange(1) = rangeFreq(1);
+0052                 mSTFT.Frange(2) = rangeFreq(2);
+0053             <span class="keyword">else</span>
+0054                 error(<span class="string">'invalid number of arguments'</span>);
+0055             <span class="keyword">end</span>
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub1" href="#_subfunctions" class="code">function extract(mSTFT)</a>
+0059             mSTFT.Frange(2) = mSTFT.trials{1}.samplingRate;
+0060             numsamples = mSTFT.trials{1}.samplingRate * mSTFT.seconds;
+0061             <span class="keyword">if</span> (numsamples == 0)                    
+0062                 numsamples = size(mSTFT.trials{1}.signal(mSTFT.channel,:),2);                             
+0063             <span class="keyword">end</span>
+0064             tic
+0065             numTrials = length(mSTFT.trials);
+0066             y = mSTFT.trials{1}.signal(mSTFT.channel, 1:numsamples);
+0067             [S,F,T,P]=spectrogram(y,[],[],[mSTFT.Frange(1):0.5:mSTFT.Frange(2)],mSTFT.trials{1}.samplingRate);
+0068             instances = zeros(numTrials, length(P(:)));
+0069             labels = zeros(numTrials,1);
+0070             <span class="keyword">for</span> i=1:numTrials
+0071                 numsamples = mSTFT.trials{i}.samplingRate * mSTFT.seconds;
+0072                 <span class="keyword">if</span>(numsamples == 0)
+0073                     y = mSTFT.trials{i}.signal(mSTFT.channel,:);
+0074                 <span class="keyword">else</span>
+0075                     y = mSTFT.trials{i}.signal(mSTFT.channel, 1:numsamples);
+0076                 <span class="keyword">end</span>                
+0077                 
+0078                 [S,F,T,P]=spectrogram(y,[],[],[mSTFT.Frange(1):0.5:mSTFT.Frange(2)],mSTFT.trials{i}.samplingRate);
+0079                 instances(i,:) = P(:);
+0080                 labels(i,1) = floor(mSTFT.trials{i}.label);
+0081             <span class="keyword">end</span>
+0082             mSTFT.avgTime = toc/numTrials;
+0083             mSTFT.instanceSet = eegtoolkit.util.InstanceSet(instances,labels);
+0084         <span class="keyword">end</span>
+0085         
+0086         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(mSTFT)</a>
+0087             <span class="keyword">if</span> length(mSTFT.Frange) == 2
+0088                 configInfo = sprintf(<span class="string">'STFT\tchannel:%d\tseconds:%d\tfrange1:%d\tfrange2:%d'</span>,mSTFT.channel,mSTFT.seconds,mSTFT.Frange(1),mSTFT.Frange(2));
+0089             <span class="keyword">else</span>
+0090                 configInfo = sprintf(<span class="string">'STFT\tchannel:%d\tseconds:%d\tfrange1:%d\tfrange2:unset'</span>,mSTFT.channel,mSTFT.seconds,mSTFT.Frange(1));
+0091             <span class="keyword">end</span>
+0092         <span class="keyword">end</span>
+0093         
+0094                         
+0095         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(mSTFT)</a>
+0096             time = mSTFT.avgTime;
+0097         <span class="keyword">end</span>
+0098     <span class="keyword">end</span>
+0099    
+0100 <span class="keyword">end</span>
+0101</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

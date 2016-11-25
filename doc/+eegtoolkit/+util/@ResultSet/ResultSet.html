@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ResultSet</title>
+  <meta name="keywords" content="ResultSet">
+  <meta name="description" content="RESULTSET class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@ResultSet</a> &gt; ResultSet.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@ResultSet&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>ResultSet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>RESULTSET class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> RESULTSET class
+ Stores the results of an experiment</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ResultSet.html" class="code" title="">ResultSet</a>	RESULTSET class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ResultSet.html" class="code" title="">ResultSet</a>	RESULTSET class</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function RS = ResultSet(instanceSet, labels, probabilities, ranking)</a></li><li><a href="#_sub2" class="code">function RSSubset = subset(RS,indices)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="ResultSet.m">ResultSet.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% RESULTSET class</span>
+0002 <span class="comment">% Stores the results of an experiment</span>
+0003 classdef <a href="ResultSet.html" class="code" title="">ResultSet</a> &lt; eegtoolkit.util.InstanceSet
+0004     
+0005     properties
+0006         outputLabels; <span class="comment">% The output labels</span>
+0007         outputProbabilities; <span class="comment">% Probabilities</span>
+0008         outputRanking; <span class="comment">% Confidence scores</span>
+0009         confusionMatrix; <span class="comment">% The Confusion Matrix</span>
+0010     <span class="keyword">end</span>
+0011     
+0012     methods
+0013         <a name="_sub0" href="#_subfunctions" class="code">function RS = ResultSet(instanceSet, labels, probabilities, ranking)</a>
+0014             <span class="comment">%Constructor method</span>
+0015             <span class="comment">%Input:</span>
+0016             <span class="comment">%(InstanceSet object): the original instanceSet</span>
+0017             <span class="comment">%Labels: a vector containing the output labels of the</span>
+0018             <span class="comment">%experiment</span>
+0019             <span class="comment">%Proababilities: a vector containing the probabilities of each</span>
+0020             <span class="comment">%label</span>
+0021             <span class="comment">%Ranking (optional): a matrix containing a score for each label</span>
+0022             
+0023             RS = RS@eegtoolkit.util.InstanceSet(instanceSet);
+0024             RS.outputLabels = labels;
+0025 
+0026             <span class="comment">%compute the confusion matrix</span>
+0027             labels = unique(RS.getLabels);
+0028             numLabels = length(labels);
+0029             RS.confusionMatrix = zeros(numLabels);
+0030             trueLabels = RS.getLabels;
+0031             numInstances = RS.getNumInstances;
+0032             <span class="keyword">for</span> k=1:numInstances
+0033                 idx1 = find(labels==RS.outputLabels(k,1));
+0034                 idx2 = find(labels==trueLabels(k,1));
+0035                 RS.confusionMatrix(idx1,idx2) = RS.confusionMatrix(idx1,idx2)+ 1;
+0036             <span class="keyword">end</span>
+0037             RS.confusionMatrix = RS.confusionMatrix';
+0038             <span class="comment">%if classifier supports ranking/probabilities</span>
+0039             <span class="keyword">if</span> nargin &gt; 2
+0040                 RS.outputProbabilities = probabilities;
+0041                 RS.outputRanking = ranking;
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub1" href="#_subfunctions" class="code">function RSSubset = subset(RS,indices)</a>
+0046             sOutputLabels = RS.outputLabels(indices);
+0047             sOutputProbabilities = RS.outputProbabilities(indices);
+0048             sInstanceSet = RS.getDatasetWithIndices(indices);
+0049             <span class="keyword">if</span> isempty(RS.outputProbabilities)
+0050                 RSSubset = eegtoolkit.util.ResultSet(sInstanceSet,sOutputLabels,sOutputProbabilities);
+0051             <span class="keyword">else</span>
+0052                 sOutputRanking = RS.outputRanking(indices);
+0053                 RSSubset = eegtoolkit.util.ResultSet(sInstanceSet,sOutputLabels,sOutputProbabilities,sOutputRanking);
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056             
+0057     <span class="keyword">end</span>
+0058     
+0059 <span class="keyword">end</span>
+0060</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

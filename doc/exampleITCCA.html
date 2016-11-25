@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exampleITCCA</title>
+  <meta name="keywords" content="exampleITCCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; exampleITCCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>exampleITCCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<p><a href="exampleITCCA.m">exampleITCCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 m_secs = 0.5:0.5:4;
+0002 <span class="keyword">for</span> ii=1:8
+0003     <span class="keyword">for</span> jj = 1:8
+0004         sess = eegtoolkit.util.Session;
+0005         <span class="comment">% sess.loadAll(4);</span>
+0006         <span class="comment">% sess.loadAll(4);</span>
+0007         sess.loadSubject(4,ii);
+0008         ss = eegtoolkit.preprocessing.SampleSelection;
+0009         ss.channels = 1:8;
+0010         ss.sampleRange = [75,74+256*m_secs(jj)];
+0011         <span class="comment">% ss.sampleRange = [1,1140];</span>
+0012         <span class="comment">% 75:1024+74</span>
+0013         h = fdesign.bandpass(<span class="string">'N,F3dB1,F3dB2'</span>,10,6,80,256);
+0014         d1 = design(h,<span class="string">'butter'</span>);
+0015         df = eegtoolkit.preprocessing.DigitalFilter; <span class="comment">%</span>
+0016         df.filt = d1;
+0017         
+0018         refer = eegtoolkit.preprocessing.Rereferencing;
+0019         refer.meanSignal = 1;
+0020         
+0021         extr = eegtoolkit.featextraction.RawSignal;
+0022         
+0023         classif = eegtoolkit.classification.ITCCA;
+0024         classif.baseClassifier = eegtoolkit.classification.MaxChooser;
+0025         
+0026         experiment = eegtoolkit.experiment.Experimenter;
+0027         experiment.session = sess;
+0028         experiment.preprocessing = {ss,refer,df};
+0029         experiment.featextraction = extr;
+0030         experiment.classification = classif;
+0031         <span class="comment">% experiment.evalMethod = experiment.EVAL_METHOD_LOOCV;</span>
+0032         <span class="comment">% experiment.run();</span>
+0033         experiment.evalMethod = experiment.EVAL_METHOD_LOBO;
+0034         experiment.run();
+0035         <span class="keyword">for</span> i=1:length(experiment.results)
+0036             accuracy(i) = experiment.results{i}.getAccuracy();
+0037         <span class="keyword">end</span>
+0038         acc2(ii,jj) = mean(accuracy);
+0039         <span class="comment">% accuracy = experiment.results{1}.getAccuracy();</span>
+0040         
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

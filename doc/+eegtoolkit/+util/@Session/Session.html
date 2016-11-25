@@ -1,0 +1,589 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Session</title>
+  <meta name="keywords" content="Session">
+  <meta name="description" content="SESSION class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@Session</a> &gt; Session.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@Session&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Session
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>SESSION class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SESSION class
+ Session I/O, splitting sessions into trials and applying filters
+
+ Properties:
+ trials: A cell array with the Trials of the loaded sessions.
+ filt: Filter to be applied when data is loaded
+ sessions: Cell array with the filenames of the dataset
+ subjectids: Vector with the subject ids corresponding to the loaded trials
+ sessionids: Vector with the session ids corresponding to the loaded trials
+
+ Functions:
+init a session
+   session = eegtoolkit.util.Session();
+init a session with a filter (created with 'filterbuilder')
+   session = eegtoolkit.util.Session(filt);
+load trials for a subject
+   session.loadSubject(subjectid);
+load a specific session
+   session.loadSubjectSession(subjectid,sessionid);
+load everything
+   session.loadAll();
+clear loaded data
+   session.clearData;
+apply a filter that was created with 'filterbuilder'
+   session.applyFilter(filt);
+
+
+DATASETS
+1. SSVEP Dataset I (SINGLE)
+2. SSVEP Dataset II (MULTI)
+3. SSVEP Dataset III (EPOC-MULTI)
+4. SSVEP Dataset SCCN
+5. ERRP Dataset
+6. MI Dataset</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Session.html" class="code" title="">Session</a>	SESSION class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Session.html" class="code" title="">Session</a>	SESSION class</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function S = Session()</a></li><li><a href="#_sub2" class="code">function S = loadAll(S,experiment)</a></li><li><a href="#_sub3" class="code">function S = loadSubject(S,experiment,subject)</a></li><li><a href="#_sub4" class="code">function S = loadSubjectSession(S,experiment,subject,session)</a></li><li><a href="#_sub5" class="code">function S = clearData(S)</a></li><li><a href="#_sub6" class="code">function trials = split(S, signal, dins, subjectid, session,labels)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Session.m">Session.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% SESSION class</span>
+0002 <span class="comment">% Session I/O, splitting sessions into trials and applying filters</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Properties:</span>
+0005 <span class="comment">% trials: A cell array with the Trials of the loaded sessions.</span>
+0006 <span class="comment">% filt: Filter to be applied when data is loaded</span>
+0007 <span class="comment">% sessions: Cell array with the filenames of the dataset</span>
+0008 <span class="comment">% subjectids: Vector with the subject ids corresponding to the loaded trials</span>
+0009 <span class="comment">% sessionids: Vector with the session ids corresponding to the loaded trials</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Functions:</span>
+0012 <span class="comment">%init a session</span>
+0013 <span class="comment">%   session = eegtoolkit.util.Session();</span>
+0014 <span class="comment">%init a session with a filter (created with 'filterbuilder')</span>
+0015 <span class="comment">%   session = eegtoolkit.util.Session(filt);</span>
+0016 <span class="comment">%load trials for a subject</span>
+0017 <span class="comment">%   session.loadSubject(subjectid);</span>
+0018 <span class="comment">%load a specific session</span>
+0019 <span class="comment">%   session.loadSubjectSession(subjectid,sessionid);</span>
+0020 <span class="comment">%load everything</span>
+0021 <span class="comment">%   session.loadAll();</span>
+0022 <span class="comment">%clear loaded data</span>
+0023 <span class="comment">%   session.clearData;</span>
+0024 <span class="comment">%apply a filter that was created with 'filterbuilder'</span>
+0025 <span class="comment">%   session.applyFilter(filt);</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%DATASETS</span>
+0029 <span class="comment">%1. SSVEP Dataset I (SINGLE)</span>
+0030 <span class="comment">%2. SSVEP Dataset II (MULTI)</span>
+0031 <span class="comment">%3. SSVEP Dataset III (EPOC-MULTI)</span>
+0032 <span class="comment">%4. SSVEP Dataset SCCN</span>
+0033 <span class="comment">%5. ERRP Dataset</span>
+0034 <span class="comment">%6. MI Dataset</span>
+0035 
+0036 classdef <a href="Session.html" class="code" title="">Session</a> &lt; handle
+0037     
+0038     properties (Constant)
+0039         THRESHOLD_SPLIT_MILLIS = 2000; <span class="comment">%Threshold for splitting the trials based on DIN data</span>
+0040     <span class="keyword">end</span>
+0041     properties (Access = public)
+0042         trials = {}; <span class="comment">% Trials of the loaded sessions.</span>
+0043         filt; <span class="comment">% Filter to be applied when data is loaded</span>
+0044         sessions; <span class="comment">% Filenames of the dataset</span>
+0045         subjectids; <span class="comment">% The subject ids corresponding to the loaded trials</span>
+0046         sessionids;
+0047     <span class="keyword">end</span>
+0048     
+0049     
+0050     methods (Access = public)
+0051         <a name="_sub0" href="#_subfunctions" class="code">function S = Session()</a>
+0052             <span class="comment">%S = eegtoolkit.util.Session();</span>
+0053             <span class="comment">%Constructs a session object</span>
+0054             <span class="comment">%</span>
+0055             <span class="comment">%S = eegtoolkit.util.Session(filt);</span>
+0056             <span class="comment">%Constructs a session object. A filter will applied to all</span>
+0057             <span class="comment">%loaded trials</span>
+0058             <span class="comment">%Dataset I</span>
+0059             S.sessions{1,1,1} = <span class="string">'S001a'</span>;
+0060             S.sessions{1,1,2} = <span class="string">'S001b'</span>;
+0061             S.sessions{1,1,3} = <span class="string">'S001c'</span>;
+0062             S.sessions{1,2,1} = <span class="string">'S002a'</span>;
+0063             S.sessions{1,2,2} = <span class="string">'S002b'</span>;
+0064             S.sessions{1,2,3} = <span class="string">'S002c'</span>;
+0065             S.sessions{1,2,4} = <span class="string">'S002d'</span>;
+0066             S.sessions{1,2,5} = <span class="string">'S002e'</span>;
+0067             S.sessions{1,3,1} = <span class="string">'S003a'</span>;
+0068             S.sessions{1,3,2} = <span class="string">'S003b'</span>;
+0069             S.sessions{1,3,3} = <span class="string">'S003c'</span>;
+0070             S.sessions{1,4,1} = <span class="string">'S004a'</span>;
+0071             S.sessions{1,4,2} = <span class="string">'S004b'</span>;
+0072             S.sessions{1,4,3} = <span class="string">'S004c'</span>;
+0073             S.sessions{1,4,4} = <span class="string">'S004d'</span>;
+0074             S.sessions{1,5,1} = <span class="string">'S005a'</span>;
+0075             S.sessions{1,5,2} = <span class="string">'S005b'</span>;
+0076             S.sessions{1,5,3} = <span class="string">'S005c'</span>;
+0077             S.sessions{1,5,4} = <span class="string">'S005d'</span>;
+0078             S.sessions{1,5,5} = <span class="string">'S005e'</span>;
+0079             S.sessions{1,6,1} = <span class="string">'S006a'</span>;
+0080             S.sessions{1,6,2} = <span class="string">'S006b'</span>;
+0081             S.sessions{1,6,3} = <span class="string">'S006c'</span>;
+0082             S.sessions{1,6,4} = <span class="string">'S006d'</span>;
+0083             S.sessions{1,6,5} = <span class="string">'S006e'</span>;
+0084             S.sessions{1,7,1} = <span class="string">'S007a'</span>;
+0085             S.sessions{1,7,2} = <span class="string">'S007b'</span>;
+0086             S.sessions{1,7,3} = <span class="string">'S007c'</span>;
+0087             S.sessions{1,7,4} = <span class="string">'S007d'</span>;
+0088             S.sessions{1,7,5} = <span class="string">'S007e'</span>;
+0089             S.sessions{1,8,1} = <span class="string">'S008a'</span>;
+0090             S.sessions{1,8,2} = <span class="string">'S008b'</span>;
+0091             S.sessions{1,8,3} = <span class="string">'S008c'</span>;
+0092             S.sessions{1,9,1} = <span class="string">'S009a'</span>;
+0093             S.sessions{1,9,2} = <span class="string">'S009b'</span>;
+0094             S.sessions{1,9,3} = <span class="string">'S009c'</span>;
+0095             S.sessions{1,9,4} = <span class="string">'S009d'</span>;
+0096             S.sessions{1,9,5} = <span class="string">'S009e'</span>;
+0097             S.sessions{1,10,1} = <span class="string">'S010a'</span>;
+0098             S.sessions{1,10,2} = <span class="string">'S010b'</span>;
+0099             S.sessions{1,10,3} = <span class="string">'S010c'</span>;
+0100             S.sessions{1,10,4} = <span class="string">'S010d'</span>;
+0101             S.sessions{1,10,5} = <span class="string">'S010e'</span>;
+0102             S.sessions{1,11,1} = <span class="string">'S013a'</span>;
+0103             S.sessions{1,11,2} = <span class="string">'S013b'</span>;
+0104             S.sessions{1,11,3} = <span class="string">'S013c'</span>;
+0105             S.sessions{1,11,4} = <span class="string">'S013d'</span>;
+0106             S.sessions{1,11,5} = <span class="string">'S013e'</span>;
+0107             
+0108             <span class="comment">%Dataset II</span>
+0109             S.sessions{2,1,1} = <span class="string">'T001a'</span>;
+0110             S.sessions{2,1,2} = <span class="string">'T001b'</span>;
+0111             S.sessions{2,1,3} = <span class="string">'T001c'</span>;
+0112             S.sessions{2,1,4} = <span class="string">'T001d'</span>;
+0113             S.sessions{2,1,5} = <span class="string">'T001e'</span>;
+0114             S.sessions{2,2,1} = <span class="string">'T002a'</span>;
+0115             S.sessions{2,2,2} = <span class="string">'T002b'</span>;
+0116             S.sessions{2,2,3} = <span class="string">'T002c'</span>;
+0117             S.sessions{2,2,4} = <span class="string">'T002d'</span>;
+0118             S.sessions{2,2,5} = <span class="string">'T002e'</span>;
+0119             S.sessions{2,3,1} = <span class="string">'T003a'</span>;
+0120             S.sessions{2,3,2} = <span class="string">'T003b'</span>;
+0121             S.sessions{2,3,3} = <span class="string">'T003c'</span>;
+0122             S.sessions{2,3,4} = <span class="string">'T003d'</span>;
+0123             S.sessions{2,3,5} = <span class="string">'T003e'</span>;
+0124             S.sessions{2,4,1} = <span class="string">'T004a'</span>;
+0125             S.sessions{2,4,2} = <span class="string">'T004b'</span>;
+0126             S.sessions{2,4,3} = <span class="string">'T004c'</span>;
+0127             S.sessions{2,4,4} = <span class="string">'T004d'</span>;
+0128             S.sessions{2,4,5} = <span class="string">'T004e'</span>;
+0129             S.sessions{2,5,1} = <span class="string">'T005a'</span>;
+0130             S.sessions{2,5,2} = <span class="string">'T005b'</span>;
+0131             S.sessions{2,5,3} = <span class="string">'T005c'</span>;
+0132             S.sessions{2,5,4} = <span class="string">'T005d'</span>;
+0133             S.sessions{2,5,5} = <span class="string">'T005e'</span>;
+0134             S.sessions{2,6,1} = <span class="string">'T006a'</span>;
+0135             S.sessions{2,6,2} = <span class="string">'T006b'</span>;
+0136             S.sessions{2,6,3} = <span class="string">'T006c'</span>;
+0137             S.sessions{2,6,4} = <span class="string">'T006d'</span>;
+0138             S.sessions{2,6,5} = <span class="string">'T006e'</span>;
+0139             S.sessions{2,7,1} = <span class="string">'T007a'</span>;
+0140             S.sessions{2,7,2} = <span class="string">'T007b'</span>;
+0141             S.sessions{2,7,3} = <span class="string">'T007c'</span>;
+0142             S.sessions{2,7,4} = <span class="string">'T007d'</span>;
+0143             S.sessions{2,7,5} = <span class="string">'T007e'</span>;
+0144             S.sessions{2,8,1} = <span class="string">'T008a'</span>;
+0145             S.sessions{2,8,2} = <span class="string">'T008b'</span>;
+0146             S.sessions{2,8,3} = <span class="string">'T008c'</span>;
+0147             S.sessions{2,8,4} = <span class="string">'T008d'</span>;
+0148             S.sessions{2,8,5} = <span class="string">'T008e'</span>;
+0149             S.sessions{2,9,1} = <span class="string">'T009a'</span>;
+0150             S.sessions{2,9,2} = <span class="string">'T009b'</span>;
+0151             S.sessions{2,9,3} = <span class="string">'T009c'</span>;
+0152             S.sessions{2,9,4} = <span class="string">'T009d'</span>;
+0153             S.sessions{2,9,5} = <span class="string">'T009e'</span>;
+0154             S.sessions{2,10,1} = <span class="string">'T010a'</span>;
+0155             S.sessions{2,10,2} = <span class="string">'T010b'</span>;
+0156             S.sessions{2,10,3} = <span class="string">'T010c'</span>;
+0157             S.sessions{2,10,4} = <span class="string">'T010d'</span>;
+0158             S.sessions{2,10,5} = <span class="string">'T010e'</span>;
+0159             S.sessions{2,11,1} = <span class="string">'T013a'</span>;
+0160             S.sessions{2,11,2} = <span class="string">'T013b'</span>;
+0161             S.sessions{2,11,3} = <span class="string">'T013c'</span>;
+0162             S.sessions{2,11,4} = <span class="string">'T013d'</span>;
+0163             S.sessions{2,11,5} = <span class="string">'T013e'</span>;
+0164             
+0165             <span class="comment">%Dataset III (Epoc)</span>
+0166             S.sessions{3,1,1} = <span class="string">'U001a'</span>;
+0167             S.sessions{3,1,2} = <span class="string">'U001b'</span>;
+0168             S.sessions{3,1,3} = <span class="string">'U001c'</span>;
+0169             S.sessions{3,1,4} = <span class="string">'U001d'</span>;
+0170             S.sessions{3,1,5} = <span class="string">'U001e'</span>;
+0171             S.sessions{3,2,1} = <span class="string">'U002a'</span>;
+0172             S.sessions{3,2,2} = <span class="string">'U002b'</span>;
+0173             S.sessions{3,2,3} = <span class="string">'U002c'</span>;
+0174             S.sessions{3,2,4} = <span class="string">'U002d'</span>;
+0175             S.sessions{3,2,5} = <span class="string">'U002e'</span>;
+0176             S.sessions{3,3,1} = <span class="string">'U003a'</span>;
+0177             S.sessions{3,3,2} = <span class="string">'U003b'</span>;
+0178             S.sessions{3,3,3} = <span class="string">'U003c'</span>;
+0179             S.sessions{3,3,4} = <span class="string">'U003d'</span>;
+0180             S.sessions{3,3,5} = <span class="string">'U003e'</span>;
+0181             S.sessions{3,4,1} = <span class="string">'U004a'</span>;
+0182             S.sessions{3,4,2} = <span class="string">'U004b'</span>;
+0183             S.sessions{3,4,3} = <span class="string">'U004c'</span>;
+0184             S.sessions{3,4,4} = <span class="string">'U004d'</span>;
+0185             S.sessions{3,4,5} = <span class="string">'U004e'</span>;
+0186             S.sessions{3,5,1} = <span class="string">'U005a'</span>;
+0187             S.sessions{3,5,2} = <span class="string">'U005b'</span>;
+0188             S.sessions{3,5,3} = <span class="string">'U005c'</span>;
+0189             S.sessions{3,5,4} = <span class="string">'U005d'</span>;
+0190             S.sessions{3,5,5} = <span class="string">'U005e'</span>;
+0191             S.sessions{3,6,1} = <span class="string">'U006a'</span>;
+0192             S.sessions{3,6,2} = <span class="string">'U006b'</span>;
+0193             S.sessions{3,6,3} = <span class="string">'U006c'</span>;
+0194             S.sessions{3,6,4} = <span class="string">'U006d'</span>;
+0195             S.sessions{3,6,5} = <span class="string">'U006e'</span>;
+0196             S.sessions{3,7,1} = <span class="string">'U007a'</span>;
+0197             S.sessions{3,7,2} = <span class="string">'U007b'</span>;
+0198             S.sessions{3,7,3} = <span class="string">'U007c'</span>;
+0199             S.sessions{3,7,4} = <span class="string">'U007d'</span>;
+0200             S.sessions{3,7,5} = <span class="string">'U007e'</span>;
+0201             S.sessions{3,8,1} = <span class="string">'U008a'</span>;
+0202             S.sessions{3,8,2} = <span class="string">'U008b'</span>;
+0203             S.sessions{3,8,3} = <span class="string">'U008c'</span>;
+0204             S.sessions{3,8,4} = <span class="string">'U008d'</span>;
+0205             S.sessions{3,8,5} = <span class="string">'U008e'</span>;
+0206             S.sessions{3,9,1} = <span class="string">'U009a'</span>;
+0207             S.sessions{3,9,2} = <span class="string">'U009b'</span>;
+0208             S.sessions{3,9,3} = <span class="string">'U009c'</span>;
+0209             S.sessions{3,9,4} = <span class="string">'U009d'</span>;
+0210             S.sessions{3,9,5} = <span class="string">'U009e'</span>;
+0211             S.sessions{3,10,1} = <span class="string">'U010a'</span>;
+0212             S.sessions{3,10,2} = <span class="string">'U010b'</span>;
+0213             S.sessions{3,10,3} = <span class="string">'U010c'</span>;
+0214             S.sessions{3,10,4} = <span class="string">'U010d'</span>;
+0215             S.sessions{3,10,5} = <span class="string">'U010e'</span>;
+0216             S.sessions{3,11,1} = <span class="string">'U011a'</span>;
+0217             S.sessions{3,11,2} = <span class="string">'U011b'</span>;
+0218             S.sessions{3,11,3} = <span class="string">'U011c'</span>;
+0219             S.sessions{3,11,4} = <span class="string">'U011d'</span>;
+0220             S.sessions{3,11,5} = <span class="string">'U011e'</span>;
+0221             
+0222             <span class="comment">%SCCN dataset</span>
+0223             S.sessions{4,1,1} = <span class="string">'s1'</span>;
+0224             S.sessions{4,2,1} = <span class="string">'s2'</span>;
+0225             S.sessions{4,3,1} = <span class="string">'s3'</span>;
+0226             S.sessions{4,4,1} = <span class="string">'s4'</span>;
+0227             S.sessions{4,5,1} = <span class="string">'s5'</span>;
+0228             S.sessions{4,6,1} = <span class="string">'s6'</span>;
+0229             S.sessions{4,7,1} = <span class="string">'s7'</span>;
+0230             S.sessions{4,8,1} = <span class="string">'s8'</span>;
+0231             S.sessions{4,9,1} = <span class="string">'s9'</span>;
+0232             S.sessions{4,10,1} = <span class="string">'s10'</span>;
+0233             
+0234             <span class="comment">%ERRP dataset</span>
+0235             S.sessions{5,1,1} = <span class="string">'EEG_s1.mat'</span>;
+0236             S.sessions{5,2,1} = <span class="string">'EEG_s2.mat'</span>;
+0237             S.sessions{5,3,1} = <span class="string">'EEG_s3.mat'</span>;
+0238             S.sessions{5,4,1} = <span class="string">'EEG_s4.mat'</span>;
+0239             S.sessions{5,5,1} = <span class="string">'EEG_s5.mat'</span>;
+0240             S.sessions{5,6,1} = <span class="string">'EEG_s6.mat'</span>;
+0241             S.sessions{5,7,1} = <span class="string">'EEG_s7.mat'</span>;
+0242             S.sessions{5,8,1} = <span class="string">'EEG_s8.mat'</span>;
+0243             
+0244             S.sessions{6,1,1} = <span class="string">'dataset_BCIcomp1.mat'</span>;
+0245             
+0246             S.sessions{7,1,1} = <span class="string">'B01T.mat'</span>;
+0247             S.sessions{7,1,2} = <span class="string">'B01T.mat'</span>;
+0248             S.sessions{7,2,1} = <span class="string">'B02T.mat'</span>;
+0249             S.sessions{7,2,2} = <span class="string">'B02T.mat'</span>;
+0250             S.sessions{7,3,1} = <span class="string">'B03T.mat'</span>;
+0251             S.sessions{7,3,2} = <span class="string">'B03T.mat'</span>;
+0252             S.sessions{7,4,1} = <span class="string">'B04T.mat'</span>;
+0253             S.sessions{7,4,2} = <span class="string">'B04T.mat'</span>;
+0254             S.sessions{7,5,1} = <span class="string">'B05T.mat'</span>;
+0255             S.sessions{7,5,2} = <span class="string">'B05T.mat'</span>;
+0256             S.sessions{7,6,1} = <span class="string">'B06T.mat'</span>;
+0257             S.sessions{7,6,2} = <span class="string">'B06T.mat'</span>;
+0258             S.sessions{7,7,1} = <span class="string">'B07T.mat'</span>;
+0259             S.sessions{7,7,2} = <span class="string">'B07T.mat'</span>;
+0260             S.sessions{7,8,1} = <span class="string">'B08T.mat'</span>;
+0261             S.sessions{7,8,2} = <span class="string">'B08T.mat'</span>;
+0262             S.sessions{7,9,1} = <span class="string">'B09T.mat'</span>;
+0263             S.sessions{7,9,2} = <span class="string">'B09T.mat'</span>;
+0264             
+0265             <span class="comment">%MI dataset</span>
+0266             <span class="comment">%             S.sessions{6,1,1} = ;</span>
+0267             
+0268             
+0269             S.subjectids = [];
+0270             S.sessionids = [];
+0271         <span class="keyword">end</span>
+0272         <a name="_sub1" href="#_subfunctions" class="code">function S = loadAll(S,experiment)</a>
+0273             <span class="comment">%loads everything</span>
+0274             [~,l,~] = size(S.sessions);
+0275             h = waitbar(0,<span class="string">'Loading...'</span>);
+0276             <span class="keyword">for</span> i=1:l
+0277                 waitbar(i/l,h,<span class="string">'Loading...'</span>);
+0278                 S.loadSubject(experiment,i);
+0279             <span class="keyword">end</span>
+0280             close(h);
+0281         <span class="keyword">end</span>
+0282         
+0283         <a name="_sub2" href="#_subfunctions" class="code">function S = loadSubject(S,experiment,subject)</a>
+0284             <span class="comment">%loads all trials for a specific subject</span>
+0285             <span class="comment">%</span>
+0286             <span class="comment">%Example:</span>
+0287             <span class="comment">%   session.loadSubject(1);</span>
+0288             <span class="comment">%loads all the trials of the 1st subject</span>
+0289             [~,~, y] = size(S.sessions);
+0290             <span class="keyword">for</span> i=1:y
+0291                 <span class="keyword">if</span> ~isempty(S.sessions{experiment,subject,i})
+0292                     S.loadSubjectSession(experiment,subject,i);
+0293                 <span class="keyword">end</span>
+0294             <span class="keyword">end</span>
+0295         <span class="keyword">end</span>
+0296         <a name="_sub3" href="#_subfunctions" class="code">function S = loadSubjectSession(S,experiment,subject,session)</a>
+0297             <span class="comment">%loads all trials for a specific session</span>
+0298             <span class="comment">%</span>
+0299             <span class="comment">%Example:</span>
+0300             <span class="comment">%   session.loadSubjectSession(1,2);</span>
+0301             <span class="comment">%loads the 2nd session of the 1st subject</span>
+0302             <span class="comment">%</span>
+0303             <span class="keyword">switch</span>(experiment)
+0304                 <span class="keyword">case</span> 1
+0305                     <span class="comment">%Load Dataset I (SINGLE)</span>
+0306                     load(S.sessions{experiment,subject,session});
+0307                     signal = eval(<span class="string">'eeg'</span>);
+0308                     numTrials = length(S.trials) + 1;
+0309                     curTrials = S.split(signal,DIN_1,subject,session);
+0310                     <span class="keyword">for</span> i=1:length(curTrials)
+0311                         S.trials{numTrials} = curTrials{i};
+0312                         numTrials = numTrials + 1;
+0313                     <span class="keyword">end</span>
+0314                 <span class="keyword">case</span> 2
+0315                     <span class="comment">%Load Dataset II (MULTI)</span>
+0316                     load(S.sessions{experiment,subject,session});
+0317                     signal = eval(<span class="string">'eeg'</span>);
+0318                     numTrials = length(S.trials) + 1;
+0319                     curTrials = S.split(signal,DIN_1,subject,session,labels);
+0320                     <span class="keyword">for</span> i=1:length(curTrials)
+0321                         S.trials{numTrials} = curTrials{i};
+0322                         numTrials = numTrials + 1;
+0323                     <span class="keyword">end</span>
+0324                 <span class="keyword">case</span> 3
+0325                     <span class="comment">%Dataset III (EPOC-MULTI)</span>
+0326                     SAMPLING_RATE = 128;
+0327                     load(strcat(S.sessions{experiment,subject,session},<span class="string">'i'</span>));
+0328                     events = eval(<span class="string">'events'</span>);
+0329                     marks = events(events(:,2)==32779,3);
+0330                     stops = events(events(:,2)==32780,3);
+0331                     numTrials = length(S.trials) + 1;
+0332                     labels = {4,2,3,5,1,2,5,4,2,3,1,5};
+0333                     <span class="keyword">for</span> i=1:length(marks)
+0334                         signal = eeg(:,marks(i):stops(i) -1);
+0335                         label = labels{i};
+0336                         S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.SSVEP);
+0337                         numTrials = numTrials + 1;
+0338                         S.subjectids = [S.subjectids subject];
+0339                         S.sessionids = [S.sessionids session];
+0340                     <span class="keyword">end</span>
+0341                     <span class="comment">%load part 2</span>
+0342                     load(strcat(S.sessions{experiment,subject,session},<span class="string">'ii'</span>));
+0343                     events = eval(<span class="string">'events'</span>);
+0344                     marks = events(events(:,2)==32779,3);
+0345                     stops = events(events(:,2)==32780,3);
+0346                     numTrials = length(S.trials) + 1;
+0347                     labels = {4,3,2,4,1,2,5,3,4,1,3,1,3};
+0348                     <span class="keyword">for</span> i=1:length(marks)
+0349                         signal = eeg(:,marks(i):stops(i) -1);
+0350                         label = labels{i};
+0351                         S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.SSVEP);
+0352                         numTrials = numTrials + 1;
+0353                         S.subjectids = [S.subjectids subject];
+0354                         S.sessionids = [S.sessionids session];
+0355                     <span class="keyword">end</span>
+0356                 <span class="keyword">case</span> 4
+0357                     <span class="comment">%SCCN Dataset</span>
+0358                     SAMPLING_RATE = 256;
+0359                     load(S.sessions{experiment,subject,session});
+0360                     [x,y,z,zz] = size(eeg);
+0361                     numTrials = length(S.trials) + 1;
+0362                     <span class="keyword">for</span> i=1:x
+0363                         <span class="keyword">for</span> j=1:zz
+0364                             S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(eeg(i,:,:,j)),i,SAMPLING_RATE,subject,j);
+0365                             numTrials = numTrials+1;
+0366                             S.subjectids = [S.subjectids subject];
+0367                             S.sessionids = [S.sessionids j];
+0368                         <span class="keyword">end</span>
+0369                     <span class="keyword">end</span>
+0370                 <span class="keyword">case</span> 5
+0371                     <span class="comment">%ERRP Dataset</span>
+0372                     SAMPLING_RATE = 256;
+0373                     <span class="comment">%range of trial in milliseconds based on the stimulus</span>
+0374                     <span class="comment">%event</span>
+0375                     range = [200,800];
+0376                     xstart = round(range(1)*SAMPLING_RATE/1000)-1500;
+0377                     xend = round(range(2)*SAMPLING_RATE/1000);
+0378                     load(S.sessions{experiment,subject,session});
+0379                     events = {<span class="string">'correct_movement'</span>, <span class="string">'error_movement'</span>};
+0380                     numTrials = length(S.trials) + 1;
+0381                     <span class="keyword">for</span> ev=1:length(events)
+0382                         idxev = find(strcmp(EEG.events.name, events{ev}));
+0383                         epochs.(events{ev}) = zeros(length(xstart:xend), size(EEG.signal,2), length(idxev));
+0384                         <span class="keyword">for</span> i=1:length(idxev)
+0385                             epochs.(events{ev})(:,:,i) = EEG.signal(EEG.events.position(idxev(i))+xstart:EEG.events.position(idxev(i))+xend,:);
+0386                         <span class="keyword">end</span>
+0387                         GrandAverages.(events{ev}) = mean(epochs.(events{ev}),3);
+0388                     <span class="keyword">end</span>
+0389                     [~,~,numCorrect] = size(epochs.correct_movement);
+0390                     [~,~,numError] = size(epochs.error_movement);
+0391                     <span class="keyword">for</span> i=1:numCorrect
+0392                         S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(epochs.correct_movement(:,:,i))',1,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.ERRP);
+0393                         numTrials = numTrials + 1;
+0394                         S.subjectids = [S.subjectids subject];
+0395                         S.sessionids = [S.sessionids session];
+0396                         
+0397                     <span class="keyword">end</span>
+0398                     <span class="keyword">for</span> i=1:numError
+0399                         S.trials{numTrials} = eegtoolkit.util.Trial(squeeze(epochs.error_movement(:,:,i))',2,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.ERRP);
+0400                         numTrials = numTrials + 1;
+0401                         S.subjectids = [S.subjectids subject];
+0402                         S.sessionids = [S.sessionids session];
+0403                     <span class="keyword">end</span>
+0404                 <span class="keyword">case</span> 6
+0405                     load(S.sessions{experiment,subject,session});
+0406                     [~,~,n] = size(x_train);
+0407                     numTrials = length(S.trials) + 1;
+0408                     <span class="keyword">for</span> i=1:n
+0409                         signal = squeeze(x_train(:,:,i));
+0410                         label = y_train(i);
+0411                         S.trials{numTrials} = eegtoolkit.util.Trial(signal',label,128,1,1,eegtoolkit.util.Trial.MI);
+0412                         S.subjectids = [S.subjectids subject];
+0413                         S.sessionids = [S.sessionids session];
+0414                         numTrials = numTrials + 1;
+0415                     <span class="keyword">end</span>
+0416                 <span class="keyword">case</span> 7
+0417                     load(S.sessions{experiment,subject,session});
+0418                     [trialsegm,labels] = segmentGratzB(data{session},0.5,2.5,250);
+0419                     [n,~,~] = size(trialsegm);
+0420                     numTrials = length(S.trials) + 1;
+0421                     <span class="keyword">for</span> i=1:n
+0422                         signal = squeeze(trialsegm(i,:,:));
+0423                         label = labels(i);
+0424                         S.trials{numTrials} = eegtoolkit.util.Trial(signal',label,250,subject,session,eegtoolkit.util.Trial.MI);
+0425                         S.subjectids = [S.subjectids subject];
+0426                         S.sessionids = [S.sessionids session];
+0427                         numTrials = numTrials + 1;
+0428                     <span class="keyword">end</span>
+0429                 <span class="keyword">otherwise</span>
+0430                     error(<span class="string">'invalid experiment id'</span>);
+0431             <span class="keyword">end</span>
+0432         <span class="keyword">end</span>
+0433         
+0434         <a name="_sub4" href="#_subfunctions" class="code">function S = clearData(S)</a>
+0435             <span class="comment">%clears loaded data</span>
+0436             S.trials = {};
+0437             S.subjectids = [];
+0438             S.sessionids = [];
+0439         <span class="keyword">end</span>
+0440     <span class="keyword">end</span>
+0441     
+0442     methods (Access = private)
+0443         <a name="_sub5" href="#_subfunctions" class="code">function trials = split(S, signal, dins, subjectid, session,labels)</a>
+0444             SAMPLING_RATE = 250;
+0445             timestamps = cell2mat(dins(2,:));
+0446             samples = cell2mat(dins(4,:));
+0447             [a numDins ]= size(dins);
+0448             sampleA= samples(1);
+0449             timeA = timestamps(1);
+0450             previous = timestamps(1);
+0451             ranges = [];
+0452             freqs = [];
+0453             times = [];
+0454             sum = 0;
+0455             count = 0;
+0456             i=2;
+0457             <span class="keyword">for</span> i=2:numDins
+0458                 current = timestamps(i);
+0459                 <span class="keyword">if</span>(current - previous) &gt; S.THRESHOLD_SPLIT_MILLIS;
+0460                     sampleB = samples(i-1);
+0461                     timeB = timestamps(i-1);
+0462                     freqs = [freqs; (sum/count)];
+0463                     <span class="comment">% don't ask why</span>
+0464                     <span class="keyword">if</span>(sampleB - sampleA&gt;382)
+0465                         ranges = [ranges ; [sampleA (sampleA+1249)]];
+0466                         times = [times; [timeA timeB]];
+0467                     <span class="keyword">end</span>
+0468                     sampleA = samples(i);
+0469                     timeA = timestamps(i);
+0470                     sum = 0;
+0471                     count = 0;
+0472                 <span class="keyword">else</span>
+0473                     sum = sum + (current-previous);
+0474                     count = count +1;
+0475                 <span class="keyword">end</span>
+0476                 previous = timestamps(i);
+0477             <span class="keyword">end</span>
+0478             <span class="comment">%             if(isempty(labels))</span>
+0479             sampleB = samples(i-1);
+0480             timeB = timestamps(i-1);
+0481             freqs = [freqs; (sum/count)];
+0482             ranges = [ranges; [sampleA sampleA+1249]];
+0483             times = [times; [timeA timeB]];
+0484             freqs = freqs*2;
+0485             freqs = 1000./freqs;
+0486             <span class="comment">%             end</span>
+0487             [numSplits a] = size(ranges);
+0488             trials = {};
+0489             i = 1;
+0490             <span class="keyword">for</span> i=1:numSplits
+0491                 <span class="keyword">if</span>(nargin&gt;5)
+0492                     trials{i} = eegtoolkit.util.Trial(signal(:, ranges(i,1):ranges(i,2)), labels{i},SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
+0493                     S.subjectids = [S.subjectids subjectid];
+0494                     S.sessionids = [S.sessionids session];
+0495                 <span class="keyword">else</span>
+0496                     trials{i} = eegtoolkit.util.Trial(signal(:,ranges(i,1):ranges(i,2)), freqs(i), SAMPLING_RATE, subjectid,session,eegtoolkit.util.Trial.SSVEP);
+0497                     S.subjectids = [S.subjectids subjectid];
+0498                     S.sessionids = [S.sessionids session];
+0499                 <span class="keyword">end</span>
+0500             <span class="keyword">end</span>
+0501         <span class="keyword">end</span>
+0502         
+0503         
+0504     <span class="keyword">end</span>
+0505 <span class="keyword">end</span>
+0506</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

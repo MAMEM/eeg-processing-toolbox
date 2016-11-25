@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MLR</title>
+  <meta name="keywords" content="MLR">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="#">@MLR</a> &gt; MLR.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+classification/@MLR&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MLR
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLR.html" class="code" title="">MLR</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLR.html" class="code" title="">MLR</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function MLR = MLR(instanceSet)</a></li><li><a href="#_sub2" class="code">function MLR = build(MLR)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(MLR,instance)</a></li><li><a href="#_sub4" class="code">function MLR = reset(MLR)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(MLR)</a></li><li><a href="#_sub6" class="code">function time = getTime(MLR)</a></li><li><a href="#_sub7" class="code">function Proj_W=pca_func(MLR,data)</a></li><li><a href="#_sub8" class="code">function W_mlr=MultiLR(MLR,train_Feat,train_Y)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="MLR.m">MLR.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MLR.html" class="code" title="">MLR</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004         
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008         W_mlr;
+0009         PCA_mat;
+0010         trainFeat;
+0011     <span class="keyword">end</span>
+0012     
+0013     methods (Access = public)
+0014         <a name="_sub0" href="#_subfunctions" class="code">function MLR = MLR(instanceSet)</a>
+0015             <span class="keyword">if</span> nargin &gt; 0
+0016                 MLR.instanceSet = instanceSet;
+0017             <span class="keyword">end</span>
+0018             
+0019         <span class="keyword">end</span>
+0020         
+0021         <a name="_sub1" href="#_subfunctions" class="code">function MLR = build(MLR)</a>
+0022             MLR.reset();
+0023             data = MLR.instanceSet.getInstances;
+0024             data = data';
+0025             labels = MLR.instanceSet.getLabels;
+0026             numTrials = length(labels);
+0027             train_Y = zeros(length(unique(labels)),numTrials);
+0028             <span class="keyword">for</span> i = 1 : numTrials
+0029                 train_Y(labels(i),i) = 1;
+0030             <span class="keyword">end</span>
+0031             [Ydim,Num]=size(train_Y);
+0032             PCA_W=MLR.pca_func(data);
+0033             train_Data=PCA_W'*data;
+0034             train_Data=[ones(1,numTrials);train_Data];
+0035             MLR.W_mlr = MLR.MultiLR(train_Data,train_Y);<span class="comment">%inv(train_Data*train_Data')*train_Data*train_Y';%(train_Data'*train_Data)\train_Data'*train_Y;%MultiLR(train_Data,train_Y);</span>
+0036             MLR.PCA_mat=PCA_W;
+0037             mtrainFeat=MLR.W_mlr'*train_Data;
+0038             MLR.trainFeat=mtrainFeat;
+0039         <span class="keyword">end</span>
+0040         
+0041         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(MLR,instance)</a>
+0042             
+0043             N = size(instance,1);
+0044             instance = instance';
+0045             test_Data=MLR.PCA_mat'*instance;
+0046             test_Data=[ones(1,N);test_Data];
+0047             testFeat=MLR.W_mlr'*test_Data;
+0048             output=knnclassify(testFeat',MLR.trainFeat',MLR.instanceSet.getLabels,5,<span class="string">'euclidean'</span>);
+0049             probabilities=zeros(N,1);
+0050             ranking=zeros(N,1);
+0051             
+0052         <span class="keyword">end</span>
+0053         
+0054         <a name="_sub3" href="#_subfunctions" class="code">function MLR = reset(MLR)</a>
+0055             <span class="comment">%delete all stored models</span>
+0056             MLR.W_mlr=[];
+0057             MLR.PCA_mat=[];
+0058             MLR.trainFeat=[];
+0059         <span class="keyword">end</span>
+0060         
+0061         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(MLR)</a>
+0062             configInfo = sprintf(<span class="string">'MLR'</span>);
+0063         <span class="keyword">end</span>
+0064         
+0065         
+0066         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(MLR)</a>
+0067             time = 0;
+0068         <span class="keyword">end</span>
+0069         
+0070     <span class="keyword">end</span>
+0071     
+0072     methods (Access = private)
+0073         <a name="_sub6" href="#_subfunctions" class="code">function Proj_W=pca_func(MLR,data)</a>
+0074             Proj_W=[];
+0075             meanData=mean(data,2);
+0076             data=data-repmat(meanData,1,size(data,2));
+0077             <span class="comment">% stdVar=std(data')';</span>
+0078             <span class="comment">% staData=(data-repmat(meanData,1,size(data,2)))./repmat(stdVar,1,size(data,2));</span>
+0079             <span class="comment">% data=staData;</span>
+0080             [V,S]=eig(data'*data);
+0081             [sorted_diagS,sorted_rank]=sort(diag(S),<span class="string">'descend'</span>);
+0082             sorted_S=diag(sorted_diagS);
+0083             V=V(:,sorted_rank);
+0084             r=rank(sorted_S);
+0085             S1=sorted_S(1:r,1:r);
+0086             V1=V(:,1:r);
+0087             U=data*V1*S1^(-0.5);
+0088             <span class="comment">%[sorted_S,sorted_rank]=sort(diag(S),'descend');</span>
+0089             All_energy=sum(diag(S1));
+0090             sorted_energy=diag(S1);
+0091             <span class="keyword">for</span> j=1:r
+0092                 <span class="keyword">if</span> (sum(sorted_energy(1:j))/All_energy)&gt;0.99
+0093                     <span class="keyword">break</span>
+0094                 <span class="keyword">end</span>
+0095             <span class="keyword">end</span>
+0096             Proj_W=U(:,1:j);
+0097         <span class="keyword">end</span>
+0098         <a name="_sub7" href="#_subfunctions" class="code">function W_mlr=MultiLR(MLR,train_Feat,train_Y)</a>
+0099             
+0100             <span class="comment">% Multiple linear regression</span>
+0101             <span class="comment">% train_Feat: training samples</span>
+0102             <span class="comment">% train_Y: label matrix</span>
+0103             
+0104             [U,Sigma,V]=svd(train_Feat,<span class="string">'econ'</span>);
+0105             r=rank(Sigma);
+0106             U1=U(:,1:r);
+0107             V1=V(:,1:r);
+0108             Sigma_r=diag(Sigma(1:r, 1:r));
+0109             W_mlr=U1*diag(1./Sigma_r)*V1'*train_Y';
+0110             
+0111             
+0112         <span class="keyword">end</span>
+0113     <span class="keyword">end</span>
+0114 <span class="keyword">end</span>
+0115</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

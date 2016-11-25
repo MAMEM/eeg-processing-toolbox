@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of L1MCCA</title>
+  <meta name="keywords" content="L1MCCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="#">@L1MCCA</a> &gt; L1MCCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+classification/@L1MCCA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>L1MCCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="L1MCCA.html" class="code" title="">L1MCCA</a>	</li><li><a href="../../../+eegtoolkit/+featextraction/@L1MCCA/L1MCCA.html" class="code" title="">L1MCCA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="L1MCCA.html" class="code" title="">L1MCCA</a>	</li><li><a href="../../../+eegtoolkit/+featextraction/@L1MCCA/L1MCCA.html" class="code" title="">L1MCCA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function L1MCCA = L1MCCA(samplingRate,numSeconds,numHarmonics,stimulusFrequencies)</a></li><li><a href="#_sub2" class="code">function L1MCCA = build(L1MCCA)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(L1MCCA,instance)</a></li><li><a href="#_sub4" class="code">function L1MCCA = reset(L1MCCA)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(L1MCCA)</a></li><li><a href="#_sub6" class="code">function [Wx, Wy, r] = cca(L1MCCA,X,Y)</a></li><li><a href="#_sub7" class="code">function  [w1,w3,v1] = smcca(L1MCCA,refdata,traindata,max_iter,iniw3,n_comp,lmbda)</a></li><li><a href="#_sub8" class="code">function y=squarewave(L1MCCA,f, S, T, H)</a></li><li><a href="#_sub9" class="code">function time = getTime(L1MCCA)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="L1MCCA.m">L1MCCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="L1MCCA.html" class="code" title="">L1MCCA</a>&lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004         
+0005     <span class="keyword">end</span>
+0006     properties
+0007         samplingRate;
+0008         numHarmonics;
+0009         numSeconds;
+0010         stimulusFrequencies;
+0011         models;
+0012         maxIterations;
+0013         nProjectionComponents;
+0014         lambda;
+0015     <span class="keyword">end</span>
+0016     
+0017     properties (Access = private)
+0018         referenceSignals;
+0019         optimalReferenceSignals;
+0020         projections;
+0021     <span class="keyword">end</span>
+0022     
+0023     methods (Access = public)
+0024         <a name="_sub0" href="#_subfunctions" class="code">function L1MCCA = L1MCCA(samplingRate,numSeconds,numHarmonics,stimulusFrequencies)</a>
+0025             L1MCCA.samplingRate = samplingRate;
+0026             L1MCCA.numSeconds = numSeconds;
+0027             L1MCCA.numHarmonics = numHarmonics;
+0028             L1MCCA.stimulusFrequencies = stimulusFrequencies;
+0029             
+0030             L1MCCA.maxIterations = 200;
+0031             L1MCCA.nProjectionComponents = 1;
+0032             L1MCCA.lambda = 0.02;
+0033             
+0034             L1MCCA.referenceSignals = {};
+0035             L1MCCA.projections = {};
+0036             L1MCCA.optimalReferenceSignals = {};
+0037             
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub1" href="#_subfunctions" class="code">function L1MCCA = build(L1MCCA)</a>
+0041             L1MCCA.reset;
+0042             n_sti = length(L1MCCA.stimulusFrequencies);
+0043             TW = 0.5:0.5:L1MCCA.numSeconds;
+0044             TW_p = round(TW*L1MCCA.samplingRate);
+0045             
+0046             <span class="keyword">for</span> i=1:n_sti
+0047                 L1MCCA.referenceSignals{i} = L1MCCA.squarewave(L1MCCA.stimulusFrequencies(i)<span class="keyword">...</span>
+0048                     ,L1MCCA.samplingRate,L1MCCA.numSeconds*L1MCCA.samplingRate,L1MCCA.numHarmonics);
+0049             <span class="keyword">end</span>
+0050             <span class="keyword">for</span> i=1:n_sti
+0051                 a = L1MCCA.instanceSet.matrix4D(:,:,L1MCCA.instanceSet.labelss==i);
+0052                 [~,~,numIns] = size(a);
+0053                 iniw3 = ones(numIns,1);
+0054                 L1MCCA.projections{i} = {};
+0055                 [L1MCCA.projections{i}{1},L1MCCA.projections{i}{2},L1MCCA.projections{i}{3}] = L1MCCA.smcca(L1MCCA.referenceSignals{i},<span class="keyword">...</span>
+0056                     a,L1MCCA.maxIterations,iniw3,L1MCCA.nProjectionComponents,L1MCCA.lambda);
+0057             <span class="keyword">end</span>
+0058             <span class="keyword">for</span> i=1:n_sti
+0059                 L1MCCA.optimalReferenceSignals{i} = ttm(tensor(L1MCCA.instanceSet.matrix4D(:,:,L1MCCA.instanceSet.labelss==i)),L1MCCA.projections{i}{2}',3);
+0060                 L1MCCA.optimalReferenceSignals{i} = tenmat(L1MCCA.optimalReferenceSignals{i},1);
+0061                 L1MCCA.optimalReferenceSignals{i} = L1MCCA.optimalReferenceSignals{i}.data;
+0062                 L1MCCA.optimalReferenceSignals{i} = L1MCCA.projections{i}{1}'*L1MCCA.optimalReferenceSignals{i};
+0063             <span class="keyword">end</span>
+0064         <span class="keyword">end</span>
+0065         
+0066         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(L1MCCA,instance)</a>
+0067             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0068             <span class="comment">%output = predicted class</span>
+0069             <span class="comment">%probabilities = probability for predicted class</span>
+0070             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0071             
+0072             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0073             [~, ~,numInstance] = size(instance);
+0074             numLabels = length(L1MCCA.optimalReferenceSignals);
+0075             output = zeros(numInstance,1);
+0076             scores = zeros(numLabels,numInstance);
+0077             <span class="keyword">for</span> i=1:numInstance
+0078                 <span class="keyword">for</span> j=1:numLabels
+0079                     [~,~,r] = L1MCCA.cca(instance(:,:,i),L1MCCA.optimalReferenceSignals{j});
+0080                     scores(j,i) = max(r);
+0081                     
+0082                 <span class="keyword">end</span>
+0083                 [~,output(i,1)] = max(scores(:,i));
+0084             <span class="keyword">end</span>
+0085             ranking = scores;
+0086             probabilities = max(scores);
+0087         <span class="keyword">end</span>
+0088         
+0089         <a name="_sub3" href="#_subfunctions" class="code">function L1MCCA = reset(L1MCCA)</a>
+0090 <span class="comment">%             'Resets' the classifier.</span>
+0091             L1MCCA.referenceSignals = {};
+0092             L1MCCA.projections = {};
+0093             L1MCCA.optimalReferenceSignals = {};
+0094         <span class="keyword">end</span>
+0095         
+0096         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(L1MCCA)</a>
+0097             <span class="comment">% Prints the parameters of the classifier</span>
+0098             configInfo = <span class="string">'L1MCCA'</span>;
+0099         <span class="keyword">end</span>
+0100         
+0101         <a name="_sub5" href="#_subfunctions" class="code">function [Wx, Wy, r] = cca(L1MCCA,X,Y)</a>
+0102             
+0103             <span class="comment">% CCA calculate canonical correlations</span>
+0104             <span class="comment">%</span>
+0105             <span class="comment">% [Wx Wy r] = cca(X,Y) where Wx and Wy contains the canonical correlation</span>
+0106             <span class="comment">% vectors as columns and r is a vector with corresponding canonical</span>
+0107             <span class="comment">% correlations. The correlations are sorted in descending order. X and Y</span>
+0108             <span class="comment">% are matrices where each column is a sample. Hence, X and Y must have</span>
+0109             <span class="comment">% the same number of columns.</span>
+0110             <span class="comment">%</span>
+0111             <span class="comment">% Example: If X is M*K and Y is N*K there are L=MIN(M,N) solutions. Wx is</span>
+0112             <span class="comment">% then M*L, Wy is N*L and r is L*1.</span>
+0113             <span class="comment">%</span>
+0114             <span class="comment">%</span>
+0115             <span class="comment">% ?? 2000 Magnus Borga, Link?pings universitet</span>
+0116             
+0117             <span class="comment">% --- Calculate covariance matrices ---</span>
+0118             
+0119             z = [X;Y];
+0120             C = cov(z.');
+0121             sx = size(X,1);
+0122             sy = size(Y,1);
+0123             Cxx = C(1:sx, 1:sx) + 10^(-8)*eye(sx);
+0124             Cxy = C(1:sx, sx+1:sx+sy);
+0125             Cyx = Cxy';
+0126             Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + 10^(-8)*eye(sy);
+0127             invCyy = inv(Cyy);
+0128             
+0129             <span class="comment">% --- Calcualte Wx and r ---</span>
+0130             
+0131             [Wx,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); <span class="comment">% Basis in X</span>
+0132             r = sqrt(real(r));      <span class="comment">% Canonical correlations</span>
+0133             
+0134             <span class="comment">% --- Sort correlations ---</span>
+0135             
+0136             V = fliplr(Wx);        <span class="comment">% reverse order of eigenvectors</span>
+0137             r = flipud(diag(r));    <span class="comment">% extract eigenvalues and reverse their order</span>
+0138             [r,I]= sort((real(r)));    <span class="comment">% sort reversed eigenvalues in ascending order</span>
+0139             r = flipud(r);        <span class="comment">% restore sorted eigenvalues into descending order</span>
+0140             <span class="keyword">for</span> j = 1:length(I)
+0141                 Wx(:,j) = V(:,I(j));  <span class="comment">% sort reversed eigenvectors in ascending order</span>
+0142             <span class="keyword">end</span>
+0143             Wx = fliplr(Wx);    <span class="comment">% restore sorted eigenvectors into descending order</span>
+0144             
+0145             <span class="comment">% --- Calcualte Wy  ---</span>
+0146             
+0147             Wy = invCyy*Cyx*Wx;     <span class="comment">% Basis in Y</span>
+0148             <span class="comment">% Wy = Wy./repmat(sqrt(sum(abs(Wy).^2)),sy,1); % Normalize Wy</span>
+0149         <span class="keyword">end</span>
+0150         <a name="_sub6" href="#_subfunctions" class="code">function  [w1,w3,v1] = smcca(L1MCCA,refdata,traindata,max_iter,iniw3,n_comp,lmbda)</a>
+0151             <span class="comment">% L1-regualrized (Sparse) Multiway CCA</span>
+0152             <span class="comment">% traindata:    channel x time x trial</span>
+0153             <span class="comment">% refdata:      references by sine-cosine waveforms</span>
+0154             <span class="comment">%</span>
+0155             <span class="comment">% Rerefence:</span>
+0156             <span class="comment">% [1] Y. Zhang, G. Zhou, J. Jin, M. Wang, X. Wang, A. Cichocki.</span>
+0157             <span class="comment">%     L1-regularized multiway canonical correlation analysis for SSVEP-based BCI.</span>
+0158             <span class="comment">%     IEEE Trans. Neural Syst. Rehabil. Eng., 21(6): 887-896 (2013)</span>
+0159             <span class="comment">% [2] T.K. Kim, R. Cipolla. Canonical correlation analysis of video volume tensor for</span>
+0160             <span class="comment">%     action categorization and detection. IEEE Trans. PAMI, 31(8): 1415-1428 (2009)</span>
+0161             <span class="comment">%</span>
+0162             <span class="comment">%</span>
+0163             <span class="comment">% by Yu Zhang, ECUST, 2014.4.29</span>
+0164             <span class="comment">%</span>
+0165             
+0166             iter=1;
+0167             w3=iniw3;
+0168             w3=w3./norm(w3);
+0169             traindata=tensor(traindata);
+0170             refdata=tensor(refdata);
+0171             
+0172             er=0.00001;     <span class="comment">% error for iteration stop</span>
+0173             
+0174             <span class="keyword">while</span> iter&lt;max_iter
+0175                 projx3=ttm(traindata,w3',3);
+0176                 projx3=tenmat(projx3,1);                        <span class="comment">% unfolding each trial tensor into i-mode matrix</span>
+0177                 projx3=projx3.data;
+0178                 [v1,w1,r1]=L1MCCA.cca(refdata.data,projx3);
+0179                 v1=v1(:,1:n_comp); w1=w1(:,1:n_comp);
+0180                 v1=v1./norm(v1); w1=w1./norm(w1);
+0181                 projx1=ttm(traindata,w1',1);
+0182                 projx1=tenmat(projx1,3);                        <span class="comment">% unfolding each trial tensor into i-mode matrix</span>
+0183                 projx1=projx1.data;
+0184                 projref1=ttm(refdata,v1',1);
+0185                 projref1=projref1.data(:)';
+0186                 w3=lasso(projx1',projref1',<span class="string">'Lambda'</span>,lmbda);
+0187                 w3=w3./norm(w3);
+0188                 <span class="keyword">if</span> iter&gt;1
+0189                     <span class="keyword">if</span> all(sign(w1)==-sign(prew1))
+0190                         errw(1,iter-1)=norm(w1+prew1);
+0191                     <span class="keyword">else</span>
+0192                         errw(1,iter-1)=norm(w1-prew1);
+0193                     <span class="keyword">end</span>
+0194                     <span class="keyword">if</span> all(sign(w3)==-sign(prew3))
+0195                         errw(2,iter-1)=norm(w3+prew3);
+0196                     <span class="keyword">else</span>
+0197                         errw(2,iter-1)=norm(w3-prew3);
+0198                     <span class="keyword">end</span>
+0199                     <span class="keyword">if</span> all(sign(v1)==-sign(prev1))
+0200                         errw(3,iter-1)=norm(v1+prev1);
+0201                     <span class="keyword">else</span>
+0202                         errw(3,iter-1)=norm(v1-prev1);
+0203                     <span class="keyword">end</span>
+0204                     <span class="keyword">if</span> errw(1,iter-1)&lt;er &amp;&amp; errw(2,iter-1)&lt;er &amp;&amp; errw(3,iter-1)&lt;er
+0205                         <span class="keyword">break</span>
+0206                     <span class="keyword">end</span>
+0207                 <span class="keyword">end</span>
+0208                 prew1=w1;
+0209                 prew3=w3;
+0210                 prev1=v1;
+0211                 iter=iter+1;
+0212             <span class="keyword">end</span>
+0213             
+0214             fprintf(<span class="string">'L1MCCA Iteration is %d \n'</span>,iter);
+0215         <span class="keyword">end</span>
+0216         
+0217         
+0218         <a name="_sub7" href="#_subfunctions" class="code">function y=squarewave(L1MCCA,f, S, T, H)</a>
+0219             
+0220             <span class="comment">% f-- the fundermental frequency</span>
+0221             <span class="comment">% S-- the sampling rate</span>
+0222             <span class="comment">% T-- the number of sampling points</span>
+0223             <span class="comment">% H-- the number of harmonics</span>
+0224             
+0225             
+0226             <span class="keyword">for</span> i=1:H
+0227                 <span class="keyword">for</span> j=1:T
+0228                     t= j/S;
+0229                     y(2*i-1,j)=sin(2*pi*(i*f)*t);
+0230                     y(2*i,j)=cos(2*pi*(i*f)*t);
+0231                 <span class="keyword">end</span>
+0232             <span class="keyword">end</span>
+0233         <span class="keyword">end</span>
+0234         
+0235         <a name="_sub8" href="#_subfunctions" class="code">function time = getTime(L1MCCA)</a>
+0236             time = 0;
+0237         <span class="keyword">end</span>
+0238     <span class="keyword">end</span>
+0239 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

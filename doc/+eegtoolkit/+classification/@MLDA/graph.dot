@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  MLDA -> MLDA;
+
+  MLDA [URL="MLDA.html"];
+}

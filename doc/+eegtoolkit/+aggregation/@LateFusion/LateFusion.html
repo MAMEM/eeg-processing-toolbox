@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of LateFusion</title>
+  <meta name="keywords" content="LateFusion">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+aggregation</a> &gt; <a href="#">@LateFusion</a> &gt; LateFusion.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+aggregation/@LateFusion&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>LateFusion
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LateFusion.html" class="code" title="">LateFusion</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LateFusion.html" class="code" title="">LateFusion</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function LFA = LateFusion(LFA)</a></li><li><a href="#_sub2" class="code">function LFA = aggregate(LFA)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(LFA)</a></li><li><a href="#_sub4" class="code">function time = getTime(LFA)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="LateFusion.m">LateFusion.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="LateFusion.html" class="code" title="">LateFusion</a> &lt; eegtoolkit.aggregation.AggregatorBase;
+0002     
+0003     properties
+0004     <span class="keyword">end</span>
+0005     
+0006     methods
+0007         
+0008         <a name="_sub0" href="#_subfunctions" class="code">function LFA = LateFusion(LFA)</a>
+0009         <span class="keyword">end</span>
+0010         
+0011         <a name="_sub1" href="#_subfunctions" class="code">function LFA = aggregate(LFA)</a>
+0012             numTransf = length(LFA.featextractors);
+0013             LFA.instanceSet = eegtoolkit.util.FusionInstanceSet(LFA.featextractors{1}.instanceSet);
+0014             
+0015             <span class="keyword">for</span> i=1:numTransf
+0016                 LFA.instanceSet = LFA.instanceSet.addInstanceSet(LFA.featextractors{i}.instanceSet);
+0017             <span class="keyword">end</span>
+0018         <span class="keyword">end</span>
+0019         
+0020         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(LFA)</a>
+0021             configInfo = <span class="string">'LateFusion'</span>;
+0022         <span class="keyword">end</span>
+0023         
+0024                 
+0025         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(LFA)</a>
+0026             time = 0;
+0027         <span class="keyword">end</span>
+0028     <span class="keyword">end</span>
+0029     
+0030 <span class="keyword">end</span>
+0031</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

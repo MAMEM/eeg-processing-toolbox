@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Trial</title>
+  <meta name="keywords" content="Trial">
+  <meta name="description" content="A class that defines a Trial">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@Trial</a> &gt; Trial.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@Trial&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Trial
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>A class that defines a Trial</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> A class that defines a Trial
+ 
+ Properties:
+ signal: the signal of the trial, matrix m x n, where m is the channels
+ and n the samples
+ label: a label for the trial (typically assigned with the frequency that is calculated using DIN data)
+ duration: the duration of the trial in seconds
+ samplingRate: the samling rate used to capture the signal
+ subjectid: the subject from whom the trial was recorded
+ sessionid: the session id
+ type: the type of the trial. Supported types of trials:
+ SSVEP = 1;
+ ERRP = 2;
+ MI = 3;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Trial.html" class="code" title="">Trial</a>	A class that defines a Trial</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Trial.html" class="code" title="">Trial</a>	A class that defines a Trial</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function T = Trial(signal, label, samplingRate, subjectID, sessionID,type)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Trial.m">Trial.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% A class that defines a Trial</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Properties:</span>
+0004 <span class="comment">% signal: the signal of the trial, matrix m x n, where m is the channels</span>
+0005 <span class="comment">% and n the samples</span>
+0006 <span class="comment">% label: a label for the trial (typically assigned with the frequency that is calculated using DIN data)</span>
+0007 <span class="comment">% duration: the duration of the trial in seconds</span>
+0008 <span class="comment">% samplingRate: the samling rate used to capture the signal</span>
+0009 <span class="comment">% subjectid: the subject from whom the trial was recorded</span>
+0010 <span class="comment">% sessionid: the session id</span>
+0011 <span class="comment">% type: the type of the trial. Supported types of trials:</span>
+0012 <span class="comment">% SSVEP = 1;</span>
+0013 <span class="comment">% ERRP = 2;</span>
+0014 <span class="comment">% MI = 3;</span>
+0015 
+0016 classdef <a href="Trial.html" class="code" title="">Trial</a> &lt; handle
+0017     
+0018     
+0019     properties (Constant)
+0020         <span class="comment">%Type of trial</span>
+0021         SSVEP = 1;
+0022         ERRP = 2;
+0023         MI = 3;
+0024     <span class="keyword">end</span>
+0025     
+0026     properties (Access = public)
+0027         signal; <span class="comment">% the signal of the trial</span>
+0028         label; <span class="comment">% a label for the trial (typically assigned with the frequency that is calculated using DIN data)</span>
+0029         duration; <span class="comment">% the duration of the trial in seconds</span>
+0030         samplingRate; <span class="comment">% the samling rate used to capture the signal</span>
+0031         subjectid; <span class="comment">%the subject from</span>
+0032         sessionid; <span class="comment">%the session id</span>
+0033         type;
+0034     <span class="keyword">end</span>
+0035     
+0036     methods (Access = public)
+0037         <a name="_sub0" href="#_subfunctions" class="code">function T = Trial(signal, label, samplingRate, subjectID, sessionID,type)</a>
+0038             T.signal = signal;
+0039             T.label = label;
+0040             T.samplingRate = samplingRate;
+0041             T.duration = length(signal)/samplingRate;
+0042             T.subjectid = subjectID;
+0043             T.sessionid = sessionID;
+0044             <span class="keyword">if</span> nargin&gt;5
+0045                 T.type = type;
+0046             <span class="keyword">end</span>
+0047         <span class="keyword">end</span>
+0048         
+0049     <span class="keyword">end</span>
+0050     
+0051 <span class="keyword">end</span>
+0052</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

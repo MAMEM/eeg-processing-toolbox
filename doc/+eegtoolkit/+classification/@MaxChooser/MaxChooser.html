@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MaxChooser</title>
+  <meta name="keywords" content="MaxChooser">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="#">@MaxChooser</a> &gt; MaxChooser.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+classification/@MaxChooser&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MaxChooser
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MaxChooser.html" class="code" title="">MaxChooser</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MaxChooser.html" class="code" title="">MaxChooser</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function MaxChooser =MaxChooser(instanceSet)</a></li><li><a href="#_sub2" class="code">function MaxChooser = build(MaxChooser)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(MaxChooser,instance)</a></li><li><a href="#_sub4" class="code">function MaxChooser = reset(MaxChooser)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(MaxChooser)</a></li><li><a href="#_sub6" class="code">function time = getTime(MaxChooser)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="MaxChooser.m">MaxChooser.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MaxChooser.html" class="code" title="">MaxChooser</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004 
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008       
+0009     <span class="keyword">end</span>
+0010     
+0011     methods (Access = public)
+0012         <a name="_sub0" href="#_subfunctions" class="code">function MaxChooser =MaxChooser(instanceSet)</a>
+0013             <span class="keyword">if</span> nargin &gt; 0
+0014                 MaxChooser.instanceSet = instanceSet;
+0015             <span class="keyword">end</span>
+0016            
+0017         <span class="keyword">end</span>
+0018         
+0019         <a name="_sub1" href="#_subfunctions" class="code">function MaxChooser = build(MaxChooser)</a>
+0020             
+0021         <span class="keyword">end</span>
+0022         
+0023         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(MaxChooser,instance)</a>
+0024             
+0025             dd_ins=instance;
+0026             N = size(instance,1);
+0027             pred_lab=zeros(N,1);
+0028             <span class="keyword">for</span> i=1:N
+0029                 [v,idx]=max(dd_ins(i,:));                
+0030                 pred_lab(i)=idx;   
+0031                 ranking(i,:) = dd_ins(i,:);
+0032             <span class="keyword">end</span>
+0033             
+0034             output = pred_lab;<span class="comment">%sum(pred_lab)/length(pred_lab)</span>
+0035             probabilities=zeros(N,1);
+0036 <span class="comment">%             ranking=zeros(N,1);</span>
+0037         <span class="keyword">end</span>
+0038         
+0039         <a name="_sub3" href="#_subfunctions" class="code">function MaxChooser = reset(MaxChooser)</a>
+0040             <span class="comment">%delete all stored models</span>
+0041         <span class="keyword">end</span>
+0042         
+0043         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(MaxChooser)</a>
+0044             configInfo = sprintf(<span class="string">'MaxChooser'</span>);
+0045         <span class="keyword">end</span>
+0046         
+0047                         
+0048         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(MaxChooser)</a>
+0049             time = 0;
+0050         <span class="keyword">end</span>
+0051                 
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">end</span>
+0054</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

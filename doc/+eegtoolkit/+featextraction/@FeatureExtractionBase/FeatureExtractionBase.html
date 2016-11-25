@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FeatureExtractionBase</title>
+  <meta name="keywords" content="FeatureExtractionBase">
+  <meta name="description" content="Abstract class for feature extraction. Implement the functions for any">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="#">@FeatureExtractionBase</a> &gt; FeatureExtractionBase.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+featextraction/@FeatureExtractionBase&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>FeatureExtractionBase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Abstract class for feature extraction. Implement the functions for any</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Abstract class for feature extraction. Implement the functions for any
+ preprocessing step (e.g. filtering, artifact removal, sub-sampling,
+ rereferencing, etc.
+ 
+ Properties:
+ instanceSet: Output - the features in an InstanceSet structure
+ trials: Input - the signals in a cell of Trial structures
+ 
+ Functions:
+Implement this function to extract the features from the input Trials 
+and return the features in an instanceSet
+   out = obj.extract(in);
+Info &amp; run time so that the experiments are easily documented. configInfo
+is a string with the configuration information and time is of type double.
+   configInfo = obj.getConfigInfo();
+   time = obj.getTime();</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FeatureExtractionBase.html" class="code" title="">FeatureExtractionBase</a>	Abstract class for feature extraction. Implement the functions for any</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FeatureExtractionBase.html" class="code" title="">FeatureExtractionBase</a>	Abstract class for feature extraction. Implement the functions for any</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function instances = getInstances(obj)</a></li><li><a href="#_sub2" class="code">function labels = getLabels(obj)</a></li><li><a href="#_sub3" class="code">function dataset = getDataset(obj)</a></li><li><a href="#_sub4" class="code">function instanceSet = getInstanceSet(obj)</a></li><li><a href="#_sub5" class="code">function writeCSV(obj, csvname)</a></li><li><a href="#_sub6" class="code">function writeArff(obj, fname)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="FeatureExtractionBase.m">FeatureExtractionBase.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Abstract class for feature extraction. Implement the functions for any</span>
+0002 <span class="comment">% preprocessing step (e.g. filtering, artifact removal, sub-sampling,</span>
+0003 <span class="comment">% rereferencing, etc.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Properties:</span>
+0006 <span class="comment">% instanceSet: Output - the features in an InstanceSet structure</span>
+0007 <span class="comment">% trials: Input - the signals in a cell of Trial structures</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Functions:</span>
+0010 <span class="comment">%Implement this function to extract the features from the input Trials</span>
+0011 <span class="comment">%and return the features in an instanceSet</span>
+0012 <span class="comment">%   out = obj.extract(in);</span>
+0013 <span class="comment">%Info &amp; run time so that the experiments are easily documented. configInfo</span>
+0014 <span class="comment">%is a string with the configuration information and time is of type double.</span>
+0015 <span class="comment">%   configInfo = obj.getConfigInfo();</span>
+0016 <span class="comment">%   time = obj.getTime();</span>
+0017 
+0018 
+0019 classdef (Abstract) <a href="FeatureExtractionBase.html" class="code" title="">FeatureExtractionBase</a> &lt; handle
+0020     <span class="comment">%Base class for a feature transformer</span>
+0021     <span class="comment">%For writing your own FeatureTransformer extend this class and</span>
+0022     <span class="comment">%implement the 'transform' function</span>
+0023     properties (Access = public)
+0024         instanceSet; <span class="comment">% Output: The dataset</span>
+0025         trials;<span class="comment">% Input: The trial signals</span>
+0026         filter;
+0027     <span class="keyword">end</span>
+0028     
+0029     methods (Abstract = true)
+0030         obj = extract(obj);
+0031         configInfo = getConfigInfo(obj);
+0032         time = getTime(obj);
+0033     <span class="keyword">end</span>
+0034     
+0035     methods (Access = public)
+0036         <a name="_sub0" href="#_subfunctions" class="code">function instances = getInstances(obj)</a>
+0037             <span class="comment">%Get the instances (no class labels)</span>
+0038             instances = obj.instanceSet.getInstances;
+0039         <span class="keyword">end</span>
+0040         <a name="_sub1" href="#_subfunctions" class="code">function labels = getLabels(obj)</a>
+0041             <span class="comment">%Get the labels</span>
+0042             labels = obj.instanceSet.getLabels;
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub2" href="#_subfunctions" class="code">function dataset = getDataset(obj)</a>
+0046             <span class="comment">% same with getInstances but includes the labels as the last</span>
+0047             <span class="comment">% row</span>
+0048             dataset = obj.instanceSet.getDataset;
+0049         <span class="keyword">end</span>
+0050         
+0051         <a name="_sub3" href="#_subfunctions" class="code">function instanceSet = getInstanceSet(obj)</a>
+0052             <span class="comment">% Get the dataset as an 'InstanceSet' class object</span>
+0053             instanceSet = obj.instanceSet;
+0054         <span class="keyword">end</span>
+0055         <a name="_sub4" href="#_subfunctions" class="code">function writeCSV(obj, csvname)</a>
+0056             <span class="comment">% write the dataset to a csv file</span>
+0057             <span class="comment">% Example:</span>
+0058             <span class="comment">%   obj.writeCSV('data.csv');</span>
+0059             obj.instanceSet.writeCSV(csvname);
+0060         <span class="keyword">end</span>
+0061         <a name="_sub5" href="#_subfunctions" class="code">function writeArff(obj, fname)</a>
+0062             <span class="comment">% write the dataset to a weka-readable file (arff)</span>
+0063             <span class="comment">% Caution: filename without extension</span>
+0064             <span class="comment">% Example:</span>
+0065             <span class="comment">%   obj.writeArff('data')</span>
+0066             obj.instanceSet.writeArff(fname);
+0067         <span class="keyword">end</span>
+0068     <span class="keyword">end</span>
+0069 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

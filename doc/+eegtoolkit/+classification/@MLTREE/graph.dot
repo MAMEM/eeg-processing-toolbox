@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  MLTREE -> MLTREE;
+
+  MLTREE [URL="MLTREE.html"];
+}

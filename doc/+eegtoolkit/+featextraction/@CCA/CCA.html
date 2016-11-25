@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CCA</title>
+  <meta name="keywords" content="CCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="#">@CCA</a> &gt; CCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+featextraction/@CCA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>CCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CCA.html" class="code" title="">CCA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CCA.html" class="code" title="">CCA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function CCA = CCA(sti_f,chans,fs,numH)</a></li><li><a href="#_sub2" class="code">function extract(CCA)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(CCA)</a></li><li><a href="#_sub4" class="code">function refSignal=ck_signalTrans(CCA,f,mLen,FreqSamp,NumHarm)</a></li><li><a href="#_sub5" class="code">function time = getTime(CCA)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="CCA.m">CCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="CCA.html" class="code" title="">CCA</a> &lt; eegtoolkit.featextraction.PSDExtractionBase<span class="comment">%FeatureExtractionBase</span>
+0002     <span class="comment">%</span>
+0003     <span class="comment">% works only on our datasets, for other datasets needs modifications</span>
+0004     <span class="comment">%</span>
+0005     properties (Access = public)
+0006         channel;
+0007         avgTime;
+0008         stimulus_freqs;
+0009         FreqSamp;
+0010         NumHarm;
+0011         allFeatures;
+0012     <span class="keyword">end</span>
+0013     methods (Access = public)
+0014         <a name="_sub0" href="#_subfunctions" class="code">function CCA = CCA(sti_f,chans,fs,numH)</a>
+0015             <span class="keyword">if</span> ( nargin ~= 4 )
+0016                 error(<span class="string">'It is needed to define the simulus freqs, the channels, frequency sampling and number of harmonics'</span>);
+0017             <span class="keyword">else</span>
+0018                 CCA.stimulus_freqs = sti_f;
+0019                 CCA.channel = chans;
+0020                 CCA.FreqSamp = fs;
+0021                 CCA.NumHarm = numH;
+0022                 CCA.allFeatures = 0;
+0023             <span class="keyword">end</span>
+0024         <span class="keyword">end</span>
+0025         
+0026         <a name="_sub1" href="#_subfunctions" class="code">function extract(CCA)</a>
+0027             sti_f = CCA.stimulus_freqs;
+0028             mLen=size(CCA.trials{1}.signal,2);
+0029             refSignals=CCA.ck_signalTrans(sti_f,mLen,CCA.FreqSamp,CCA.NumHarm);
+0030             NumStim = size(refSignals,3);
+0031             numTrials = length(CCA.trials);
+0032             <span class="keyword">for</span> i=1:numTrials
+0033                 data = CCA.trials{i}.signal(CCA.channel,:);
+0034                 <span class="keyword">if</span>(CCA.allFeatures == 1)
+0035                     features=NaN*ones(NumStim,min(rank(data),CCA.NumHarm*2));
+0036                     <span class="keyword">for</span> j=1:NumStim
+0037                         [wx1,wy1,r1] = canoncorr(data',refSignals(:,:,j)');
+0038                         features(j,:) = r1;
+0039                     <span class="keyword">end</span>
+0040                     tempfeatures = features(1,:);
+0041                     <span class="keyword">for</span> j=2:NumStim
+0042                         tempfeatures = horzcat(tempfeatures,features(j,:));
+0043                     <span class="keyword">end</span>
+0044                     instances(i,:) = tempfeatures(:);
+0045                     labels(i,1) = floor(CCA.trials{i}.label);
+0046                 <span class="keyword">else</span>
+0047                     features=NaN*ones(NumStim,1);
+0048                     <span class="keyword">for</span> j=1:NumStim
+0049                         <span class="comment">%                     [wx1,wy1,r1] = CCA.cca(data,refSignals(:,:,j));</span>
+0050                         [wx1,wy1,r1] = canoncorr(data',refSignals(:,:,j)');
+0051                         features(j) = max(r1);
+0052                     <span class="keyword">end</span>
+0053                     instances(i,:) = features(:);
+0054                     labels(i,1) = floor(CCA.trials{i}.label);
+0055                 <span class="keyword">end</span>
+0056             <span class="keyword">end</span>
+0057 <span class="comment">%             unique(labels)</span>
+0058             <span class="keyword">if</span> (sum(unique(labels)) == 41)
+0059                 labels(labels==6)=1;
+0060                 labels(labels==7)=2;
+0061                 labels(labels==8)=3;
+0062                 labels(labels==9)=4;
+0063                 labels(labels==11)=5;
+0064             <span class="keyword">end</span>
+0065 <span class="comment">%             unique(labels)</span>
+0066             CCA.instanceSet = eegtoolkit.util.InstanceSet(instances, labels);
+0067         <span class="keyword">end</span>
+0068         
+0069         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(CCA)</a>
+0070             configInfo = sprintf(<span class="string">'CCA'</span>);
+0071         <span class="keyword">end</span>
+0072         
+0073 <span class="comment">%         function [Wx, Wy, r] = cca(CCA,X,Y)</span>
+0074 <span class="comment">%</span>
+0075 <span class="comment">%             % CCA calculate canonical correlations</span>
+0076 <span class="comment">%             %</span>
+0077 <span class="comment">%             % [Wx Wy r] = cca(X,Y) where Wx and Wy contains the canonical correlation</span>
+0078 <span class="comment">%</span>
+0079 <span class="comment">%             % vectors as columns and r is a vector with corresponding canonical</span>
+0080 <span class="comment">%             % correlations. The correlations are sorted in descending order. X and Y</span>
+0081 <span class="comment">%             % are matrices where each column is a sample. Hence, X and Y must have</span>
+0082 <span class="comment">%             % the same number of columns.</span>
+0083 <span class="comment">%             %</span>
+0084 <span class="comment">%             % Example: If X is M*K and Y is N*K there are L=MIN(M,N) solutions. Wx is</span>
+0085 <span class="comment">%             % then M*L, Wy is N*L and r is L*1.</span>
+0086 <span class="comment">%             %</span>
+0087 <span class="comment">%             %</span>
+0088 <span class="comment">%             % ?? 2000 Magnus Borga, Link?pings universitet</span>
+0089 <span class="comment">%</span>
+0090 <span class="comment">%             % --- Calculate covariance matrices ---??????????????</span>
+0091 <span class="comment">%</span>
+0092 <span class="comment">%             z = [X;Y];</span>
+0093 <span class="comment">%             C = cov(z.');</span>
+0094 <span class="comment">%             sx = size(X,1);   %X??????(??),</span>
+0095 <span class="comment">%             sy = size(Y,1);</span>
+0096 <span class="comment">%             Cxx = C(1:sx, 1:sx) + 10^(-8)*eye(sx);</span>
+0097 <span class="comment">%             Cxy = C(1:sx, sx+1:sx+sy);</span>
+0098 <span class="comment">%             Cyx = Cxy';</span>
+0099 <span class="comment">%             Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + 10^(-8)*eye(sy);%eye()????????</span>
+0100 <span class="comment">%             invCyy = inv(Cyy);</span>
+0101 <span class="comment">%</span>
+0102 <span class="comment">%             % --- Calcualte Wx and r ---</span>
+0103 <span class="comment">%</span>
+0104 <span class="comment">%             [Wx,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); % Basis in X eig????????????</span>
+0105 <span class="comment">%             r = sqrt(real(r));      % Canonical correlations</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">%             % --- Sort correlations ---</span>
+0108 <span class="comment">%</span>
+0109 <span class="comment">%             V = fliplr(Wx);        % reverse order of eigenvectors??????????????????????i??????????i??????</span>
+0110 <span class="comment">%             r = flipud(diag(r));    % extract eigenvalues and reverse their order</span>
+0111 <span class="comment">%             [r,I]= sort((real(r)));    % sort reversed eigenvalues in ascending order</span>
+0112 <span class="comment">%             r = flipud(r);        % restore sorted eigenvalues into descending order??????????????</span>
+0113 <span class="comment">%             for j = 1:length(I)</span>
+0114 <span class="comment">%                 Wx(:,j) = V(:,I(j));  % sort reversed eigenvectors in ascending order</span>
+0115 <span class="comment">%             end</span>
+0116 <span class="comment">%             Wx = fliplr(Wx);    % restore sorted eigenvectors into descending order</span>
+0117 <span class="comment">%</span>
+0118 <span class="comment">%             % --- Calcualte Wy  ---</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">%             Wy = invCyy*Cyx*Wx;     % Basis in Y</span>
+0121 <span class="comment">%             % Wy = Wy./repmat(sqrt(sum(abs(Wy).^2)),sy,1); % Normalize Wy</span>
+0122 <span class="comment">%</span>
+0123 <span class="comment">%         end</span>
+0124         
+0125         <a name="_sub3" href="#_subfunctions" class="code">function refSignal=ck_signalTrans(CCA,f,mLen,FreqSamp,NumHarm)</a>
+0126             
+0127             p=mLen;<span class="comment">%1250;</span>
+0128             fs=FreqSamp;<span class="comment">%250;</span>
+0129             TP=1/fs:1/fs:p/fs;
+0130             <span class="keyword">for</span> j=1:length(f)
+0131                 tempComp=[];
+0132                 <span class="keyword">for</span> k=1:NumHarm
+0133                     Sinh1=sin(2*pi*k*f(j)*TP);
+0134                     Cosh1=cos(2*pi*k*f(j)*TP);
+0135                     tempComp = [tempComp; Sinh1;Cosh1;];
+0136                 <span class="keyword">end</span>
+0137                 refSignal(:,:,j)=tempComp;
+0138             <span class="keyword">end</span>
+0139         <span class="keyword">end</span>
+0140         <a name="_sub4" href="#_subfunctions" class="code">function time = getTime(CCA)</a>
+0141             time = CCA.avgTime;
+0142         <span class="keyword">end</span>
+0143     <span class="keyword">end</span>
+0144     
+0145 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

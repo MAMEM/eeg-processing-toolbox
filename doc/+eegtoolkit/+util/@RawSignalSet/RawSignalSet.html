@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RawSignalSet</title>
+  <meta name="keywords" content="RawSignalSet">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@RawSignalSet</a> &gt; RawSignalSet.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@RawSignalSet&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>RawSignalSet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="RawSignalSet.html" class="code" title="">RawSignalSet</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="RawSignalSet.html" class="code" title="">RawSignalSet</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function RSS = RawSignalSet(trials)</a></li><li><a href="#_sub2" class="code">function sMatrix = get(indices)</a></li><li><a href="#_sub3" class="code">function sMatrix = getInstancesWithIndices(RSS,indices)</a></li><li><a href="#_sub4" class="code">function instanceStruct = removeInstancesWithIndices(RSS,indices)</a></li><li><a href="#_sub5" class="code">function numInstances = getNumInstances(RSS)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="RawSignalSet.m">RawSignalSet.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="RawSignalSet.html" class="code" title="">RawSignalSet</a> &lt; eegtoolkit.util.InstanceSet
+0002     <span class="comment">%RAWSIGNALSET Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         <span class="comment">%numTrials X numChannels X numSamples</span>
+0007         signalMatrix;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods
+0011         <a name="_sub0" href="#_subfunctions" class="code">function RSS = RawSignalSet(trials)</a>
+0012             <span class="comment">%             RSS = RSS@eegtoolkit.util.InstanceSet(zeros(1,1000),ones(1,1000));</span>
+0013             <span class="keyword">if</span>(nargin~=1)
+0014                 error(<span class="string">'trials parameter not set'</span>);
+0015             <span class="keyword">end</span>
+0016             <span class="comment">%             if(nargin&gt;0)</span>
+0017             numTrials = length(trials);
+0018             labels = zeros(numTrials,1);
+0019             <span class="keyword">for</span> i=1:numTrials
+0020                 labels(i) = trials{i}.label;
+0021             <span class="keyword">end</span>
+0022             [numChannels, numSamples] = size(trials{i}.signal);
+0023             sMatrix = zeros(numTrials,numChannels,numSamples);
+0024             <span class="keyword">for</span> i=1:numTrials
+0025                 sMatrix(i,:,:) = trials{i}.signal;
+0026             <span class="keyword">end</span>
+0027             RSS = RSS@eegtoolkit.util.InstanceSet(squeeze(sMatrix(:,1,:)),labels);
+0028             RSS.signalMatrix = sMatrix;
+0029             <span class="comment">%             end</span>
+0030         <span class="keyword">end</span>
+0031         
+0032         <a name="_sub1" href="#_subfunctions" class="code">function sMatrix = get(indices)</a>
+0033             sMatrix = squeeze(RSS.signalMatrix(indices,:,:));
+0034         <span class="keyword">end</span>
+0035         
+0036         <a name="_sub2" href="#_subfunctions" class="code">function sMatrix = getInstancesWithIndices(RSS,indices)</a>
+0037             sMatrix = RSS.signalMatrix(indices,:,:);
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub3" href="#_subfunctions" class="code">function instanceStruct = removeInstancesWithIndices(RSS,indices)</a>
+0041 <span class="comment">%             newRSS = eegtoolkit.util.RawSignalSet;</span>
+0042 <span class="comment">%             newRSS.labels = RSS.labels;</span>
+0043 <span class="comment">%             newRSS.labels(indices) = [];</span>
+0044 <span class="comment">%             newRSS.signalMatrix = RSS.signalMatrix;</span>
+0045 <span class="comment">%             newRSS.signalMatrix(indices,:,:) = [];</span>
+0046             sMatrix = RSS.signalMatrix;
+0047             sMatrix(indices,:,:) = [];
+0048             
+0049             labels = RSS.labels;
+0050             labels(indices) = [];
+0051             instanceStruct = struct(<span class="string">'sMatrix'</span>,sMatrix, <span class="string">'labels'</span>, labels);
+0052         <span class="keyword">end</span>
+0053         
+0054         <a name="_sub4" href="#_subfunctions" class="code">function numInstances = getNumInstances(RSS)</a>
+0055             [numInstances,~,~] = size(RSS.signalMatrix);
+0056         <span class="keyword">end</span>
+0057             
+0058     <span class="keyword">end</span>
+0059     
+0060     
+0061 <span class="keyword">end</span>
+0062</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

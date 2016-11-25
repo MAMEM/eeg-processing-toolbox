@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exampleDefault</title>
+  <meta name="keywords" content="exampleDefault">
+  <meta name="description" content="Load the data. Call this once outside of the script so you dont have to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; exampleDefault.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>exampleDefault
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Load the data. Call this once outside of the script so you dont have to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Load the data. Call this once outside of the script so you dont have to
+ load the data again and again. Make sure the dataset is included in your
+ Matlab path
+ sess = eegtoolkit.util.Session;
+ sess.loadAll(1); %Loads dataset I</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<p><a href="exampleDefault.m">exampleDefault.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Load the data. Call this once outside of the script so you dont have to</span>
+0002 <span class="comment">% load the data again and again. Make sure the dataset is included in your</span>
+0003 <span class="comment">% Matlab path</span>
+0004 <span class="comment">% sess = eegtoolkit.util.Session;</span>
+0005 <span class="comment">% sess.loadAll(1); %Loads dataset I</span>
+0006 
+0007 <span class="comment">%Load a filter from the samples</span>
+0008 load filters/filt_IIRElliptic.mat;
+0009 
+0010 <span class="comment">%Extract features with the pwelch method</span>
+0011 extr = eegtoolkit.featextraction.PWelch;
+0012 
+0013 refer = eegtoolkit.preprocessing.Rereferencing;
+0014 <span class="comment">%Subtract the mean from the signal</span>
+0015 refer.meanSignal = 1;
+0016 
+0017 ss = eegtoolkit.preprocessing.SampleSelection;
+0018 ss.sampleRange = [1,1250]; <span class="comment">% Specify the sample range to be used for each Trial</span>
+0019 ss.channels = 126; <span class="comment">% Specify the channel(s) to be used</span>
+0020 
+0021 df = eegtoolkit.preprocessing.DigitalFilter; <span class="comment">% Apply a filter to the raw data</span>
+0022 df.filt = Hbp; <span class="comment">% Hbp is a filter built with &quot;filterbuilder&quot; matlab function</span>
+0023 
+0024 <span class="comment">%Configure the classifier</span>
+0025 classif = eegtoolkit.classification.LIBSVMFast;
+0026 
+0027 <span class="comment">%Set the Experimenter wrapper class</span>
+0028 experiment = eegtoolkit.experiment.Experimenter;
+0029 experiment.session = sess;
+0030 <span class="comment">% Add the preprocessing steps (order is taken into account)</span>
+0031 experiment.preprocessing = {ss,refer,df};
+0032 experiment.featextraction = extr;
+0033 experiment.classification = classif;
+0034 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; <span class="comment">% specify that you want a &quot;leave one subject out&quot; (default is LOOCV)</span>
+0035 experiment.run();
+0036 <span class="keyword">for</span> i=1:length(experiment.results)
+0037     accuracies(i) = experiment.results{i}.getAccuracy();
+0038 <span class="keyword">end</span>
+0039 
+0040 accuracies'
+0041 <span class="comment">%mean accuracy for all subjects</span>
+0042 fprintf(<span class="string">'mean acc = %f\n'</span>, mean(accuracies));
+0043 <span class="comment">%get the configuration used (for reporting)</span>
+0044 experiment.getExperimentInfo
+0045 experiment.getTime</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

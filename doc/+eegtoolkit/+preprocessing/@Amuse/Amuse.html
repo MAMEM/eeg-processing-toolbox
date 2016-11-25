@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Amuse</title>
+  <meta name="keywords" content="Amuse">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+preprocessing</a> &gt; <a href="#">@Amuse</a> &gt; Amuse.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+preprocessing/@Amuse&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Amuse
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Amuse.html" class="code" title="">Amuse</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Amuse.html" class="code" title="">Amuse</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function AM = Amuse()</a></li><li><a href="#_sub2" class="code">function out = process(AM,in )</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(AM)</a></li><li><a href="#_sub4" class="code">function time = getTime(AM)</a></li><li><a href="#_sub5" class="code">function [W,D1,y] = amuse(AM,X)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Amuse.m">Amuse.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Amuse.html" class="code" title="">Amuse</a> &lt; eegtoolkit.preprocessing.PreprocessingBase
+0002     
+0003     properties
+0004         first;
+0005         last;
+0006         avgTime;
+0007     <span class="keyword">end</span>
+0008     
+0009     methods
+0010         <a name="_sub0" href="#_subfunctions" class="code">function AM = Amuse()</a>
+0011             AM.first = 2;
+0012             AM.last = 256;
+0013         <span class="keyword">end</span>
+0014         
+0015         <a name="_sub1" href="#_subfunctions" class="code">function out = process(AM,in )</a>
+0016             out = {};
+0017             total = 0;
+0018             <span class="keyword">for</span> i=1:length(in)
+0019                 <span class="comment">%                 i</span>
+0020                 <span class="comment">%                 in{i}.signal(end,:) = [];</span>
+0021                 tic
+0022                 signal = in{i}.signal;
+0023                 <span class="comment">%                 signal(end,:) = [];</span>
+0024                 [W,~,yest] = AM.amuse(signal);
+0025                 signal = pinv(W(AM.first:AM.last,:))*yest(AM.first:AM.last,: );
+0026                 total = total + toc;
+0027                 in{i}.signal = signal;
+0028                 <span class="comment">%                 out{i} = eegtoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid);</span>
+0029             <span class="keyword">end</span>
+0030             out = in;
+0031             <span class="comment">%             total = toc;</span>
+0032             AM.avgTime = total/length(in);
+0033         <span class="keyword">end</span>
+0034         
+0035         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(AM)</a>
+0036             configInfo = sprintf(<span class="string">'Amuse:\t%d-%d'</span>,AM.first,AM.last);
+0037         <span class="keyword">end</span>
+0038         
+0039         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(AM)</a>
+0040             time = AM.avgTime;
+0041         <span class="keyword">end</span>
+0042     <span class="keyword">end</span>
+0043     
+0044     methods (Access = private)
+0045         <a name="_sub4" href="#_subfunctions" class="code">function [W,D1,y] = amuse(AM,X)</a>
+0046             <span class="comment">% BSS using eigenvalue value decomposition</span>
+0047             <span class="comment">% Program written by A. Cichocki and R. Szupiluk</span>
+0048             <span class="comment">%</span>
+0049             <span class="comment">% X [m x N] matrix of observed (measured) signals,</span>
+0050             <span class="comment">% W separating matrix,</span>
+0051             <span class="comment">% y estimated separated sources</span>
+0052             <span class="comment">% p time delay used in computation of covariance matrices</span>
+0053             <span class="comment">% optimal time-delay default p= 1</span>
+0054             <span class="comment">%</span>
+0055             <span class="comment">% First stage: Standard prewhitening</span>
+0056             
+0057             [m,N]=size(X);
+0058             <span class="keyword">if</span> nargin==2,
+0059                 n=m; <span class="comment">%</span>
+0060             <span class="keyword">end</span>;
+0061             
+0062             Rxx=(X*X')/N;
+0063             
+0064             [Ux,Dx,Vx]=svd(Rxx);
+0065             Dx=diag(Dx);
+0066             <span class="comment">% n=xxx;</span>
+0067             <span class="keyword">if</span> n&lt;m, <span class="comment">% under assumption of additive white noise and</span>
+0068                 <span class="comment">%when the number of sources are known or can a priori estimated</span>
+0069                 Dx=Dx-real((mean(Dx(n+1:m))));
+0070                 Q= diag(real(sqrt(1./Dx(1:n))))*Ux(:,1:n)';
+0071                 <span class="comment">%</span>
+0072             <span class="keyword">else</span>    <span class="comment">% under assumption of no additive noise and when the</span>
+0073                 <span class="comment">% number of sources is unknown</span>
+0074                 n=max(find(Dx&gt;1e-199)); <span class="comment">%Detection the number of sources</span>
+0075                 Q= diag(real(sqrt(1./Dx(1:n))))*Ux(:,1:n)';
+0076             <span class="keyword">end</span>;
+0077 
+0078             <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0079             <span class="comment">% Second stage: Fast separation using sorting EVD</span>
+0080             <span class="comment">% notation the same as used in the Chapter 4</span>
+0081             Xb=Q*X;
+0082             p=1;
+0083             <span class="comment">% paramter p can take here value different than 1</span>
+0084             <span class="comment">% for example -1 or 2.</span>
+0085             N=max(size(Xb));
+0086             Xb=Xb-kron(mean(Xb')',ones(1,N));
+0087             
+0088             Rxbxbp=(Xb(:,1:N-1)*Xb(:,2:N)')/(N-1);
+0089             Rxbxbp= Rxbxbp+Rxbxbp';
+0090             [Vxb Dxb]=eig(Rxbxbp);
+0091             [D1 perm]=sort(diag(Dxb));
+0092             D1=flipud(D1);
+0093             Vxb=Vxb(:,flipud(perm));
+0094             W = Vxb'*Q;
+0095             y = Vxb' * Xb;<span class="comment">%change Xb instead of x1</span>
+0096         <span class="keyword">end</span>
+0097     <span class="keyword">end</span>
+0098     
+0099     
+0100     
+0101 <span class="keyword">end</span>
+0102</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

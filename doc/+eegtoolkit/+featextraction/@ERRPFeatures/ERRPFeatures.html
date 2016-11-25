@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ERRPFeatures</title>
+  <meta name="keywords" content="ERRPFeatures">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="#">@ERRPFeatures</a> &gt; ERRPFeatures.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+featextraction/@ERRPFeatures&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>ERRPFeatures
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ERRPFeatures.html" class="code" title="">ERRPFeatures</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ERRPFeatures.html" class="code" title="">ERRPFeatures</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ERRP = ERRPFeatures()</a></li><li><a href="#_sub2" class="code">function extract(ERRP)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(ERRP)</a></li><li><a href="#_sub4" class="code">function time = getTime(ERRP)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="ERRPFeatures.m">ERRPFeatures.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="ERRPFeatures.html" class="code" title="">ERRPFeatures</a> &lt; eegtoolkit.featextraction.PSDExtractionBase<span class="comment">%FeatureExtractionBase</span>
+0002     properties (Access = public)
+0003         channel;
+0004         avgTime;
+0005 <span class="comment">%         downSampleFactor;</span>
+0006     <span class="keyword">end</span>
+0007     methods (Access = public)
+0008         <a name="_sub0" href="#_subfunctions" class="code">function ERRP = ERRPFeatures()</a>
+0009 <span class="comment">%             ERRP.downSampleFactor = 8;</span>
+0010             ERRP.channel = 1;
+0011         <span class="keyword">end</span>
+0012         
+0013         <a name="_sub1" href="#_subfunctions" class="code">function extract(ERRP)</a>
+0014             
+0015             numTrials = length(ERRP.trials);
+0016             [~,numSamples]  =  size(ERRP.trials{1}.signal(ERRP.channel,:));
+0017 <span class="comment">%             numFeatures = floor(numSamples/ERRP.downSampleFactor);</span>
+0018             instances = zeros(numTrials,numSamples);
+0019             labels = zeros(numTrials,1);
+0020             <span class="keyword">for</span> i=1:numTrials
+0021                 instances(i,:) = ERRP.trials{i}.signal(ERRP.channel,:);
+0022                 labels(i) = ERRP.trials{i}.label;
+0023             <span class="keyword">end</span>
+0024             ERRP.instanceSet = eegtoolkit.util.InstanceSet(instances, labels);
+0025         <span class="keyword">end</span>
+0026         
+0027         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(ERRP)</a>
+0028             configInfo = sprintf(<span class="string">'ERRP features'</span>);
+0029         <span class="keyword">end</span>
+0030         
+0031         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(ERRP)</a>
+0032             time = ERRP.avgTime;
+0033         <span class="keyword">end</span>
+0034     <span class="keyword">end</span>
+0035     
+0036 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

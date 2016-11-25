@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ClassifierBase</title>
+  <meta name="keywords" content="ClassifierBase">
+  <meta name="description" content="Abstract class for classification. Implement the functions for any">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="#">@ClassifierBase</a> &gt; ClassifierBase.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+classification/@ClassifierBase&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>ClassifierBase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Abstract class for classification. Implement the functions for any</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Abstract class for classification. Implement the functions for any
+ classifier (e.g. LibSVM, LDA, MLR, Decision trees, Adaboost, etc.)
+ 
+ Properties:
+ instanceSet: the training/test set in an InstanceSet structure
+ 
+ Functions:
+Implement this function to train the classification models. Each
+implementation should define the type of models that are to be trained by
+the build function.
+   obj = obj.build();
+Implement this function to apply the classification models to the provided
+instance, where instance is a matrix #instances x #features including the
+instances. The function should return the following three outputs; 1)
+output, the classified labels of the instances (#instances x 1), 2)
+probabilities, the probabilities for the output label (instances x 1) and
+3) ranking, a matrix #instances x #classes with the probabilities of each
+instance for each class (used for multiclass classification).
+   [output, probabilities, ranking] = obj.classifyInstance(instance);
+Implement this function to reset the classifier (e.g. delete the stored
+classification models
+   obj.reset();
+Info &amp; run time so that the experiments are easily documented. configInfo
+is a string with the configuration information and time is of type double.
+   configInfo = obj.getConfigInfo();
+   time = obj.getTime();</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ClassifierBase.html" class="code" title="">ClassifierBase</a>	Abstract class for classification. Implement the functions for any</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ClassifierBase.html" class="code" title="">ClassifierBase</a>	Abstract class for classification. Implement the functions for any</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="ClassifierBase.m">ClassifierBase.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Abstract class for classification. Implement the functions for any</span>
+0002 <span class="comment">% classifier (e.g. LibSVM, LDA, MLR, Decision trees, Adaboost, etc.)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Properties:</span>
+0005 <span class="comment">% instanceSet: the training/test set in an InstanceSet structure</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Functions:</span>
+0008 <span class="comment">%Implement this function to train the classification models. Each</span>
+0009 <span class="comment">%implementation should define the type of models that are to be trained by</span>
+0010 <span class="comment">%the build function.</span>
+0011 <span class="comment">%   obj = obj.build();</span>
+0012 <span class="comment">%Implement this function to apply the classification models to the provided</span>
+0013 <span class="comment">%instance, where instance is a matrix #instances x #features including the</span>
+0014 <span class="comment">%instances. The function should return the following three outputs; 1)</span>
+0015 <span class="comment">%output, the classified labels of the instances (#instances x 1), 2)</span>
+0016 <span class="comment">%probabilities, the probabilities for the output label (instances x 1) and</span>
+0017 <span class="comment">%3) ranking, a matrix #instances x #classes with the probabilities of each</span>
+0018 <span class="comment">%instance for each class (used for multiclass classification).</span>
+0019 <span class="comment">%   [output, probabilities, ranking] = obj.classifyInstance(instance);</span>
+0020 <span class="comment">%Implement this function to reset the classifier (e.g. delete the stored</span>
+0021 <span class="comment">%classification models</span>
+0022 <span class="comment">%   obj.reset();</span>
+0023 <span class="comment">%Info &amp; run time so that the experiments are easily documented. configInfo</span>
+0024 <span class="comment">%is a string with the configuration information and time is of type double.</span>
+0025 <span class="comment">%   configInfo = obj.getConfigInfo();</span>
+0026 <span class="comment">%   time = obj.getTime();</span>
+0027 
+0028 classdef (Abstract) <a href="ClassifierBase.html" class="code" title="">ClassifierBase</a> &lt; handle
+0029     
+0030     properties
+0031         instanceSet;
+0032     <span class="keyword">end</span>
+0033     
+0034     methods (Abstract = true)
+0035         [output, probabilities, ranking] = classifyInstance(obj,instance);
+0036         obj = build(obj);
+0037         obj = reset(obj);
+0038         configInfo = getConfigInfo(obj);
+0039         time = getTime(obj);
+0040     <span class="keyword">end</span>
+0041     
+0042 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

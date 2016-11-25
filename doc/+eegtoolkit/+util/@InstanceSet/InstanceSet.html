@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of InstanceSet</title>
+  <meta name="keywords" content="InstanceSet">
+  <meta name="description" content="A class for describing a set of instances and labels">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@InstanceSet</a> &gt; InstanceSet.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@InstanceSet&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>InstanceSet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>A class for describing a set of instances and labels</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> A class for describing a set of instances and labels
+ 
+ Properties:
+ -instances : a m x n matrix where m = # instances and n =
+ # features
+ -labels: a m x 1 matrix containing the labels for each
+ instance
+ -K: a m x m matrix containing the kernel of the instances
+ required only for the Fast vesrion of LibSVM
+
+ Functions:
+Construct an instanceSet
+   IS = eegtoolkit.util.InstanceSet(instances, labels)
+Compute the kernel
+   K = IS.computeKernel(kernel, gamma, maxlag, scaleopt)
+ kernel can be one of 'linear' (default),'rbf','chi','xcorr','spearman',
+ 'correlation','cosine','euclidean','seuclidean','mahalanobis'
+Get the training kernel with indexes in the trainidx vector
+   Ktrain = IS.getTrainKernel(trainidx)
+Get the test kernel with test indexes testidx and train indexes trainidx
+   Ktest = IS.getTestKernel(trainidx, testidx)
+Get instances of specific indices in vector idx
+   instance = IS.getInstancesWithIndices(idx)
+Get the instances of a specific label
+   instances = IS.getInstancesForLabel(label)
+Get the indices corresponding to a specific label
+   indices = IS.getInstanceIndicesForLabel(label)
+Get the instances including the labels as the last row
+   dataset = getDataset(IS)
+Get the instances with specific indices. The last column of the matrix 
+will contain the label.
+   dataset = IS.getDatasetWithIndices(idx)
+Remove instances with specific indices. A new InstanceSet object is 
+returned by this function without the specified instances
+   IS = IS.removeInstancesWithIndices(idx)
+ Write the dataset to a csv file
+   IS.writeCSV(csvname)
+Write the dataset to a weka-readable file (arff). The whole dataset is
+written if the indices are not given (function called with 1 argument)
+   IS.writeArff(fname, indices)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="InstanceSet.html" class="code" title="">InstanceSet</a>	A class for describing a set of instances and labels</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="InstanceSet.html" class="code" title="">InstanceSet</a>	A class for describing a set of instances and labels</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function IS = InstanceSet(instances, labels)</a></li><li><a href="#_sub2" class="code">function instances = getInstances(IS)</a></li><li><a href="#_sub3" class="code">function K = computeKernel(IS,kernel, gamma, maxlag, scaleopt)</a></li><li><a href="#_sub4" class="code">function Ktrain = getTrainKernel(IS, trainidx)</a></li><li><a href="#_sub5" class="code">function Ktest = getTestKernel(IS, trainidx, testidx)</a></li><li><a href="#_sub6" class="code">function instance = getInstancesWithIndices(IS, idx)</a></li><li><a href="#_sub7" class="code">function labels = getLabels(IS)</a></li><li><a href="#_sub8" class="code">function numLabels = getNumLabels(IS)</a></li><li><a href="#_sub9" class="code">function numInstances = getNumInstances(IS)</a></li><li><a href="#_sub10" class="code">function numFeatures = getNumFeatures(IS)</a></li><li><a href="#_sub11" class="code">function instances = getInstancesForLabel(IS, label)</a></li><li><a href="#_sub12" class="code">function indices = getInstanceIndicesForLabel(IS,label)</a></li><li><a href="#_sub13" class="code">function dataset = getDataset(IS)</a></li><li><a href="#_sub14" class="code">function dataset = getDatasetWithIndices(IS,idx)</a></li><li><a href="#_sub15" class="code">function IS = removeInstancesWithIndices(IS, idx)</a></li><li><a href="#_sub16" class="code">function writeCSV(IS, csvname)</a></li><li><a href="#_sub17" class="code">function writeArff(IS, fname, indices)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="InstanceSet.m">InstanceSet.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% A class for describing a set of instances and labels</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Properties:</span>
+0004 <span class="comment">% -instances : a m x n matrix where m = # instances and n =</span>
+0005 <span class="comment">% # features</span>
+0006 <span class="comment">% -labels: a m x 1 matrix containing the labels for each</span>
+0007 <span class="comment">% instance</span>
+0008 <span class="comment">% -K: a m x m matrix containing the kernel of the instances</span>
+0009 <span class="comment">% required only for the Fast vesrion of LibSVM</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Functions:</span>
+0012 <span class="comment">%Construct an instanceSet</span>
+0013 <span class="comment">%   IS = eegtoolkit.util.InstanceSet(instances, labels)</span>
+0014 <span class="comment">%Compute the kernel</span>
+0015 <span class="comment">%   K = IS.computeKernel(kernel, gamma, maxlag, scaleopt)</span>
+0016 <span class="comment">% kernel can be one of 'linear' (default),'rbf','chi','xcorr','spearman',</span>
+0017 <span class="comment">% 'correlation','cosine','euclidean','seuclidean','mahalanobis'</span>
+0018 <span class="comment">%Get the training kernel with indexes in the trainidx vector</span>
+0019 <span class="comment">%   Ktrain = IS.getTrainKernel(trainidx)</span>
+0020 <span class="comment">%Get the test kernel with test indexes testidx and train indexes trainidx</span>
+0021 <span class="comment">%   Ktest = IS.getTestKernel(trainidx, testidx)</span>
+0022 <span class="comment">%Get instances of specific indices in vector idx</span>
+0023 <span class="comment">%   instance = IS.getInstancesWithIndices(idx)</span>
+0024 <span class="comment">%Get the instances of a specific label</span>
+0025 <span class="comment">%   instances = IS.getInstancesForLabel(label)</span>
+0026 <span class="comment">%Get the indices corresponding to a specific label</span>
+0027 <span class="comment">%   indices = IS.getInstanceIndicesForLabel(label)</span>
+0028 <span class="comment">%Get the instances including the labels as the last row</span>
+0029 <span class="comment">%   dataset = getDataset(IS)</span>
+0030 <span class="comment">%Get the instances with specific indices. The last column of the matrix</span>
+0031 <span class="comment">%will contain the label.</span>
+0032 <span class="comment">%   dataset = IS.getDatasetWithIndices(idx)</span>
+0033 <span class="comment">%Remove instances with specific indices. A new InstanceSet object is</span>
+0034 <span class="comment">%returned by this function without the specified instances</span>
+0035 <span class="comment">%   IS = IS.removeInstancesWithIndices(idx)</span>
+0036 <span class="comment">% Write the dataset to a csv file</span>
+0037 <span class="comment">%   IS.writeCSV(csvname)</span>
+0038 <span class="comment">%Write the dataset to a weka-readable file (arff). The whole dataset is</span>
+0039 <span class="comment">%written if the indices are not given (function called with 1 argument)</span>
+0040 <span class="comment">%   IS.writeArff(fname, indices)</span>
+0041 
+0042 classdef <a href="InstanceSet.html" class="code" title="">InstanceSet</a>
+0043     properties (Access = public)
+0044         instances; <span class="comment">% the instances</span>
+0045         labels; <span class="comment">% the labels</span>
+0046         K; <span class="comment">% the kernel of the instances</span>
+0047     <span class="keyword">end</span>
+0048     
+0049     methods
+0050         <a name="_sub0" href="#_subfunctions" class="code">function IS = InstanceSet(instances, labels)</a>
+0051             <span class="comment">% obj = InstanceSet(instances, labels)</span>
+0052             
+0053             <span class="keyword">if</span> nargin == 1
+0054                 [~, cols] = size(instances);
+0055                 IS.instances = instances(:,1:cols-1);
+0056                 IS.labels = instances(:,cols);
+0057             <span class="keyword">elseif</span> nargin==2
+0058                 IS.instances = instances;
+0059                 IS.labels = floor(labels);
+0060             <span class="keyword">end</span>
+0061             <span class="comment">%             for i=1:size(IS.instances,1)</span>
+0062             <span class="comment">%                 IS.instances(i,:) = IS.instances(i,:)./norm(IS.instances(i,:));</span>
+0063             <span class="comment">%             end</span>
+0064         <span class="keyword">end</span>
+0065         
+0066         <a name="_sub1" href="#_subfunctions" class="code">function instances = getInstances(IS)</a>
+0067             <span class="comment">% get the instances</span>
+0068             instances = IS.instances;
+0069         <span class="keyword">end</span>
+0070         
+0071         <a name="_sub2" href="#_subfunctions" class="code">function K = computeKernel(IS,kernel, gamma, maxlag, scaleopt)</a>
+0072             <span class="keyword">switch</span> kernel
+0073                 <span class="keyword">case</span> <span class="string">'linear'</span>
+0074                     K = IS.instances*IS.instances';
+0075                 <span class="keyword">case</span> <span class="string">'rbf'</span>
+0076                     dist = pdist2(IS.instances,IS.instances).^2;
+0077                     <span class="comment">%                     N = size(IS.instances,1);</span>
+0078                     <span class="comment">%                     dist = repmat(sum(IS.instances.^2, 2)', [N 1])' + ...</span>
+0079                     <span class="comment">%                         repmat(sum(IS.instances.^2,2)', [N 1]) - ...</span>
+0080                     <span class="comment">%                         2.*IS.instances*IS.instances';</span>
+0081                     K = exp(-gamma.*dist);
+0082                 <span class="keyword">case</span> <span class="string">'chi'</span>
+0083                     m = size(IS.instances,1);
+0084                     n = size(IS.instances,1);
+0085                     mOnes = ones(1,m); D = zeros(m,n);
+0086                     <span class="keyword">for</span> i=1:n
+0087                         yi = IS.instances(i,:);  yiRep = yi( mOnes, : );
+0088                         s = yiRep + IS.instances;    d = yiRep - IS.instances;
+0089                         D(:,i) = sum( d.^2 ./ (s+eps), 2 );
+0090                     <span class="keyword">end</span>
+0091                     D = D/2;
+0092                     K = exp(-gamma.*D);
+0093                     <span class="comment">%                     error('chi kernel not implemented yet');</span>
+0094                 <span class="keyword">case</span> <span class="string">'xcorr'</span>
+0095                     K = zeros(size(IS.instances,1));
+0096                     <span class="keyword">if</span> size(IS.instances,2) &lt; 500 <span class="comment">% if memory allows it go for the vectorized version</span>
+0097                         a = xcorr(IS.instances',maxlag,scaleopt);
+0098                         c = reshape(a, 2*maxlag+1, size(IS.instances,1), size(IS.instances,1));
+0099                         <span class="keyword">if</span> size(c,1) == 1 <span class="comment">% no max is required</span>
+0100                             K = squeeze(c);
+0101                         <span class="keyword">else</span>
+0102                             K = squeeze(max(c));
+0103                         <span class="keyword">end</span>
+0104                     <span class="keyword">else</span>
+0105                         <span class="keyword">for</span> i=1:size(IS.instances,1)
+0106                             <span class="keyword">for</span> j=i:size(IS.instances,1)
+0107                                 K(i,j)=max(xcorr(IS.instances(i,:),IS.instances(j,:),maxlag,scaleopt));
+0108                                 K(j,i)=K(i,j);
+0109                             <span class="keyword">end</span>
+0110                         <span class="keyword">end</span>
+0111                     <span class="keyword">end</span>
+0112                 <span class="keyword">case</span> {<span class="string">'spearman'</span>,<span class="string">'correlation'</span>,<span class="string">'cosine'</span>}
+0113                     dist = pdist2(IS.instances,IS.instances,kernel);
+0114                     K = 1-dist;
+0115                 <span class="keyword">case</span> {<span class="string">'euclidean'</span>,<span class="string">'seuclidean'</span>,<span class="string">'mahalanobis'</span>}
+0116                     dist = pdist2(IS.instances,IS.instances,kernel).^2;
+0117                     K = exp(-gamma.*dist);
+0118                 <span class="keyword">otherwise</span> <span class="comment">% if not one of the above, it can either be any value of distance in pdist2 or a function handle</span>
+0119                     dist = pdist2(IS.instances,IS.instances,kernel);
+0120                     K = exp(-gamma.*dist);
+0121             <span class="keyword">end</span>
+0122         <span class="keyword">end</span>
+0123         
+0124         <a name="_sub3" href="#_subfunctions" class="code">function Ktrain = getTrainKernel(IS, trainidx)</a>
+0125             Ktrain = IS.K(trainidx,trainidx);
+0126         <span class="keyword">end</span>
+0127         
+0128         <a name="_sub4" href="#_subfunctions" class="code">function Ktest = getTestKernel(IS, trainidx, testidx)</a>
+0129             Ktest = IS.K(testidx,trainidx);
+0130         <span class="keyword">end</span>
+0131         
+0132         <a name="_sub5" href="#_subfunctions" class="code">function instance = getInstancesWithIndices(IS, idx)</a>
+0133             <span class="comment">% get instances of specific indices</span>
+0134             instance = IS.instances(idx,:);
+0135         <span class="keyword">end</span>
+0136         <a name="_sub6" href="#_subfunctions" class="code">function labels = getLabels(IS)</a>
+0137             <span class="comment">% get the labels</span>
+0138             labels = IS.labels;
+0139         <span class="keyword">end</span>
+0140         
+0141         <a name="_sub7" href="#_subfunctions" class="code">function numLabels = getNumLabels(IS)</a>
+0142             <span class="comment">% get the number of labels</span>
+0143             numLabels = length(unique(IS.getLabels()));
+0144         <span class="keyword">end</span>
+0145         
+0146         <a name="_sub8" href="#_subfunctions" class="code">function numInstances = getNumInstances(IS)</a>
+0147             <span class="comment">% get the number of instances</span>
+0148             [numInstances,~] = size(IS.instances);
+0149         <span class="keyword">end</span>
+0150         
+0151         <a name="_sub9" href="#_subfunctions" class="code">function numFeatures = getNumFeatures(IS)</a>
+0152             <span class="comment">% get the number of features</span>
+0153             [~, numFeatures] = size(IS.instances);
+0154         <span class="keyword">end</span>
+0155         
+0156         
+0157         <a name="_sub10" href="#_subfunctions" class="code">function instances = getInstancesForLabel(IS, label)</a>
+0158             <span class="comment">% get the instances of a specific label</span>
+0159             indices = IS.getInstanceIndicesForLabel(label);
+0160             instances = IS.getInstances();
+0161             instances = instances(indices,:);
+0162         <span class="keyword">end</span>
+0163         
+0164         <a name="_sub11" href="#_subfunctions" class="code">function indices = getInstanceIndicesForLabel(IS,label)</a>
+0165             <span class="comment">% get the indices corresponding to a specific label</span>
+0166             [indices, ~] = find(IS.getDataset()==label);
+0167         <span class="keyword">end</span>
+0168         
+0169         <a name="_sub12" href="#_subfunctions" class="code">function dataset = getDataset(IS)</a>
+0170             <span class="comment">% same with getInstances but includes the labels as the last</span>
+0171             <span class="comment">% row</span>
+0172             dataset = horzcat(IS.instances,IS.labels);
+0173         <span class="keyword">end</span>
+0174         
+0175         <a name="_sub13" href="#_subfunctions" class="code">function dataset = getDatasetWithIndices(IS,idx)</a>
+0176             <span class="comment">% get the instances with specific indices. The last column of</span>
+0177             <span class="comment">% the matrix will contain the label.</span>
+0178             instance = IS.instances(idx,:);
+0179             label = IS.labels(idx,:);
+0180             dataset = horzcat(instance,label);
+0181         <span class="keyword">end</span>
+0182         <a name="_sub14" href="#_subfunctions" class="code">function IS = removeInstancesWithIndices(IS, idx)</a>
+0183             <span class="comment">% remove instances with specific indices. A new InstanceSet</span>
+0184             <span class="comment">% object is returned by this functioned without the specified</span>
+0185             <span class="comment">% instances</span>
+0186             IS.instances(idx,:) = [];
+0187             IS.labels(idx,:) = [];
+0188         <span class="keyword">end</span>
+0189         <a name="_sub15" href="#_subfunctions" class="code">function writeCSV(IS, csvname)</a>
+0190             <span class="comment">% write the dataset to a csv file</span>
+0191             <span class="comment">% Example:</span>
+0192             <span class="comment">%   obj.writeCSV('data.csv');</span>
+0193             csvwrite(csvname, IS.getDataset());
+0194         <span class="keyword">end</span>
+0195         <a name="_sub16" href="#_subfunctions" class="code">function writeArff(IS, fname, indices)</a>
+0196             <span class="comment">% write the dataset to a weka-readable file (arff)</span>
+0197             <span class="comment">% Caution: filename without extension</span>
+0198             <span class="comment">% Example:</span>
+0199             <span class="comment">%   obj.writeArff('data')</span>
+0200             <span class="keyword">if</span> nargin==3
+0201                 data1 = IS.getDatasetWithIndices(indices);
+0202                 is1 = eegtoolkit.util.InstanceSet(data1);
+0203                 data2 = IS.getDatasetWithIndices(~indices);
+0204                 is2 = eegtoolkit.util.InstanceSet(data2);
+0205                 is1.writeArff(sprintf(<span class="string">'test%s'</span>, fname));
+0206                 is2.writeArff(sprintf(<span class="string">'train%s'</span>,fname));
+0207                 <span class="keyword">return</span>;
+0208             <span class="keyword">else</span>
+0209                 data = IS.getDataset();
+0210             <span class="keyword">end</span>
+0211             <span class="comment">%             data = horzcat(IS.instances,floor(IS.labels));</span>
+0212             sss=size(data,2)-1;
+0213             filename1=strcat(fname,<span class="string">'.arff'</span>);
+0214             out1 = fopen (filename1, <span class="string">'w+'</span>);
+0215             aa1=strcat(<span class="string">'@relation'</span>,{<span class="string">' '</span>},fname,<span class="string">'-weka.filters.unsupervised.attribute.NumericToNominal-Rlast'</span>);
+0216             fprintf (out1, <span class="string">'%s\n'</span>, char(aa1));
+0217             <span class="keyword">for</span> jj=1:sss
+0218                 fprintf (out1, <span class="string">'@attribute %s numeric\n'</span>,num2str(jj));
+0219             <span class="keyword">end</span>
+0220             n_classes=max(unique(data(:,end)));
+0221             txt1=strcat(<span class="string">'@attribute'</span>,{<span class="string">' '</span>},num2str(sss+1),{<span class="string">' {'</span>});
+0222             
+0223             <span class="keyword">for</span> ii=1:n_classes
+0224                 txt1=strcat(txt1,num2str(ii),{<span class="string">','</span>});
+0225             <span class="keyword">end</span>
+0226             txt1=strcat(txt1,{<span class="string">'}'</span>});
+0227             
+0228             fprintf (out1, <span class="string">'%s\n\n'</span>,char(txt1));
+0229             fprintf (out1,<span class="string">'@data\n'</span>);
+0230             
+0231             fclose(out1);
+0232             
+0233             dlmwrite (filename1, data, <span class="string">'-append'</span> );
+0234         <span class="keyword">end</span>
+0235     <span class="keyword">end</span>
+0236     
+0237 <span class="keyword">end</span>
+0238</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of AggregatorBase</title>
+  <meta name="keywords" content="AggregatorBase">
+  <meta name="description" content="Abstract class for aggregation. Implement the functions for any">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+aggregation</a> &gt; <a href="#">@AggregatorBase</a> &gt; AggregatorBase.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+aggregation/@AggregatorBase&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>AggregatorBase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Abstract class for aggregation. Implement the functions for any</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Abstract class for aggregation. Implement the functions for any
+ fusion methodology (e.g. late fusion, VLAD, channel concatenation, etc.)
+ 
+ Properties:
+ featextractors: cell array with the the feature extractors to be used on
+ the trials. Each cell contains a featextraction object, and the trials
+ are given to each of the objects within the Experimenter class
+ instanceSet: output - the aggregated features. Can be a simple
+ InstanceSet or the extended FusionInstanceSet
+ 
+ Functions:
+Implement this function to process the trials of each featextraction
+object in the cell array featextractors. It should store in the
+instanceSet property the features.
+   obj.aggregate();
+Info &amp; run time so that the experiments are easily documented. configInfo
+is a string with the configuration information and time is of type double.
+   configInfo = obj.getConfigInfo();
+   time = obj.getTime();</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="AggregatorBase.html" class="code" title="">AggregatorBase</a>	Abstract class for aggregation. Implement the functions for any</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="AggregatorBase.html" class="code" title="">AggregatorBase</a>	Abstract class for aggregation. Implement the functions for any</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="AggregatorBase.m">AggregatorBase.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Abstract class for aggregation. Implement the functions for any</span>
+0002 <span class="comment">% fusion methodology (e.g. late fusion, VLAD, channel concatenation, etc.)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Properties:</span>
+0005 <span class="comment">% featextractors: cell array with the the feature extractors to be used on</span>
+0006 <span class="comment">% the trials. Each cell contains a featextraction object, and the trials</span>
+0007 <span class="comment">% are given to each of the objects within the Experimenter class</span>
+0008 <span class="comment">% instanceSet: output - the aggregated features. Can be a simple</span>
+0009 <span class="comment">% InstanceSet or the extended FusionInstanceSet</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Functions:</span>
+0012 <span class="comment">%Implement this function to process the trials of each featextraction</span>
+0013 <span class="comment">%object in the cell array featextractors. It should store in the</span>
+0014 <span class="comment">%instanceSet property the features.</span>
+0015 <span class="comment">%   obj.aggregate();</span>
+0016 <span class="comment">%Info &amp; run time so that the experiments are easily documented. configInfo</span>
+0017 <span class="comment">%is a string with the configuration information and time is of type double.</span>
+0018 <span class="comment">%   configInfo = obj.getConfigInfo();</span>
+0019 <span class="comment">%   time = obj.getTime();</span>
+0020 
+0021 classdef (Abstract) <a href="AggregatorBase.html" class="code" title="">AggregatorBase</a> &lt; handle
+0022     
+0023     properties
+0024         featextractors;
+0025         instanceSet;
+0026     <span class="keyword">end</span>
+0027     
+0028     methods (Abstract = true)
+0029         obj = aggregate(obj);
+0030         configInfo = getConfigInfo(obj);
+0031         time = getTime(obj);
+0032     <span class="keyword">end</span>
+0033     
+0034 <span class="keyword">end</span>
+0035</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

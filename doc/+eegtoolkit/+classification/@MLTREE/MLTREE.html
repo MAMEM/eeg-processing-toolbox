@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MLTREE</title>
+  <meta name="keywords" content="MLTREE">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="#">@MLTREE</a> &gt; MLTREE.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+classification/@MLTREE&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MLTREE
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLTREE.html" class="code" title="">MLTREE</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLTREE.html" class="code" title="">MLTREE</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function MLTREE = MLTREE(instanceSet, algorithmForCategorical, maxNumSplits, minLeafSize, minParentSize, numVariablesToSample, scoreTransform, prior)</a></li><li><a href="#_sub2" class="code">function MLTREE = build(MLTREE)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(MLTREE,instance)</a></li><li><a href="#_sub4" class="code">function MLTREE = reset(MLTREE)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(MLTREE)</a></li><li><a href="#_sub6" class="code">function time = getTime(MLTREE)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="MLTREE.m">MLTREE.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MLTREE.html" class="code" title="">MLTREE</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004 
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008        AlgorithmForCategorical; <span class="comment">% Algorithm for best categorical predictor split 'Exact' | 'PullLeft' | 'PCA' | 'OVAbyClass'</span>
+0009        MaxNumSplits; <span class="comment">% Maximal number of decision splits. size(X,1) - 1 (default) | positive integer</span>
+0010        MinLeafSize; <span class="comment">% Minimum number of leaf node observations 1 (default) | positive integer value</span>
+0011        MinParentSize; <span class="comment">% Minimum number of branch node observations 10 (default) | positive integer value</span>
+0012        NumVariablesToSample; <span class="comment">% Number of predictors to select at random for each split 'all' | positive integer value</span>
+0013        ScoreTransform <span class="comment">% 'none' (default). Score transform function. Check http://www.mathworks.com/help/stats/fitcdiscr.html</span>
+0014        Prior; <span class="comment">% Prior probabilities 'empirical' (default) | 'uniform' | vector of scalar values | structure</span>
+0015        models;
+0016        totalTime;
+0017        totalCount;
+0018     <span class="keyword">end</span>
+0019     
+0020     methods (Access = public)
+0021         <a name="_sub0" href="#_subfunctions" class="code">function MLTREE = MLTREE(instanceSet, algorithmForCategorical, maxNumSplits, minLeafSize, minParentSize, numVariablesToSample, scoreTransform, prior)</a>
+0022             <span class="comment">%set default parameters</span>
+0023             <span class="keyword">if</span> nargin &gt; 0
+0024                 MLTREE.instanceSet = instanceSet;
+0025             <span class="keyword">end</span>
+0026             <span class="keyword">if</span> nargin &gt; 1
+0027                 MLTREE.AlgorithmForCategorical = algorithmForCategorical;
+0028             <span class="keyword">end</span>
+0029             <span class="keyword">if</span> nargin &gt; 2 
+0030                 MLTREE.MaxNumSplits=maxNumSplits;
+0031             <span class="keyword">end</span>
+0032             <span class="keyword">if</span> nargin &gt; 3
+0033                 MLTREE.MinLeafSize = minLeafSize;
+0034             <span class="keyword">end</span>
+0035             <span class="keyword">if</span> nargin &gt; 4
+0036                 MLTREE.MinParentSize = minParentSize;
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin &gt; 5
+0039                 MLTREE.NumVariablesToSample = numVariablesToSample;
+0040             <span class="keyword">end</span>
+0041             <span class="keyword">if</span> nargin &gt; 6
+0042                 MLTREE.ScoreTransform = scoreTransform;
+0043             <span class="keyword">end</span>
+0044             <span class="keyword">if</span> nargin &gt; 7
+0045                 MLTREE.Prior = prior;
+0046             <span class="keyword">end</span>
+0047             MLTREE.totalTime = 0;
+0048             MLTREE.totalCount = 0;
+0049         <span class="keyword">end</span>
+0050         
+0051         <a name="_sub1" href="#_subfunctions" class="code">function MLTREE = build(MLTREE)</a>
+0052             <span class="comment">%clear all from previous calls to &quot;build&quot;</span>
+0053             MLTREE.reset;
+0054             numLabels = MLTREE.instanceSet.getNumLabels;
+0055             uniqueLabels = unique(MLTREE.instanceSet.getLabels);
+0056            
+0057             <span class="comment">% ---- Multi-Class ----- %</span>
+0058             instances=MLTREE.instanceSet.instances;
+0059             labels=MLTREE.instanceSet.labels;
+0060             
+0061             <span class="comment">%LDA.models{1}=fitcecoc(instances,labels,'Coding','ternarycomplete');</span>
+0062             MLTREE.models{1} = fitctree(instances,labels,<span class="string">'AlgorithmForCategorical'</span>,MLTREE.AlgorithmForCategorical,<span class="string">'MaxNumSplits'</span>,MLTREE.MaxNumSplits,<span class="string">'MinLeafSize'</span>,MLTREE.MinLeafSize,<span class="string">'MinParentSize'</span>,MLTREE.MinParentSize,<span class="string">'NumVariablesToSample'</span>, MLTREE.NumVariablesToSample,<span class="string">'ScoreTransform'</span>,MLTREE.ScoreTransform, <span class="string">'Prior'</span>,MLTREE.Prior);
+0063      
+0064             
+0065             <span class="comment">% ---- One (vs) All ----- %</span>
+0066 <span class="comment">%             for i=1:numLabels</span>
+0067 <span class="comment">%                 currentLabel = uniqueLabels(i);</span>
+0068 <span class="comment">%                 labels = zeros(LDA.instanceSet.getNumInstances,1)-1;</span>
+0069 <span class="comment">%                 labels(LDA.instanceSet.getInstanceIndicesForLabel(currentLabel)) = 1;</span>
+0070 <span class="comment">%                 instances = sparse(LDA.instanceSet.getInstances);</span>
+0071 <span class="comment">%                 LDA.models{i} = libsvmtrain(labels,instances, '-t 0 -c 1 -b 1');</span>
+0072 <span class="comment">%                 if LDA.kernel == LDA.KERNEL_LINEAR;</span>
+0073 <span class="comment">%                    %store the models in an instance variable</span>
+0074 <span class="comment">%                    LDA.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -b 1 -q', LDA.kernel, LDA.cost));</span>
+0075 <span class="comment">%                 elseif LDA.kernel == LDA.KERNEL_RBF;</span>
+0076 <span class="comment">%                    LDA.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -g %f -b 1 -q', LDA.kernel, LDA.cost, LDA.gamma));</span>
+0077 <span class="comment">%                 else</span>
+0078 <span class="comment">%                    error('invalid kernel parameter');</span>
+0079 <span class="comment">%                 end</span>
+0080 <span class="comment">%             end</span>
+0081         <span class="keyword">end</span>
+0082         
+0083         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(MLTREE,instance)</a>
+0084             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0085             <span class="comment">%output = predicted class</span>
+0086             <span class="comment">%probabilities = probability for predicted class</span>
+0087             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0088             
+0089             
+0090             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0091             numModels = length(MLTREE.models);
+0092             [numinstance, ~] = size(instance);
+0093             scores = zeros(numModels,numinstance);
+0094              
+0095             <span class="comment">% ---- Multi-class ----- %</span>
+0096             tic
+0097             [label,scores,cost] = predict(MLTREE.models{1},instance); 
+0098             MLTREE.totalTime = MLTREE.totalTime + toc;
+0099             MLTREE.totalCount = MLTREE.totalCount + numinstance;
+0100             <span class="comment">% ---- One (vs) All -----%</span>
+0101 <span class="comment">%              for i=1:numModels</span>
+0102 <span class="comment">%                  %predict using the stored models</span>
+0103 <span class="comment">%                  [label,score,cost] = predict(LDA.models{i},instance);</span>
+0104 <span class="comment">%                  %libsvmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');</span>
+0105 <span class="comment">%                 %store probability for each class</span>
+0106 <span class="comment">%                 scores(i,:) = score(:,1);</span>
+0107 <span class="comment">%             end</span>
+0108 
+0109              output = zeros(numinstance,1);
+0110              probabilities = zeros(numinstance,1);
+0111              <span class="comment">%we need these for ranking metrics (e.g. mAP)</span>
+0112              ranking = scores;
+0113              <span class="keyword">for</span> i=1:numinstance
+0114                  <span class="comment">%select the class with the highest probability</span>
+0115                  [prob, idx] = max(scores(i,:));
+0116                  uniqueLabels = unique(MLTREE.instanceSet.getLabels);
+0117                  <span class="comment">%output the label with highest probability</span>
+0118                  output(i,1) = uniqueLabels(idx);
+0119                  <span class="comment">%return the probability for the output label</span>
+0120                  probabilities(i,1) = prob;
+0121              <span class="keyword">end</span>
+0122         <span class="keyword">end</span>
+0123         
+0124         <a name="_sub3" href="#_subfunctions" class="code">function MLTREE = reset(MLTREE)</a>
+0125             <span class="comment">%delete all stored models</span>
+0126             MLTREE.models = {};
+0127         <span class="keyword">end</span>
+0128         
+0129         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(MLTREE)</a>
+0130             configInfo = <span class="string">'MLTREE (Config info not supported yet)'</span>;
+0131         <span class="keyword">end</span>
+0132         
+0133                         
+0134         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(MLTREE)</a>
+0135             time = MLTREE.totalTime/MLTREE.totalCount;
+0136         <span class="keyword">end</span>
+0137                 
+0138     <span class="keyword">end</span>
+0139 <span class="keyword">end</span>
+0140</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

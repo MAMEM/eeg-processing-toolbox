@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Adaboost</title>
+  <meta name="keywords" content="Adaboost">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="#">@Adaboost</a> &gt; Adaboost.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+classification/@Adaboost&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Adaboost
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Adaboost.html" class="code" title="">Adaboost</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Adaboost.html" class="code" title="">Adaboost</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function BOOST = Adaboost(instanceSet, Method, NLearn, Learners)</a></li><li><a href="#_sub2" class="code">function BOOST = build(BOOST)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(BOOST,instance)</a></li><li><a href="#_sub4" class="code">function BOOST = reset(BOOST)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(BOOST)</a></li><li><a href="#_sub6" class="code">function time = getTime(BOOST)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Adaboost.m">Adaboost.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Adaboost.html" class="code" title="">Adaboost</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004 
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008         Method <span class="comment">% AdaboostM2 (default), TotalBoost, LPBoost, Subspace, etc</span>
+0009         NLearn <span class="comment">% Number of learners (default 100)</span>
+0010         Learners <span class="comment">% Tree (default), KNN (only for Subspace), Discriminant(recommended for subspace), Custom</span>
+0011         models;
+0012         totalTime;
+0013         totalCount;
+0014     <span class="keyword">end</span>
+0015     
+0016     methods (Access = public)
+0017         <a name="_sub0" href="#_subfunctions" class="code">function BOOST = Adaboost(instanceSet, Method, NLearn, Learners)</a>
+0018             <span class="comment">%set default parameters</span>
+0019             BOOST.Method = <span class="string">'AdaBoostM2'</span>;
+0020             BOOST.NLearn=100;
+0021             BOOST.Learners = <span class="string">'Tree'</span>;
+0022             <span class="keyword">if</span> nargin &gt; 0
+0023                 BOOST.instanceSet = instanceSet;
+0024             <span class="keyword">end</span>
+0025             <span class="keyword">if</span> nargin &gt; 1
+0026                 BOOST.Method = Method;
+0027             <span class="keyword">end</span>
+0028             <span class="keyword">if</span> nargin &gt; 2 
+0029                 BOOST.NLearn=NLearn;
+0030             <span class="keyword">end</span>
+0031             <span class="keyword">if</span> nargin &gt; 3
+0032                 BOOST.Learners = Learners;
+0033             <span class="keyword">end</span>
+0034             BOOST.totalTime = 0;
+0035             BOOST.totalCount = 0;
+0036         <span class="keyword">end</span>
+0037         
+0038         <a name="_sub1" href="#_subfunctions" class="code">function BOOST = build(BOOST)</a>
+0039             <span class="comment">%clear all from previous calls to &quot;build&quot;</span>
+0040             BOOST.reset;
+0041             numLabels = BOOST.instanceSet.getNumLabels;
+0042             uniqueLabels = unique(BOOST.instanceSet.getLabels);
+0043             
+0044             <span class="comment">% ---- Multi-Class ----- %</span>
+0045             instances=BOOST.instanceSet.instances;
+0046             labels=BOOST.instanceSet.labels;
+0047             
+0048             BOOST.models{1} = fitensemble(instances,labels,BOOST.Method, BOOST.NLearn, BOOST.Learners,<span class="keyword">...</span>
+0049                 <span class="string">'Type'</span>,<span class="string">'Classification'</span>);
+0050 
+0051 <span class="comment">%             for i=1:numLabels</span>
+0052 <span class="comment">%                 currentLabel = uniqueLabels(i);</span>
+0053 <span class="comment">%                 labels = zeros(BOOST.instanceSet.getNumInstances,1)-1;</span>
+0054 <span class="comment">%                 labels(BOOST.instanceSet.getInstanceIndicesForLabel(currentLabel)) = 1;</span>
+0055 <span class="comment">%                 instances = sparse(BOOST.instanceSet.getInstances);</span>
+0056 <span class="comment">%                 N = length(labels); % X training labels</span>
+0057 <span class="comment">%                 W = 1/N * ones(N,1); %Weights initialization</span>
+0058 <span class="comment">%                 M = 10; % Number of boosting iterations</span>
+0059 <span class="comment">%                 for m=1:M</span>
+0060 <span class="comment">%                     C = 1; %The cost parameters of the linear SVM, you can...</span>
+0061 <span class="comment">%                     % perform a grid search for the optimal value as well</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">%                     %Calculate the error and alpha in adaBoost with cross validation</span>
+0064 <span class="comment">%                     cmd = ['-c ', num2str(C), ' -b 1'];</span>
+0065 <span class="comment">%                     model = svmtrain(W,labels, instances, cmd);</span>
+0066 <span class="comment">%                     [Xout, acc, ~] = svmpredict(labels, instances,model);</span>
+0067 <span class="comment">%</span>
+0068 <span class="comment">%                     err = sum(.5 * W .* acc * N)/sum(W);</span>
+0069 <span class="comment">%                     alpha = log( (1-err)/err );</span>
+0070 <span class="comment">%</span>
+0071 <span class="comment">%                     % update the weight</span>
+0072 <span class="comment">%                     W = W.*exp( - alpha.*Xout.*X );</span>
+0073 <span class="comment">%                     W = W/norm(W);</span>
+0074 <span class="comment">%                 end</span>
+0075 <span class="comment">%                 BOOST.models{i} = model;</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">%             end</span>
+0078             
+0079         <span class="keyword">end</span>
+0080         
+0081         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(BOOST,instance)</a>
+0082             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0083             <span class="comment">%output = predicted class</span>
+0084             <span class="comment">%probabilities = probability for predicted class</span>
+0085             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0086             
+0087             
+0088             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0089             numModels = length(BOOST.models);
+0090             [numinstance, ~] = size(instance);
+0091             scores = zeros(numModels,numinstance);
+0092              
+0093             <span class="comment">% ---- Multi-class ----- %</span>
+0094             tic
+0095             [label,scores] = predict(BOOST.models{1},instance); 
+0096             BOOST.totalTime = BOOST.totalTime + toc;
+0097             BOOST.totalCount = BOOST.totalCount + numinstance;
+0098 
+0099              output = zeros(numinstance,1);
+0100              probabilities = zeros(numinstance,1);
+0101              <span class="comment">%we need these for ranking metrics (e.g. mAP)</span>
+0102              ranking = scores;
+0103              <span class="keyword">for</span> i=1:numinstance
+0104                  <span class="comment">%select the class with the highest probability</span>
+0105                  [prob, idx] = max(scores(i,:));
+0106                  uniqueLabels = unique(BOOST.instanceSet.getLabels);
+0107                  <span class="comment">%output the label with highest probability</span>
+0108                  output(i,1) = uniqueLabels(idx);
+0109                  <span class="comment">%return the probability for the output label</span>
+0110                  probabilities(i,1) = prob;
+0111              <span class="keyword">end</span>
+0112         <span class="keyword">end</span>
+0113         
+0114         <a name="_sub3" href="#_subfunctions" class="code">function BOOST = reset(BOOST)</a>
+0115             <span class="comment">%delete all stored models</span>
+0116             BOOST.models = {};
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(BOOST)</a>
+0120             configInfo = sprintf(<span class="string">'Adaboost: Method: %s NLearn: %d Learners: %s'</span>,<span class="keyword">...</span>
+0121                 BOOST.Method, BOOST.NLearn, BOOST.Learners);
+0122         <span class="keyword">end</span>
+0123         
+0124                         
+0125         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(BOOST)</a>
+0126             time = BOOST.totalTime / BOOST.totalCount;
+0127         <span class="keyword">end</span>
+0128                 
+0129     <span class="keyword">end</span>
+0130 <span class="keyword">end</span>
+0131</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

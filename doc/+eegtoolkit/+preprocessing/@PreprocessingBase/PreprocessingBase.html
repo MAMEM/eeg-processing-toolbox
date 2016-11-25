@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PreprocessingBase</title>
+  <meta name="keywords" content="PreprocessingBase">
+  <meta name="description" content="Abstract class for preprocessing. Implement the functions for any">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+preprocessing</a> &gt; <a href="#">@PreprocessingBase</a> &gt; PreprocessingBase.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+preprocessing/@PreprocessingBase&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>PreprocessingBase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Abstract class for preprocessing. Implement the functions for any</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Abstract class for preprocessing. Implement the functions for any
+ preprocessing step (e.g. filtering, artifact removal, sub-sampling,
+ rereferencing, etc.
+ 
+ Properties:
+ originalTrials: cell array with the trials to be processed
+ processedTrials: the processed trials to be returned
+ 
+ Functions:
+Implement this function to process the in trials and return the processed
+trials (out)
+   out = obj.process(in);
+Info &amp; run time so that the experiments are easily documented. configInfo
+is a string with the configuration information and time is of type double.
+   configInfo = obj.getConfigInfo();
+   time = obj.getTime();</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PreprocessingBase.html" class="code" title="">PreprocessingBase</a>	Abstract class for preprocessing. Implement the functions for any</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PreprocessingBase.html" class="code" title="">PreprocessingBase</a>	Abstract class for preprocessing. Implement the functions for any</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="PreprocessingBase.m">PreprocessingBase.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Abstract class for preprocessing. Implement the functions for any</span>
+0002 <span class="comment">% preprocessing step (e.g. filtering, artifact removal, sub-sampling,</span>
+0003 <span class="comment">% rereferencing, etc.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Properties:</span>
+0006 <span class="comment">% originalTrials: cell array with the trials to be processed</span>
+0007 <span class="comment">% processedTrials: the processed trials to be returned</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Functions:</span>
+0010 <span class="comment">%Implement this function to process the in trials and return the processed</span>
+0011 <span class="comment">%trials (out)</span>
+0012 <span class="comment">%   out = obj.process(in);</span>
+0013 <span class="comment">%Info &amp; run time so that the experiments are easily documented. configInfo</span>
+0014 <span class="comment">%is a string with the configuration information and time is of type double.</span>
+0015 <span class="comment">%   configInfo = obj.getConfigInfo();</span>
+0016 <span class="comment">%   time = obj.getTime();</span>
+0017 
+0018 classdef <a href="PreprocessingBase.html" class="code" title="">PreprocessingBase</a> &lt; handle
+0019     
+0020     properties
+0021         originalTrials;
+0022         processedTrials;
+0023     <span class="keyword">end</span>
+0024     
+0025     methods (Abstract = true)
+0026         out = process(obj,in);
+0027         configInfo = getConfigInfo(obj);
+0028         time = getTime(obj);
+0029     <span class="keyword">end</span>
+0030     
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

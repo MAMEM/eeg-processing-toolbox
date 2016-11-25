@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MLR_Transf</title>
+  <meta name="keywords" content="MLR_Transf">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="#">@MLR_Transf</a> &gt; MLR_Transf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+featextraction/@MLR_Transf&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MLR_Transf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLR_Transf.html" class="code" title="">MLR_Transf</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLR_Transf.html" class="code" title="">MLR_Transf</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function PWT = MLR_Transf(chns)</a></li><li><a href="#_sub2" class="code">function extract(PWT)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(PWT)</a></li><li><a href="#_sub4" class="code">function time = getTime(PWT)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="MLR_Transf.m">MLR_Transf.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MLR_Transf.html" class="code" title="">MLR_Transf</a> &lt; eegtoolkit.featextraction.PSDExtractionBase<span class="comment">%FeatureExtractionBase</span>
+0002     <span class="comment">%Computes the psd using the welch method</span>
+0003     <span class="comment">%Usage:</span>
+0004     <span class="comment">%   session = eegtoolkit.util.Session();</span>
+0005     <span class="comment">%   session.loadSubject(1);</span>
+0006     <span class="comment">%   pwt = ssveptolkit.transform.PWelchTransformer(session.trials);</span>
+0007     <span class="comment">%Specify the channel to be used (default = 126)</span>
+0008     <span class="comment">%   pwt.channel = 150;</span>
+0009     <span class="comment">%Specify the number of seconds to be used (default = 0, use all signal)</span>
+0010     <span class="comment">%   pwt.seconds = 3;</span>
+0011     <span class="comment">%Specify the nfft parameter (default = 512, computes 257 features)</span>
+0012     <span class="comment">%   pwt.nfft = 512;</span>
+0013     <span class="comment">%Transform the signal</span>
+0014     <span class="comment">%   pwt.transform();</span>
+0015     properties (Access = public)
+0016         channel;
+0017         avgTime;
+0018     <span class="keyword">end</span>
+0019     methods (Access = public)
+0020         <a name="_sub0" href="#_subfunctions" class="code">function PWT = MLR_Transf(chns)</a>
+0021             <span class="keyword">if</span> nargin == 1
+0022                 PWT.trials = {};
+0023                 PWT.channel = [1:length(chns)];
+0024             <span class="keyword">else</span>
+0025                 error(<span class="string">'invalid number of arguments'</span>);
+0026             <span class="keyword">end</span>
+0027         <span class="keyword">end</span>
+0028         
+0029         <a name="_sub1" href="#_subfunctions" class="code">function extract(PWT)</a>
+0030             
+0031             numTrials = length(PWT.trials);
+0032             [m n]=size(PWT.trials{1}.signal(PWT.channel,:));
+0033             data = zeros(m,n,numTrials);
+0034             labels = zeros(numTrials,1);
+0035             
+0036             <span class="keyword">for</span> i = 1 : numTrials   <span class="comment">%</span>
+0037                 <span class="keyword">for</span> j=1:m
+0038                     data(j,:,i) = PWT.trials{i}.signal(j,:);<span class="comment">%data(j,:,i)./norm(data(j,:,i));</span>
+0039                     data(j,:,i) = (data(j,:,i) - mean(data(j,:,i)))./std(data(j,:,i));
+0040 <span class="comment">%                     data(j,:,i) = data(j,:,i)./norm(data(j,:,i));</span>
+0041                 <span class="keyword">end</span><span class="comment">%</span>
+0042                 labels(i) = floor(PWT.trials{i}.label);
+0043             <span class="keyword">end</span>
+0044             <span class="comment">%data= reshape(data,m*n,size(data,3));</span>
+0045             <span class="keyword">for</span> i=1:numTrials
+0046                 newData(i,:) = [data(1,:,i) data(2,:,i)];
+0047             <span class="keyword">end</span>
+0048             <span class="comment">%             MeanTrainData=mean(data,2);</span>
+0049             <span class="comment">%             data=data-repmat(MeanTrainData,1,numTrials);</span>
+0050             data = newData;
+0051             PWT.instanceSet = eegtoolkit.util.InstanceSet(data, labels);
+0052         <span class="keyword">end</span>
+0053         
+0054         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(PWT)</a>
+0055             configInfo = sprintf(<span class="string">'MLR_Transf_rawdata'</span>);
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(PWT)</a>
+0059             time = PWT.avgTime;
+0060         <span class="keyword">end</span>
+0061     <span class="keyword">end</span>
+0062     
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

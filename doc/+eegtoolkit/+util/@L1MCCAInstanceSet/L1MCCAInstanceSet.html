@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of L1MCCAInstanceSet</title>
+  <meta name="keywords" content="L1MCCAInstanceSet">
+  <meta name="description" content="RESULTSET class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@L1MCCAInstanceSet</a> &gt; L1MCCAInstanceSet.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@L1MCCAInstanceSet&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>L1MCCAInstanceSet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>RESULTSET class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> RESULTSET class
+ Stores the results of an experiment</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="L1MCCAInstanceSet.html" class="code" title="">L1MCCAInstanceSet</a>	RESULTSET class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="L1MCCAInstanceSet.html" class="code" title="">L1MCCAInstanceSet</a>	RESULTSET class</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function L1 = L1MCCAInstanceSet(trials)</a></li><li><a href="#_sub2" class="code">function newL1 = removeInstancesWithIndices(L1,indices)</a></li><li><a href="#_sub3" class="code">function instances = getInstancesWithIndices(L1,indices)</a></li><li><a href="#_sub4" class="code">function dataset = getDatasetWithIndices(L1,indices)</a></li><li><a href="#_sub5" class="code">function numInstances = getNumInstances(L1)</a></li><li><a href="#_sub6" class="code">function dataset = getDataset(L1)</a></li><li><a href="#_sub7" class="code">function numLabels = getNumLabels(L1)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="L1MCCAInstanceSet.m">L1MCCAInstanceSet.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% RESULTSET class</span>
+0002 <span class="comment">% Stores the results of an experiment</span>
+0003 classdef <a href="L1MCCAInstanceSet.html" class="code" title="">L1MCCAInstanceSet</a> &lt; eegtoolkit.util.InstanceSet
+0004     
+0005     properties
+0006         matrix4D;
+0007         labelss;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods
+0011         <a name="_sub0" href="#_subfunctions" class="code">function L1 = L1MCCAInstanceSet(trials)</a>
+0012             <span class="comment">%Constructor method</span>
+0013             <span class="comment">%Input:</span>
+0014             <span class="comment">%(InstanceSet object): the original instanceSet</span>
+0015             <span class="comment">%Labels: a vector containing the output labels of the</span>
+0016             <span class="comment">%experiment</span>
+0017             <span class="comment">%Proababilities: a vector containing the probabilities of each</span>
+0018             <span class="comment">%label</span>
+0019             <span class="comment">%Ranking (optional): a matrix containing a score for each label</span>
+0020             L1 = L1@eegtoolkit.util.InstanceSet(zeros(1,1000),ones(1,1000));
+0021             <span class="keyword">if</span>(nargin&gt;0)
+0022                 numTrials = length(trials);
+0023                 lbls = zeros(numTrials,1);
+0024                 <span class="keyword">for</span> i=1:numTrials
+0025                     lbls(i) = trials{i}.label;
+0026                 <span class="keyword">end</span>
+0027 
+0028                 L1.labelss = lbls;
+0029                 [numChannels, numSamples] = size(trials{1}.signal);
+0030                 
+0031                 L1.matrix4D = zeros(numChannels,numSamples,numTrials,1);
+0032                 
+0033                 <span class="keyword">for</span> i=1:numTrials
+0034                     L1.matrix4D(:,:,i) = trials{i}.signal;
+0035                 <span class="keyword">end</span>
+0036             <span class="keyword">end</span>
+0037 
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub1" href="#_subfunctions" class="code">function newL1 = removeInstancesWithIndices(L1,indices)</a>
+0041             newL1 = eegtoolkit.util.L1MCCAInstanceSet;
+0042             newL1.labelss = L1.labelss;
+0043             newL1.labelss(indices) = [];
+0044             newL1.matrix4D = L1.matrix4D;
+0045             newL1.matrix4D(:,:,indices) = [];
+0046         <span class="keyword">end</span>
+0047         
+0048         <a name="_sub2" href="#_subfunctions" class="code">function instances = getInstancesWithIndices(L1,indices)</a>
+0049             instances = L1.matrix4D(:,:,indices);
+0050         <span class="keyword">end</span>
+0051         
+0052         <a name="_sub3" href="#_subfunctions" class="code">function dataset = getDatasetWithIndices(L1,indices)</a>
+0053             instances = zeros(length(indices),1000);
+0054             labels = L1.labelss(indices);
+0055             dataset = horzcat(instances,labels);
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub4" href="#_subfunctions" class="code">function numInstances = getNumInstances(L1)</a>
+0059             [~,~,numInstances] = size(L1.matrix4D);
+0060         <span class="keyword">end</span>
+0061         
+0062         <a name="_sub5" href="#_subfunctions" class="code">function dataset = getDataset(L1)</a>
+0063             instances = zeros(L1.getNumInstances,1000);
+0064             labels = L1.labelss;
+0065             dataset = horzcat(instances,labels);
+0066         <span class="keyword">end</span>
+0067             
+0068         <a name="_sub6" href="#_subfunctions" class="code">function numLabels = getNumLabels(L1)</a>
+0069             numLabels = length(unique(L1.labelss));
+0070         <span class="keyword">end</span>
+0071     <span class="keyword">end</span>
+0072     
+0073 <span class="keyword">end</span>
+0074</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

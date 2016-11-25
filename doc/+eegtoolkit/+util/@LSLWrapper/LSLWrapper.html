@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of LSLWrapper</title>
+  <meta name="keywords" content="LSLWrapper">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+util</a> &gt; <a href="#">@LSLWrapper</a> &gt; LSLWrapper.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./+eegtoolkit/+util/@LSLWrapper&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>LSLWrapper
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LSLWrapper.html" class="code" title="">LSLWrapper</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LSLWrapper.html" class="code" title="">LSLWrapper</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function LSL = LSLWrapper()</a></li><li><a href="#_sub2" class="code">function LSL = resolveStreams(LSL,datastream,maxbuffer,eventstream)</a></li><li><a href="#_sub3" class="code">function LSL = runExperiment(LSL)</a></li><li><a href="#_sub4" class="code">function LSL = visualizeDataStream(LSL,windowlength,datastreamname,channel)</a></li><li><a href="#_sub5" class="code">function streams = findStreams(LSL,timeout)</a></li><li><a href="#_sub6" class="code">function LSL = runSSVEP(LSL,eventStopCode)</a></li><li><a href="#_sub7" class="code">function wav = tts(txt,voice,pace,fs)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="LSLWrapper.m">LSLWrapper.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="LSLWrapper.html" class="code" title="">LSLWrapper</a> &lt; handle
+0002     <span class="comment">%LSLWRAPPER Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         lib;
+0007         datastreaminfo;
+0008         datainlet;
+0009         dataoutlet;
+0010         eventstreaminfo;
+0011         eventinlet;
+0012         eventoutlet;
+0013         preprocessing;
+0014         featextraction;
+0015         results;
+0016         trials;
+0017         classification; <span class="comment">%pre-trained object required</span>
+0018     <span class="keyword">end</span>
+0019     
+0020     properties (Access = private)
+0021         streamsOK;
+0022         samplingRate;
+0023     <span class="keyword">end</span>
+0024     
+0025     methods
+0026         <a name="_sub0" href="#_subfunctions" class="code">function LSL = LSLWrapper()</a>
+0027             LSL.lib = lsl_loadlib;
+0028             LSL.streamsOK = 0;
+0029         <span class="keyword">end</span>
+0030         
+0031         <a name="_sub1" href="#_subfunctions" class="code">function LSL = resolveStreams(LSL,datastream,maxbuffer,eventstream)</a>
+0032             LSL.datastreaminfo = lsl_resolve_byprop(LSL.lib, <span class="string">'name'</span>, datastream);
+0033             LSL.eventstreaminfo = lsl_resolve_byprop(LSL.lib, <span class="string">'name'</span>, eventstream);
+0034             <span class="comment">%get samplingRate from stream info</span>
+0035             <span class="comment">%samplingRate = ?</span>
+0036             <span class="keyword">if</span>(length(LSL.datastreaminfo) &gt; 0)
+0037                 LSL.datainlet = lsl_inlet(LSL.datastreaminfo{1},maxbuffer);
+0038                 LSL.datainlet.pull_chunk;
+0039             <span class="keyword">else</span>
+0040                 error(<span class="string">'Cannot resolve data stream'</span>);
+0041             <span class="keyword">end</span>
+0042             <span class="keyword">if</span>(length(LSL.eventstreaminfo) &gt; 0)
+0043                 LSL.eventinlet = lsl_inlet(LSL.eventstreaminfo{1},1);
+0044             <span class="keyword">else</span>
+0045                 error(<span class="string">'Cannot resolve event stream'</span>);
+0046             <span class="keyword">end</span>
+0047             eventoutletInfo = lsl_streaminfo(LSL.lib,<span class="string">'CommandStream'</span>,<span class="string">'Markers'</span>,1,0,<span class="string">'cf_int32'</span>,<span class="string">'myuniquesourceid23442'</span>);
+0048             LSL.eventoutlet = lsl_outlet(eventoutletInfo);
+0049             LSL.samplingRate = LSL.datastreaminfo{1}.nominal_srate;
+0050             LSL.streamsOK = 1;
+0051         <span class="keyword">end</span>
+0052         <a name="_sub2" href="#_subfunctions" class="code">function LSL = runExperiment(LSL)</a>
+0053             <span class="keyword">if</span>(LSL.streamsOK ~=1)
+0054                 error(<span class="string">'error: Did you call \&quot;resolveStreams\&quot;?'</span>);
+0055             <span class="keyword">end</span>
+0056             strings = {<span class="string">'abstract'</span>,<span class="string">'concept'</span>,<span class="string">'objectives'</span>,<span class="string">'structure'</span>,<span class="string">'consortium'</span>};
+0057             labels = {4,2,3,5,1,2,5,4,2,3,1,5,4,3,2,4,1,2,5,3,4,1,3,1,3};
+0058             [12 6.66 7.5 8.57 10];
+0059             8.57,6.66,7.5,10,12
+0060             <span class="comment">%structure,concept,objectives,consortiu,abstract</span>
+0061             LSL.trials = {};
+0062             [y,Fs] = audioread(<span class="string">'beep-07.wav'</span>);
+0063             <a href="#_sub7" class="code" title="subfunction wav = tts(txt,voice,pace,fs)">tts</a>(<span class="string">'get ready'</span>);
+0064             pause(10);
+0065             <span class="keyword">for</span> i=1:length(labels)
+0066                 <a href="#_sub7" class="code" title="subfunction wav = tts(txt,voice,pace,fs)">tts</a>(strings{labels{i}});
+0067                 pause(1);
+0068                 sound(y,Fs);
+0069                 pause(5);
+0070                 
+0071                 chunk = LSL.datainlet.pull_chunk;
+0072                 trial = eegtoolkit.util.Trial(chunk,0,LSL.samplingRate,0,0);
+0073                 LSL.trials{length(LSL.trials)+1} = trial;
+0074                 <a href="#_sub7" class="code" title="subfunction wav = tts(txt,voice,pace,fs)">tts</a>(<span class="string">'ok'</span>);
+0075                 pause(4);
+0076             <span class="keyword">end</span>
+0077         <span class="keyword">end</span>
+0078         <span class="comment">%EBNeuro_BePLusLTM_192.168.171.81</span>
+0079         <a name="_sub3" href="#_subfunctions" class="code">function LSL = visualizeDataStream(LSL,windowlength,datastreamname,channel)</a>
+0080             <span class="comment">%             import java.util.Qu</span>
+0081             LSL.datastreaminfo = lsl_resolve_byprop(LSL.lib, <span class="string">'name'</span>, datastreamname);
+0082             LSL.datainlet = lsl_inlet(LSL.datastreaminfo{1},windowlength/LSL.datastreaminfo{1}.nominal_srate);
+0083             <span class="comment">%             LSL.eventstreaminfo = lsl_resolve_byprop(LSL.lib,'name',eventstreamname);</span>
+0084             
+0085             <span class="comment">%             buffer = eegtoolkit.util.CQueue(windowlength);</span>
+0086             <span class="comment">% %             buffer.capacity = windowlength;</span>
+0087             buffer = zeros(1,windowlength);
+0088             timestampBuffer = zeros(1,windowlength);
+0089             eventBuffer = zeros(1,windowlength);
+0090             indices = 1:windowlength;
+0091             t = 0 ;
+0092             x = 0 ;
+0093             startSpot = 0;
+0094             <span class="comment">%             interv = windowlength; % considering 1000 samples</span>
+0095             step = 0.1 ; <span class="comment">% lowering step has a number of cycles and then acquire more data</span>
+0096             k =1;
+0097             firstTimestamp = [];
+0098             <span class="keyword">while</span> ( 1 )
+0099                 <span class="comment">%                 sample = LSL.datainlet.pull_sample;</span>
+0100                 [samples,timestamps] = LSL.datainlet.pull_chunk;
+0101                 <span class="keyword">if</span> isempty(firstTimestamp)
+0102                     firstTimestamp = timestamps;
+0103                 <span class="keyword">end</span>
+0104                 [~,numPulled] = size(samples);
+0105                 <span class="keyword">if</span>(numPulled==0)
+0106                     <span class="keyword">continue</span>;
+0107                 <span class="keyword">end</span>
+0108                 <span class="comment">%                 buffer.push(sample(1));</span>
+0109                 <span class="comment">%                 buffermat = cell2mat(buffer.content);</span>
+0110                 buffer = circshift(buffer,[1,-numPulled]);
+0111                 timestampBuffer = circshift(timestampBuffer,[1,-numPulled]);
+0112                 buffer(windowlength-numPulled+1:end) = samples(channel,:);
+0113                 timestampBuffer(windowlength-numPulled+1:end) = timestamps-firstTimestamp;
+0114                 <span class="comment">%                 buffer(windowlength) = sample(1);</span>
+0115                 minBuff = min(buffer(buffer~=0));
+0116                 maxBuff = max(buffer(buffer~=0));
+0117                 plot(timestampBuffer,buffer);
+0118                 axis([ timestampBuffer(1), timestampBuffer(end)+1, minBuff , maxBuff+1 ]);
+0119                 xlabel(<span class="string">'Seconds'</span>);
+0120                 <span class="comment">%                 axis([ timestampBuffer(1), timestampBuffer(end), minBuff , maxBuff ]);</span>
+0121                 grid
+0122                 
+0123                 t = t + step;
+0124                 drawnow;
+0125                 k = k+1;
+0126                 <span class="comment">%                 indices = indices + 1;</span>
+0127                 <span class="comment">%                 pause(0.01)</span>
+0128             <span class="keyword">end</span>
+0129         <span class="keyword">end</span>
+0130         
+0131         <a name="_sub4" href="#_subfunctions" class="code">function streams = findStreams(LSL,timeout)</a>
+0132             streams = {};
+0133             <span class="keyword">if</span>(nargin&gt;1)
+0134                 allInfo = lsl_resolve_all(LSL.lib,timeout);
+0135             <span class="keyword">else</span>
+0136                 allInfo = lsl_resolve_all(LSL.lib);
+0137             <span class="keyword">end</span>
+0138             <span class="keyword">for</span> i=1:length(allInfo)
+0139                 streams{i} = allInfo{i}.name;
+0140             <span class="keyword">end</span>
+0141         <span class="keyword">end</span>
+0142         <a name="_sub5" href="#_subfunctions" class="code">function LSL = runSSVEP(LSL,eventStopCode)</a>
+0143             <span class="keyword">if</span> (LSL.streamsOK ~=1)
+0144                 error(<span class="string">'error: Did you call \&quot;resolveStreams\&quot; ?'</span>);
+0145             <span class="keyword">end</span>
+0146             <span class="keyword">while</span> 1
+0147                 sample = LSL.eventinlet.pull_sample;
+0148                 disp([<span class="string">'sample = '</span>, num2str(sample)]);
+0149                 <span class="keyword">if</span>(sample==eventStopCode)
+0150                     <span class="comment">%                     disp('Collecting signal...');</span>
+0151                     pause(5);
+0152                     <span class="comment">%                     disp('Processing...');</span>
+0153                     chunk = LSL.datainlet.pull_chunk;
+0154                     trial = {eegtoolkit.util.Trial(chunk,0,LSL.samplingRate,0,0)};
+0155                     <span class="keyword">for</span> i=1:length(LSL.preprocessing)
+0156                         trial = LSL.preprocessing{i}.process(trial);
+0157                     <span class="keyword">end</span>
+0158                     LSL.featextraction.trials = trial;
+0159                     LSL.featextraction.extract;
+0160                     [output, prob, rank] = LSL.classification.classifyInstance(LSL.featextraction.getInstances);
+0161                     result = 0;
+0162                     <span class="comment">%                     plot(chunk')</span>
+0163                     rank
+0164                     LSL.results = [LSL.results,output];
+0165                     disp([<span class="string">'classif output = '</span>, num2str(output)]);
+0166                     <span class="comment">%                     LSL.eventoutlet.push_sample(output);</span>
+0167                     LSL.eventoutlet.push_sample(output-1);
+0168                     <span class="comment">%                     disp(['prob = ', num2str(prob)]);</span>
+0169                 <span class="keyword">end</span>
+0170             <span class="keyword">end</span>
+0171         <span class="keyword">end</span>
+0172         
+0173     <span class="keyword">end</span>
+0174     
+0175     methods(Access = private)
+0176         <a name="_sub6" href="#_subfunctions" class="code">function wav = tts(txt,voice,pace,fs)</a>
+0177             <span class="comment">%TTS text to speech.</span>
+0178             <span class="comment">%   TTS (TXT) synthesizes speech from string TXT, and speaks it. The audio</span>
+0179             <span class="comment">%   format is mono, 16 bit, 16k Hz by default.</span>
+0180             <span class="comment">%</span>
+0181             <span class="comment">%   WAV = TTS(TXT) does not vocalize but output to the variable WAV.</span>
+0182             <span class="comment">%</span>
+0183             <span class="comment">%   TTS(TXT,VOICE) uses the specific voice. Use TTS('','List') to see a</span>
+0184             <span class="comment">%   list of availble voices. Default is the first voice.</span>
+0185             <span class="comment">%</span>
+0186             <span class="comment">%   TTS(...,PACE) set the pace of speech to PACE. PACE ranges from</span>
+0187             <span class="comment">%   -10 (slowest) to 10 (fastest). Default 0.</span>
+0188             <span class="comment">%</span>
+0189             <span class="comment">%   TTS(...,FS) set the sampling rate of the speech to FS kHz. FS must be</span>
+0190             <span class="comment">%   one of the following: 8000, 11025, 12000, 16000, 22050, 24000, 32000,</span>
+0191             <span class="comment">%       44100, 48000. Default 16.</span>
+0192             <span class="comment">%</span>
+0193             <span class="comment">%   This function requires the Microsoft Win32 Speech API (SAPI).</span>
+0194             <span class="comment">%</span>
+0195             <span class="comment">%   Examples:</span>
+0196             <span class="comment">%       % Speak the text;</span>
+0197             <span class="comment">%       tts('I can speak.');</span>
+0198             <span class="comment">%       % List availble voices;</span>
+0199             <span class="comment">%       tts('I can speak.','List');</span>
+0200             <span class="comment">%       % Do not speak out, store the speech in a variable;</span>
+0201             <span class="comment">%       w = tts('I can speak.',[],-4,44100);</span>
+0202             <span class="comment">%       wavplay(w,44100);</span>
+0203             <span class="comment">%</span>
+0204             <span class="comment">%   See also WAVREAD, WAVWRITE, WAVPLAY.</span>
+0205             
+0206             <span class="comment">% Written by Siyi Deng; 12-21-2007;</span>
+0207             
+0208             <span class="keyword">if</span> ~ispc, error(<span class="string">'Microsoft Win32 SAPI is required.'</span>); <span class="keyword">end</span>
+0209             <span class="keyword">if</span> ~ischar(txt), error(<span class="string">'First input must be string.'</span>); <span class="keyword">end</span>
+0210             
+0211             SV = actxserver(<span class="string">'SAPI.SpVoice'</span>);
+0212             TK = invoke(SV,<span class="string">'GetVoices'</span>);
+0213             
+0214             <span class="keyword">if</span> nargin &gt; 1
+0215                 <span class="comment">% Select voice;</span>
+0216                 <span class="keyword">for</span> k = 0:TK.Count-1
+0217                     <span class="keyword">if</span> strcmpi(voice,TK.Item(k).GetDescription)
+0218                         SV.Voice = TK.Item(k);
+0219                         <span class="keyword">break</span>;
+0220                     <span class="keyword">elseif</span> strcmpi(voice,<span class="string">'list'</span>)
+0221                         disp(TK.Item(k).GetDescription);
+0222                     <span class="keyword">end</span>
+0223                 <span class="keyword">end</span>
+0224                 <span class="comment">% Set pace;</span>
+0225                 <span class="keyword">if</span> nargin &gt; 2
+0226                     <span class="keyword">if</span> isempty(pace), pace = 0; <span class="keyword">end</span>
+0227                     <span class="keyword">if</span> abs(pace) &gt; 10, pace = sign(pace)*10; <span class="keyword">end</span>
+0228                     SV.Rate = pace;
+0229                 <span class="keyword">end</span>
+0230             <span class="keyword">end</span>
+0231             
+0232             <span class="keyword">if</span> nargin &lt; 4 || ~ismember(fs,[8000,11025,12000,16000,22050,24000,32000,<span class="keyword">...</span>
+0233                     44100,48000]), fs = 16000; <span class="keyword">end</span>
+0234             
+0235             <span class="keyword">if</span> nargout &gt; 0
+0236                 <span class="comment">% Output variable;</span>
+0237                 MS = actxserver(<span class="string">'SAPI.SpMemoryStream'</span>);
+0238                 MS.Format.Type = sprintf(<span class="string">'SAFT%dkHz16BitMono'</span>,fix(fs/1000));
+0239                 SV.AudioOutputStream = MS;
+0240             <span class="keyword">end</span>
+0241             
+0242             invoke(SV,<span class="string">'Speak'</span>,txt);
+0243             
+0244             <span class="keyword">if</span> nargout &gt; 0
+0245                 <span class="comment">% Convert uint8 to double precision;</span>
+0246                 wav = reshape(double(invoke(MS,<span class="string">'GetData'</span>)),2,[])';
+0247                 wav = (wav(:,2)*256+wav(:,1))/32768;
+0248                 wav(wav &gt;= 1) = wav(wav &gt;= 1)-2;
+0249                 delete(MS);
+0250                 clear MS;
+0251             <span class="keyword">end</span>
+0252             
+0253             delete(SV);
+0254             clear SV TK;
+0255             pause(0.2);
+0256             
+0257         <span class="keyword">end</span> <span class="comment">% TTS;</span>
+0258     <span class="keyword">end</span>
+0259 <span class="keyword">end</span>
+0260</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 14:50:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
