@@ -145,6 +145,73 @@ classdef LSLWrapper < handle
             end
         end
         %EBNeuro_BePLusLTM_192.168.171.81
+        function LSL = visualizeStressLevels(LSL,windowlength,datastreamname,channel, stressDetectionInstance)
+            
+            
+            %             import java.util.Qu
+            LSL.datastreaminfo = lsl_resolve_byprop(LSL.lib, 'name', datastreamname);
+            LSL.datainlet = lsl_inlet(LSL.datastreaminfo{1},windowlength/LSL.datastreaminfo{1}.nominal_srate);
+            %             LSL.eventstreaminfo = lsl_resolve_byprop(LSL.lib,'name',eventstreamname);
+            
+            %             buffer = eegtoolkit.util.CQueue(windowlength);
+            % %             buffer.capacity = windowlength;
+            buffer = zeros(1,windowlength);
+            timestampBuffer = zeros(1,windowlength);
+            eventBuffer = zeros(1,windowlength);
+            indices = 1:windowlength;
+            t = 0 ;
+            x = 0 ;
+            startSpot = 0;
+            %             interv = windowlength; % considering 1000 samples
+            step = 0.1 ; % lowering step has a number of cycles and then acquire more data
+            k =1;
+            firstTimestamp = [];
+            
+            while ( 1 )
+                %                 sample = LSL.datainlet.pull_sample;
+                
+                [samples,timestamps] = LSL.datainlet.pull_chunk;
+%                 samples = stressDetectionInstance.detectStress(samples);
+                size(samples)
+
+                [~,numPulled] = size(samples);
+                if(numPulled==0)
+                    pause(5);
+                    continue;
+                end
+                                if isempty(firstTimestamp)
+                    firstTimestamp = timestamps(1);
+                end
+                %                 buffer.push(sample(1));
+                %                 buffermat = cell2mat(buffer.content);
+                buffer = circshift(buffer,[1,-numPulled]);
+                timestampBuffer = circshift(timestampBuffer,[1,-numPulled]);
+                buffer(windowlength-numPulled+1:end) = stressDetectionInstance.detectStress(samples(channel,:));
+%                 size(timestamps)
+%                 size(firstTimestamp)
+                timestampBuffer(windowlength-numPulled+1:end) = timestamps-firstTimestamp;
+                %                 buffer(windowlength) = sample(1);
+                minBuff = min(buffer(buffer~=0));
+                maxBuff = max(buffer(buffer~=0));
+                plot(timestampBuffer,buffer);
+                axis([ timestampBuffer(1), timestampBuffer(end)+1, minBuff , maxBuff+1 ]);
+                xlabel('Seconds');
+                %                 axis([ timestampBuffer(1), timestampBuffer(end), minBuff , maxBuff ]);
+                grid
+                
+                t = t + step;
+                
+                drawnow;
+                k = k+1;
+                                k;
+                                pause(10);
+%                 if (k==2000)
+%                     pause;
+%                 end
+                %                 indices = indices + 1;
+                %                 pause(0.01)
+            end
+        end
         function LSL = visualizeDataStream(LSL,windowlength,datastreamname,channel)
             %             import java.util.Qu
             LSL.datastreaminfo = lsl_resolve_byprop(LSL.lib, 'name', datastreamname);
@@ -220,6 +287,7 @@ classdef LSLWrapper < handle
                 streams{i} = allInfo{i}.name;
             end
         end
+        
         function LSL = runSSVEP(LSL,eventStopCode)
             if (LSL.streamsOK ~=1)
                 error('error: Did you call \"resolveStreams\" ?');
