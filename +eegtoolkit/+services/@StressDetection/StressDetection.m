@@ -1,8 +1,10 @@
 classdef StressDetection < handle
-    %STRESSDETECTION Summary of this class goes here
-    %   Detailed explanation goes here
+    %STRESSDETECTION 
+    % Detects the stress level of a subject using the GSR measurements from
+    % a Shimmer 3+ device
     
     properties
+        % The thresholds that are calculated based on calibration data
         stressLevelThresholds;
     end
     
@@ -11,7 +13,18 @@ classdef StressDetection < handle
             SD.stressLevelThresholds = zeros(1,5);
         end
         
-        function SD = trainThresholds(SD, xdfFilename)
+        % Calculates the thresholds based on a 1xn vector containing the
+        % calibration data, where n corresponds to the number of GSR
+        % samples in kOhms. 
+        % TODO: pass sampling rate as a parameter (256Hz is hardcoded at
+        % the moment)
+        function SD = trainThresholds(SD, gsrData)
+            SD.trainThresholdsInternal(gsrData);
+        end
+        
+        % Searches for an appropriate GSR stream in an XDF file and
+        % calculates the thresholds.
+        function SD = trainThresholdsFromXDF(SD, xdfFilename)
             streams = eegtoolkit.util.load_xdf(xdfFilename);
             for i=1:length(streams)
                 if isequal(streams{i}.info.type,'BIO')
@@ -24,6 +37,9 @@ classdef StressDetection < handle
             SD.trainThresholdsInternal(gsrData);
         end
         
+        % Calculates the stress levels over a period of time based on a 1xn
+        % vector containing the GSR samples of the same time period. The
+        % trainThresholds method must be executed prior to this method.
         function stress = detectStress(SD,gsr)
             stress = zeros(1,length(gsr));
             ss = SD.computeSS(gsr);
@@ -42,6 +58,10 @@ classdef StressDetection < handle
             end
         end
         
+        % Calculates the stress levels in real-time from a GSR LSL stream
+        % and outputs the results in a new LSL stream called "Stress
+        % Levels". Again the trainThresholds must be executed first before
+        % using this method
         function runStressDetectionOutlet(SD)
             lib = lsl_loadlib;
             gsrstream = lsl_resolve_byprop(lib,'type','BIO');
@@ -69,42 +89,6 @@ classdef StressDetection < handle
                 pause(1);
             end
         end
-                
-                
-                
-%                   
-%             counterGreaterL5 = 0;
-%             counterObservations = 0;
-%             
-%             for i = 1 : frequency*60 : size(SS, 1);
-%                 
-%                 counterObservations = counterObservations + 1;
-%                 
-%                 if (i + frequency*60 - 1 < size(SS, 1))
-%                     meanValue = mean(nonzeros(SS(i : i + frequency*60)));
-%                 else
-%                     meanValue = mean(nonzeros(SS(i : size(SS, 1))));
-%                 end
-%                 
-%                 if (l0 < meanValue && meanValue < l1);
-%                     dlmwrite(pathofFile, 1, '-append');
-%                 elseif (l1 < meanValue && meanValue < l2)
-%                     dlmwrite(pathofFile, 2, '-append');
-%                 elseif (l2 < meanValue && meanValue < l3);
-%                     dlmwrite(pathofFile, 3, '-append');
-%                 elseif (l3 < meanValue && meanValue < l4)
-%                     dlmwrite(pathofFile, 4, '-append');
-%                 elseif (l4 < meanValue && meanValue < l5)
-%                     dlmwrite(pathofFile, 5, '-append');
-%                 elseif (meanValue>l5);
-%                     counterGreaterL5 = counterGreaterL5 + 1;
-%                 end
-%             end
-%             
-%             if counterGreaterL5/counterObservations > 0.4
-%                 Disp('40% of observations greater than L5');
-%             end
-%         end
         
     end
     
