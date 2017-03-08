@@ -33,5 +33,20 @@ classdef Trial < handle
         
     end
     
+    methods (Static)
+        function [tmat,labels] = transformTrials(trials)
+            numTrials = length(trials);
+            [numChannels, numSamples] = size(trials{1}.signal);
+            tmat = zeros(numTrials,numChannels,numSamples);
+            labels = zeros(1,numTrials);
+            for i=1:numTrials
+                i
+                tmat(i,:,:) = trials{i}.signal;
+                labels(i) = trials{i}.label;
+            end
+                
+        end
+    end
+    
 end
 

@@ -265,7 +265,17 @@ classdef Session < handle
             S.sessions{8,8,1} = 'TasosMa8Errp.mat';
             S.sessions{8,8,2} = 'TasosMa8GreenErrp.mat';
             
+            for i=1:11
+                for j=1:4
+                    S.sessions{9,i,j} = {1};
+                end
+            end
             
+            for i=1:11
+                for j=1:4
+                    S.sessions{10,i,j} = {1};
+                end
+            end
             %MI dataset
 %             S.sessions{6,1,1} = ;
             
@@ -439,6 +449,48 @@ classdef Session < handle
                         label = labelcell{i}>5;
                         
                         S.trials{numTrials} = eegtoolkit.util.Trial(signal,label,128,subject,session,eegtoolkit.util.Trial.ERRP);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
+                case 9 %EBN SMR
+                    load(['S',num2str(subject),'i',num2str(session)]);
+                    leftTimestamps = stims(find(stims(:,2)==769),1);
+                    rightTimestamps = stims(find(stims(:,2)==770),1);
+                    numTrials = length(S.trials) + 1;
+                    for i=1:length(leftTimestamps)
+                        [~,ind ]= min(abs(sampleTime-leftTimestamps(i)));
+                        trial = samples(ind-768:ind+1535,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
+                    for i=1:length(rightTimestamps)
+                        [~,ind ]= min(abs(sampleTime-rightTimestamps(i)));
+                        trial = samples(ind-768:ind+1535,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',2,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
+                case 10 %EBN SMR
+                    load(['S',num2str(subject),'i',num2str(session),'t']);
+                    leftTimestamps = stims(find(stims(:,2)==769),1);
+                    rightTimestamps = stims(find(stims(:,2)==770),1);
+                    numTrials = length(S.trials) + 1;
+                    for i=1:length(leftTimestamps)
+                        [~,ind ]= min(abs(sampleTime-leftTimestamps(i)));
+                        trial = samples(ind-768:ind+1535,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+                    end
+                    for i=1:length(rightTimestamps)
+                        [~,ind ]= min(abs(sampleTime-rightTimestamps(i)));
+                        trial = samples(ind-768:ind+1535,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',2,256,subject,session,eegtoolkit.util.Trial.MI);
                         S.subjectids = [S.subjectids subject];
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
