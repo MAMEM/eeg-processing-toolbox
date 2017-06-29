@@ -13,7 +13,7 @@ classdef STD < eegtoolkit.featextraction.FeatureExtractionBase
             instances = zeros(numTrials,1);
             labels = zeros(numTrials,1);
             for i=1:numTrials
-                instances(i,1) = std(STD.trials{i}.signal(STD.channel,:));
+                instances(i,1) = std(STD.trials{i}.signal(STD.channel,:))*100;
                 labels(i) = STD.trials{i}.label;
             end
             STD.instanceSet = eegtoolkit.util.InstanceSet(instances,labels);

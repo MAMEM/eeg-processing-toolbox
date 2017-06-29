@@ -94,16 +94,23 @@ classdef CSPFilterBankWrapper < eegtoolkit.classification.ClassifierBase;
             for iter_fb=1:nfb
                 
                 [b,a]=butter(3,filter_banks(iter_fb)/(CSPFB.samplingRate/2));
+%                 [z,p,k] = cheby2(3,40,filter_banks(iter_fb)/CSPFB.samplingRate/2);
+%                 [s,g]=zp2sos(z,p,k);
+%                 Hd = dfilt.df2sos(s,g);
+%                 sos = ss2sos(A,B,C,D);
+%                 d = designfilt('bandpassiir','FilterOrder',20, ...
+%                     'StopbandFrequency1',500,'StopbandFrequency2',560, ...
+%                     'StopbandAttenuation',40,'SampleRate',1500);
 %                 labels = zeros(numTrials,1);
                 %numTrials X numChannels X numSamples
                 trialsMat = permute(sMatrix,[2,3,1]);
-%                 trialsMat = zeros(numChannels,numSamples,numTrials);
-%                 for i = 1 : length(CSP_Feat.trials)
-%                     for i_ch = 1:numChannels
-%                         trialsMat(i_ch,:,i) = filtfilt(b,a,CSP_Feat.trials{i}.signal(i_ch,:));
-%                     end
-%                     labels(i) = CSP_Feat.trials{i}.label;
-%                 end
+                trialsMat = zeros(numChannels,numSamples,numTrials);
+                for i = 1 : size(sMatrix,1)
+                    for i_ch = 1:numChannels
+                        trialsMat(i_ch,:,i) = filtfilt(b,a,squeeze(sMatrix(i,i_ch,:)));
+                    end
+%                     labels(i) = trials{i}.label;
+                end
                 
                 trialsMat = permute(trialsMat,[2 1 3]);
                 [N1, Nch1, Ntr1] = size(trialsMat);
@@ -127,7 +134,11 @@ classdef CSPFilterBankWrapper < eegtoolkit.classification.ClassifierBase;
                 [U, D] = eig(covMat{1},covMat{2},'qz');
                 eigenvalues = diag(D);
                 [~, ind] = sort(eigenvalues, 'descend');
-                U = U(:,ind);
+                if(numChannels<6)
+                    U = U(:,ind);
+                else
+                    U = U(:,ind([1:3,end-2:end]));
+                end
                 CSPFB.cspFilters{iter_fb} = U';
 %                 CSP_Filter = U';
             end
@@ -138,25 +149,30 @@ classdef CSPFilterBankWrapper < eegtoolkit.classification.ClassifierBase;
         function instances = extract(CSPFB,sMatrix)
             trialsMat = permute(sMatrix,[2,3,1]);
             trialsMat = permute(trialsMat,[2,1,3]);
+            [a,b,c] = size(trialsMat);
+            if(b>=6)
+                b = 6;
+            end
+            trialsMat2 = zeros(a,b,c);
             [numTrials,numChannels,~] = size(sMatrix);
-            final_instances = zeros(numTrials, numChannels*length(CSPFB.filterBanks));
+            final_instances = zeros(numTrials, b*length(CSPFB.filterBanks));
             for iter_fb=1:length(CSPFB.cspFilters)
                 for j = 1:size(trialsMat,3)
-                    trialsMat(:,:,j) = (CSPFB.cspFilters{iter_fb}*trialsMat(:,:,j)')';
+                    trialsMat2(:,:,j) = (CSPFB.cspFilters{iter_fb}*trialsMat(:,:,j)')';
                 end
                 
-                instances = zeros(numTrials, numChannels);
+                instances = zeros(numTrials, b);
                 %labels = zeros(numTrials,1);
                 
                 for i=1:numTrials
                     
-                    projectedTrial = trialsMat(:,:,i);%Filter * CSP_Feat.trials{i}.signal(:,i);% EEGSignals.x(:,:,t)';
+                    projectedTrial = trialsMat2(:,:,i);%Filter * CSP_Feat.trials{i}.signal(:,i);% EEGSignals.x(:,:,t)';
                     %generating the features as the log variance of the projected signals
                     variances = var(projectedTrial,0,1);
                     instances(i,:) = log(variances)';
                     %labels(i,1) = floor(CSP_Feat.trials{i}.label);
                 end
-                final_instances(:,numChannels*(iter_fb-1)+1:numChannels*iter_fb) = instances;
+                final_instances(:,b*(iter_fb-1)+1:b*iter_fb) = instances;
                 %            CSP_Feat.avgTime = toc/numTrials;
 %                 CSP_Feat.instanceSet = ssveptoolkit.util.InstanceSet(final_instances,labels);
             end
