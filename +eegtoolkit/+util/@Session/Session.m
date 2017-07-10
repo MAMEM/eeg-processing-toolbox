@@ -22,6 +22,15 @@ classdef Session < handle
     
     properties (Constant)
         THRESHOLD_SPLIT_MILLIS = 2000; %Threshold for splitting the trials based on DIN data
+        PHASE1_PARTICIPANTS = {'PH1','PH2','PH3','PH4','PH5','PH6','PP1','PP2','PP3','PP4','PP5','PP6','NH1','NH2','NH3','NH4','NH5','NH6','NP1','NP2','NP3','NP4','NP5','NP6','01','02','03','04','05','06','07','08','09','10','11','12'};
+        PHASE1_SITES = {'AUTH','MDA','SHEBA'};
+        PHASE1_GTW        = 59861106687;
+        PHASE1_DICTATED   = 55834574591;
+        PHASE1_ERRP_HEAVY = 60121153535;
+        PHASE1_ERRP_LIGHT = 20770192575;
+        PHASE1_SMR_HEAVY  = 68669011967;
+        PHASE1_SMR_LIGHT  = 20694562495;
+        
     end
     properties (Access = public)
         trials = {}; % Trials of the loaded sessions.
@@ -283,6 +292,39 @@ classdef Session < handle
             S.subjectids = [];
             S.sessionids = [];
         end
+        
+        function S = loadflanker(S,filename)
+            streams = eegtoolkit.util.load_xdf(filename);
+            for i=1:length(streams)
+                if(strcmp(streams{i}.info.type,'Markers'))
+                    markerstream = streams{i};
+                elseif(strcmp(streams{i}.info.type,'EEG'))
+                    eegstream = streams{i};
+                end
+            end
+            numTrials = length(S.trials) + 1;
+            for i=1:length(markerstream.time_stamps)
+                [eegtime,eegsample] = min(abs(eegstream.time_stamps-markerstream.time_stamps(i)));
+%                 eegtoolkit.util.Trial(signal,label,SAMPLING_RATE,subject,session,eegtoolkit.util.Trial.SSVEP);
+                if(eegsample<256)
+                    continue;
+                end
+                trial = eegtoolkit.util.Trial(double(eegstream.time_series(:,eegsample-256:eegsample+256)),markerstream.time_series(i),256,1,1,eegtoolkit.util.Trial.ERRP);
+                S.trials{numTrials} = trial;
+                numTrials = numTrials + 1;
+            end
+        end
+        
+        function S = loadFotisSMR(S,filename)
+            load(filename);
+            numTrials = length(S.trials) + 1;
+            cNumTrials = size(fTrials,1);
+            for i=1:cNumTrials
+                trial = eegtoolkit.util.Trial(squeeze(fTrials(i,:,:))',fLabel(i)+1,256,1,1,eegtoolkit.util.Trial.MI);
+                S.trials{numTrials} = trial;
+                numTrials = numTrials + 1;
+            end
+        end
         function S = loadAll(S,experiment)
             %loads everything
             [~,l,~] = size(S.sessions);
@@ -294,12 +336,57 @@ classdef Session < handle
             close(h);
         end
         
-        function S = loadSubject(S,experiment,subject)
+        function S = loadSubject(S,experiment,subject,type)
             %loads all trials for a specific subject
             %
             %Example:
             %   session.loadSubject(1);
             %loads all the trials of the 1st subject
+            if(experiment==10)
+                switch type
+                    case 1
+                        %GTW
+                        error('GTW data not supported yet, use type=2 for ERRP or type=3 for SMR');
+                    case 2
+                        %ERRP Heavy
+                        subid = find(cumsum(de2bi(S.PHASE1_ERRP_HEAVY))==subject,1);
+                        siteid = subid/13+1;
+                        load([siteid,'_',subid,'_','Heavy_ERRP.mat']);
+                    case 3
+                        %SMR Heavy
+                        subid = find(cumsum(de2bi(S.PHASE1_SMR_HEAVY))==subject,1);
+                        subject = S.PHASE1_PARTICIPANTS{subid};
+                        site = S.PHASE1_SITES{floor(subid/13+1)};
+                        disp(['Loading ', site, ' ', subject]);
+                        load([site,'_',subject,'_','Heavy_SMR.mat']);
+                        trialIndices = find(smr_events(2,:)==769|smr_events(2,:)==770);
+                        for i=1:length(streams)
+                            if(strcmp(streams{i}.info.type,'EEG'))
+                                eegdata = streams{i}.time_series;
+                                eegtime = streams{i}.time_stamps;
+                                break;
+                            end
+                        end
+                        numTrials = length(S.trials) + 1;
+                        for i=1:length(trialIndices)
+                            eegind = smr_events(1,trialIndices(i));
+                            trialsegment = eegdata(:,eegind-256*3:eegind+256*6-1);
+                            if(smr_events(2,trialIndices(i))==769)
+                                label = 1;
+                            else
+                                label = 2;
+                            end
+                            S.trials{numTrials} = eegtoolkit.util.Trial(double(trialsegment),label,256,subid,1,eegtoolkit.util.Trial.MI);
+                            numTrials = numTrials + 1;
+                        end
+                    case 4
+                        %Dictated
+                        error('Dictated data not supported yet, use type=2 for ERRP or type=3 for SMR');
+                    otherwise
+                        error('Incorrect type or not specified, use type=2 to load ERRP_Heavy or type=3 to load SMR_Heavy');
+                end
+                return;
+            end
             [~,~, y] = size(S.sessions);
             for i=1:y
                 if ~isempty(S.sessions{experiment,subject,i})
@@ -460,19 +547,77 @@ classdef Session < handle
                     numTrials = length(S.trials) + 1;
                     for i=1:length(leftTimestamps)
                         [~,ind ]= min(abs(sampleTime-leftTimestamps(i)));
-                        trial = samples(ind-768:ind+1535,:);
-                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        trial1 = samples(ind-768:ind-256,:);
+                        trial2 = samples(ind+256:ind+768,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial1',0,256,subject,session,eegtoolkit.util.Trial.MI);
                         S.subjectids = [S.subjectids subject];
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial2',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+%                         id=ind-768;
+%                         while(id < ind-256)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',0,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         id = ind+256;
+%                         while(id<ind+768)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         
+% %                         trial = samples(ind-768:ind+1535,:);
+% %                         S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+% %                         S.subjectids = [S.subjectids subject];
+% %                         S.sessionids = [S.sessionids session];
+% %                         numTrials = numTrials + 1;
                     end
                     for i=1:length(rightTimestamps)
                         [~,ind ]= min(abs(sampleTime-rightTimestamps(i)));
-                        trial = samples(ind-768:ind+1535,:);
-                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',2,256,subject,session,eegtoolkit.util.Trial.MI);
+                        trial1 = samples(ind-768:ind-256,:);
+                        trial2 = samples(ind+256:ind+768,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial1',0,256,subject,session,eegtoolkit.util.Trial.MI);
                         S.subjectids = [S.subjectids subject];
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial2',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+%                                                 id=ind-768;
+%                         while(id < ind-256)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',0,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         id = ind+256;
+%                         while(id<ind+768)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         
+% %                         trial = samples(ind-768:ind+1535,:);
+% %                         S.trials{numTrials} = eegtoolkit.util.Trial(trial',2,256,subject,session,eegtoolkit.util.Trial.MI);
+% %                         S.subjectids = [S.subjectids subject];
+% %                         S.sessionids = [S.sessionids session];
+% %                         numTrials = numTrials + 1;
                     end
                 case 10 %EBN SMR
                     load(['S',num2str(subject),'i',num2str(session),'t']);
@@ -481,25 +626,112 @@ classdef Session < handle
                     numTrials = length(S.trials) + 1;
                     for i=1:length(leftTimestamps)
                         [~,ind ]= min(abs(sampleTime-leftTimestamps(i)));
-                        trial = samples(ind-768:ind+1535,:);
-                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        trial1 = samples(ind-768:ind-256,:);
+                        trial2 = samples(ind+256:ind+768,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial1',0,256,subject,session,eegtoolkit.util.Trial.MI);
                         S.subjectids = [S.subjectids subject];
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial2',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+%                         
+%                                                 id=ind-768;
+%                         while(id < ind-256)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',0,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         id = ind+256;
+%                         while(id<ind+768)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         
+% %                         trial = samples(ind-768:ind+1535,:);
+% %                         S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+% %                         S.subjectids = [S.subjectids subject];
+% %                         S.sessionids = [S.sessionids session];
+% %                         numTrials = numTrials + 1;
                     end
                     for i=1:length(rightTimestamps)
                         [~,ind ]= min(abs(sampleTime-rightTimestamps(i)));
-                        trial = samples(ind-768:ind+1535,:);
-                        S.trials{numTrials} = eegtoolkit.util.Trial(trial',2,256,subject,session,eegtoolkit.util.Trial.MI);
+                        trial1 = samples(ind-768:ind-256,:);
+                        trial2 = samples(ind+256:ind+768,:);
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial1',0,256,subject,session,eegtoolkit.util.Trial.MI);
                         S.subjectids = [S.subjectids subject];
                         S.sessionids = [S.sessionids session];
                         numTrials = numTrials + 1;
+                        S.trials{numTrials} = eegtoolkit.util.Trial(trial2',1,256,subject,session,eegtoolkit.util.Trial.MI);
+                        S.subjectids = [S.subjectids subject];
+                        S.sessionids = [S.sessionids session];
+                        numTrials = numTrials + 1;
+%                         id=ind-768;
+%                         while(id < ind-540)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',0,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+%                         id = ind+256;
+%                         while(id<ind+768)
+%                             trial = samples(id:id+540,:);
+%                             S.trials{numTrials} = eegtoolkit.util.Trial(trial',1,256,subject,session,eegtoolkit.util.Trial.MI);
+%                             S.subjectids = [S.subjectids subject];
+%                             S.sessionids = [S.sessionids session];
+%                             numTrials = numTrials + 1;
+%                             id = id + 540;
+%                         end
+% %                         
+% %                         trial = samples(ind-768:ind+1535,:);
+% %                         S.trials{numTrials} = eegtoolkit.util.Trial(trial',2,256,subject,session,eegtoolkit.util.Trial.MI);
+% %                         S.subjectids = [S.subjectids subject];
+% %                         S.sessionids = [S.sessionids session];
+% %                         numTrials = numTrials + 1;
                     end
                 otherwise
                     error('invalid experiment id');
             end
         end
         
+        function S = loadTrialsERRP(S,filename)
+            load(filename);
+            for i=1:length(streams)
+                if(strcmp(streams{i}.info.type,'Markers'))
+                    err_time = streams{i}.time_stamps(streams{i}.err_pos);
+                    cor_time = streams{i}.time_stamps(streams{i}.cor_pos);
+                elseif(strcmp(streams{i}.info.type,'EEG'))
+                    eegsamples = streams{i}.time_series;
+                    eegtime = streams{i}.time_stamps;
+                end
+            end
+            numTrials = length(S.trials);
+            for i=1:length(err_time)
+                [~,eegindx] = min(abs(eegtime-err_time(i)));
+                trial = eegtoolkit.util.Trial(double(eegsamples(:,eegindx-256:eegindx+256)),0,256,1,1,eegtoolkit.util.Trial.ERRP);
+                S.trials{numTrials + 1} = trial;
+                numTrials = numTrials + 1;
+            end
+            for i=1:length(cor_time)
+                [~,eegindx] = min(abs(eegtime-cor_time(i)));
+                trial = eegtoolkit.util.Trial(double(eegsamples(:,eegindx-256:eegindx+256)),1,256,1,1,eegtoolkit.util.Trial.ERRP);
+                S.trials{numTrials + 1} = trial;
+                numTrials = numTrials + 1;
+            end
+            
+        end
+                    
+                
         function S = clearData(S)
             %clears loaded data
             S.trials = {};

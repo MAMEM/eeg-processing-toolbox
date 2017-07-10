@@ -309,7 +309,7 @@ classdef LSLWrapper < handle
                 streams{i} = allInfo{i}.name;
             end
         end
-        function results = simulateSMROnlineFromFile(LSL, samples, windowLength, preprocessing, featextraction, trainedClassifier)
+        function results = simulateSMROnlineFromFile(LSL, samples, windowLength, preprocessing, featextraction, trainedClassifier,labels)
             samplingRate = 256;
             windowLen = samplingRate * windowLength;
             [numSamples, numChannels] = size(samples);
@@ -317,26 +317,45 @@ classdef LSLWrapper < handle
             eventStreamInfo = lsl_streaminfo(LSL.lib, 'MatlabEvents','Classification',2,0,'cf_double64','myuniquesrc004');
             eventOutlet = lsl_outlet(eventStreamInfo);
             results = [];
-            while (currentSample < numSamples)
-                trial = eegtoolkit.util.Trial(samples(currentSample-windowLen:currentSample,:)',0,samplingRate, 0,0);
+            output = [];
+            count = 1;
+            while (currentSample < numSamples-512)
+                trial = eegtoolkit.util.Trial(samples(currentSample-windowLen:currentSample,:)',0,256, 0,0);
+                trial = {trial};
                 for i=1:length(preprocessing)
-                    trial = preprocessing{i}.process({trial});
+                    trial = preprocessing{i}.process(trial);
                 end
                     featextraction.trials = trial;
                     featextraction.extract;
                     instanceSet = featextraction.instanceSet;
-                    [label, prob, rank] = trainedClassifier.classifyInstance(instanceSet.instances);
+                    [label, prob, rank] = trainedClassifier.classifyInstance(instanceSet.getInstancesWithIndices(1));
                     %rank
                     %label
                     %prob
-                    results = [results,label];
-                    eventOutlet.push_sample(rank);
-                    barh(rank(1), 'BaseValue', 0);
-                    drawnow;
-                    
+                    results = [results,rank(1)];
+                    if(length(results)>32)
+                        if(median(results(end-32:end))>0)
+                            output = [output,median(results(end-32:end))];
+                        else
+                            output = [output,median(results(end-32:end))];
+                        end
+                    else
+                        output = [output,0];
+                    end
+%                     if(length(results)>8)
+%                         results(end-8:end) = medfilt1(results(end-8:end),8);
+%                     end
+                    eventOutlet.push_sample(label);
+%                     barh(rank(1), 'BaseValue', 0);
+%                     xlim([-1,2]);
+%                     drawnow;
+                    labels2(count) = labels(floor(currentSample/256)+1);                    
+                    count = count + 1
                     %pause(windowLength);
-                    currentSample = currentSample + windowLen;
-            end
+%                     currentSample = currentSample + windowLen;
+                currentSample = currentSample + 32;
+          end
+            plot(results*-1),hold on, plot(labels);
             
         end
         function LSL = runSMROnline(LSL, windowLength, channel, preprocessing, featextraction, trainedClassifier)
