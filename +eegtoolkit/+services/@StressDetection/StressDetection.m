@@ -6,6 +6,7 @@ classdef StressDetection < handle
     properties
         % The thresholds that are calculated based on calibration data
         stressLevelThresholds;
+        datacleaned;
     end
     
     methods (Access = public)
@@ -19,6 +20,7 @@ classdef StressDetection < handle
         % TODO: pass sampling rate as a parameter (256Hz is hardcoded at
         % the moment)
         function SD = trainThresholds(SD, gsrData)
+            gsrData = SD.cleanData(gsrData);
             SD.trainThresholdsInternal(gsrData);
         end
         
@@ -41,6 +43,7 @@ classdef StressDetection < handle
         % vector containing the GSR samples of the same time period. The
         % trainThresholds method must be executed prior to this method.
         function stress = detectStress(SD,gsr)
+            gsr = SD.cleanData(gsr);
             stress = zeros(1,length(gsr));
             ss = SD.computeSS(gsr);
             for i=1:length(ss)
@@ -93,11 +96,31 @@ classdef StressDetection < handle
     end
     
     methods (Access = private)
-        
+        function cleanedData = cleanData(SD,data)
+            i=1;
+            samplesCleaned = 0;
+            while(i<=length(data))
+                if(data(i)>10000||data(i)<10)
+                    if(i<=10)
+                        warning('artifact in beginning of signal using median');
+                        data(i) = median(data(data<10000));
+%                         if(data(i)<10)
+%                             data(i) = 100;
+%                         end
+                    else
+                        data(i) = mean(data(i-10:i-1));
+                    end
+                    samplesCleaned = samplesCleaned + 1;
+                end
+                i = i+1;
+            end
+            cleanedData = data;
+            SD.datacleaned = samplesCleaned;
+        end
         function SS = computeSS(SD,data)
             F = data';
             %aquisition frequency = 256;
-            frequency = 256;
+            frequency = 32;
             %convert kÙ to ìS
             M = 1000./F;
             %initialise the reconstructed data matrix
@@ -154,24 +177,24 @@ classdef StressDetection < handle
                 sortedMatrixN = sortrows(matrixForMedianN);
                 SS(i - (frequency*60)/2 ,1) = sortedMatrixN((frequency*60)/2,1);
             end
+            i
         end
         function SD = trainThresholdsInternal(SD, data)
             %find the most calm 5minute window
             SS = SD.computeSS(data);
-            frequency = 256;
+            frequency = 32;
             minimum = 100000;
             counter = 0;
             if size(SS,1) > frequency*60*5
-                for i = i :frequency*60*5 : size(SS,1)
+                for i = 1:frequency*60*5 : size(SS,1)
                     
-                    if (i + frequency*60*5) > size(SS,1)
+                    if (i + frequency*60*5) < size(SS,1)
                         endMatrix = i + frequency*60*5;
                     else
                         endMatrix = size(SS,1);
                     end
                     
                     mn = mean(nonzeros(SS(i:endMatrix)));
-                    
                     if mn< minimum
                         minimum = mn;
                         counter1 = i;
@@ -196,7 +219,12 @@ classdef StressDetection < handle
             index = find(~n);
             
             %compute the l5 value
-            l5 = xout(1,index(1));
+            if(isempty(index))
+                l5 = xout(1,300);
+            else
+                l5 = xout(1,index(1));
+            end
+            
             
             %compute the delta value which forms the thresholds
             delta = (l5 - l0) / 4.5;

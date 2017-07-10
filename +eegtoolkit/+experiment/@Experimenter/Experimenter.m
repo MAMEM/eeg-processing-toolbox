@@ -335,15 +335,15 @@ classdef Experimenter < handle
         
         function resultSet = leaveOneSessionOut(E, sessionId, instanceSet)
             testingset = find(E.sessionids == sessionId);
-            trainset = find(E.sessionids ~= sessionId);
+%             trainset = find(E.sessionids ~= sessionId);
             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
             E.classification.build();
             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
-            [trainoutputLabels, trainoutputScores, trainoutputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(trainset));
+%             [trainoutputLabels, trainoutputScores, trainoutputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(trainset));
             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
-            trainresultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(trainset), trainoutputLabels, trainoutputScores, trainoutputRanking);
+%             trainresultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(trainset), trainoutputLabels, trainoutputScores, trainoutputRanking);
             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
-            E.trainresults{length(E.trainresults)+1} = eegtoolkit.experiment.ResultEvaluator(trainresultSet);
+%             E.trainresults{length(E.trainresults)+1} = eegtoolkit.experiment.ResultEvaluator(trainresultSet);
         end
         
         function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)

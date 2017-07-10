@@ -128,6 +128,26 @@ classdef LSLWrapper < handle
                 end
                 pause(0.5);
             end
+        function LSL = runErrPExperiment(LSL)
+%             if(LSL.streamsOK ~=1)
+%                 error('error: Did you call \"resolveStreams\"?');
+%             end
+            eventstreaminfo = lsl_resolve_byprop(LSL.lib, 'name', 'MatlabEvents');
+            if(isempty(eventstreaminfo))
+                LSL.tts('Error. Did you open Gaze The Web?');
+                error('error: Did you open GazeTheWeb');
+            end
+            inlet = lsl_inlet(eventstreaminfo{1});
+            sentence = 'the quick brown fox jumps over the lazy dog';
+            letters = LSL.sentenceToPhoneticSpelling(sentence);
+            for i=1:length(letters)
+                letterToType = uint8(sentence(i));
+                LSL.tts(letters{i},'Anna',-5);
+                while(inlet.pull_sample ~=letterToType)
+                    %do nothing;
+                end
+            end
+            
         end
         function LSL = visualizeEyeTracker(LSL)
             windowlength = 150;
@@ -290,6 +310,7 @@ classdef LSLWrapper < handle
                 if(numPulled==0)
                     continue;
                 end
+                samples
                                 if isempty(firstTimestamp)
                     firstTimestamp = timestamps(1);
                 end
@@ -319,9 +340,7 @@ classdef LSLWrapper < handle
                     end
                     hold off;
                 end
-%                 plot([basic2starttime(1),basic2starttime(1)],[gsr1(b),0],'k:');
                 axis([ timestampBuffer(1), timestampBuffer(end)+1, minBuff , maxBuff+1 ]);
-%                 axis([ timestampBuffer(1), timestampBuffer(end)+1, -100 , 100]);
                 xlabel('Seconds');
                 %                 axis([ timestampBuffer(1), timestampBuffer(end), minBuff , maxBuff ]);
                 grid
@@ -351,7 +370,109 @@ classdef LSLWrapper < handle
                 streams{i} = allInfo{i}.name;
             end
         end
-        
+        function results = simulateSMROnlineFromFile(LSL, samples, windowLength, preprocessing, featextraction, trainedClassifier,labels)
+            samplingRate = 256;
+            windowLen = samplingRate * windowLength;
+            [numSamples, numChannels] = size(samples);
+            currentSample = 1+ windowLen;
+            eventStreamInfo = lsl_streaminfo(LSL.lib, 'MatlabEvents','Classification',2,0,'cf_double64','myuniquesrc004');
+            eventOutlet = lsl_outlet(eventStreamInfo);
+            results = [];
+            output = [];
+            count = 1;
+            while (currentSample < numSamples-512)
+                trial = eegtoolkit.util.Trial(samples(currentSample-windowLen:currentSample,:)',0,256, 0,0);
+                trial = {trial};
+                for i=1:length(preprocessing)
+                    trial = preprocessing{i}.process(trial);
+                end
+                    featextraction.trials = trial;
+                    featextraction.extract;
+                    instanceSet = featextraction.instanceSet;
+                    [label, prob, rank] = trainedClassifier.classifyInstance(instanceSet.getInstancesWithIndices(1));
+                    %rank
+                    %label
+                    %prob
+                    results = [results,rank(1)];
+                    if(length(results)>32)
+                        if(median(results(end-32:end))>0)
+                            output = [output,median(results(end-32:end))];
+                        else
+                            output = [output,median(results(end-32:end))];
+                        end
+                    else
+                        output = [output,0];
+                    end
+%                     if(length(results)>8)
+%                         results(end-8:end) = medfilt1(results(end-8:end),8);
+%                     end
+                    eventOutlet.push_sample(label);
+%                     barh(rank(1), 'BaseValue', 0);
+%                     xlim([-1,2]);
+%                     drawnow;
+                    labels2(count) = labels(floor(currentSample/256)+1);                    
+                    count = count + 1
+                    %pause(windowLength);
+%                     currentSample = currentSample + windowLen;
+                currentSample = currentSample + 32;
+          end
+            plot(results*-1),hold on, plot(labels);
+            
+        end
+        function LSL = runSMROnline(LSL, windowLength, channel, preprocessing, featextraction, trainedClassifier)
+            dataStreamInfo = lsl_resolve_byprop(LSL.lib,'name','EMOTIVStream');
+            if(length(dataStreamInfo)==0)
+                error('Could not find datastream');
+            end
+            dataInlet = lsl_inlet(dataStreamInfo{1},1);
+            %outInfo = lsl_streaminfo(lib,'MatlabEvents','Classification',2,0,'cf_double64','myuniquesrc004');
+            eventStreamInfo = lsl_streaminfo(LSL.lib,'MatlabEvents','Classification',2,0,'cf_double64','myuniquesrc004');
+            eventOutlet = lsl_outlet(eventStreamInfo);
+            windowlength = windowLength*128;
+            buffer = zeros(5,windowlength);
+            colorBuffer = zeros(3,windowlength);
+            h = waitbar(100,'Detecting SMR..','Name','SMR Online',...
+                'CreateCancelBtn',...
+                'setappdata(gcbf,''canceling'',1)');
+            setappdata(h,'canceling',0)
+            while 1
+                if getappdata(h,'canceling')
+                    break
+                end
+                chunk = dataInlet.pull_chunk;
+                [~,numPulled] = size(chunk);
+                if(numPulled == 0)
+                    continue;
+                end
+                buffer = circshift(buffer,[1,-numPulled]);
+                buffer(:,windowlength-numPulled + 1:end) = chunk;
+                
+                trial = eegtoolkit.util.Trial(buffer,0,128,0,0);
+                
+                for i=1:length(preprocessing)
+                    trial = preprocessing{i}.process(trial);
+                end
+                %For CSP
+                featextraction.trials = {trial};
+                featextraction.extract;
+                instanceSet = featextraction.instanceSet;
+                
+                [label, prob, rank] = trainedClassifier.classifyInstance(instanceSet.instances);
+                rank
+                eventOutlet.push_sample(rank);
+%                 a = rand();
+%                 out = [a,1-a];
+%                 colorBuffer = circshift(buffer,[1,-numPulled]);
+%                 colorBuffer(1,windowlength-numPulled + 1:end) = a;
+%                 colorBuffer(2,windowlength-numPulled + 1:end) = 1-a;
+%                 %plot(buffer);
+%                 plot(buffer,'Color', [a,1-a,0.2]);
+%                 eventOutlet.push_sample([a,1-a]);
+                drawnow;
+                pause(1.0);
+            end
+            delete(h);
+        end
         function LSL = runSSVEP(LSL,eventStopCode)
             if (LSL.streamsOK ~=1)
                 error('error: Did you call \"resolveStreams\" ?');
@@ -395,7 +516,33 @@ classdef LSLWrapper < handle
     end
     
     methods(Access = private)
-        function wav = tts(txt,voice,pace,fs)
+        %mikra grammata, keno kai teleia.
+        function letters = sentenceToPhoneticSpelling(LSL,sentence)
+            %vaggelis-style
+%             codebook = ...
+%             {'alpha','veeta','c','delta','epsilon','fee','g','eeta','yiota','jay','kappa','lambda','manolis','nikos','omikron',...
+%             'petros','anapodo ro','ro','sigma','tough','ypsilon mikro','nee mikro','w','x-men','ypsilon megalo','zeeta'};
+            %NATO
+%             codebook = ...
+%             {'alpha','bravo','charlie','delta','echo','foxtrot','golf','hotel','india','juliett','kilo','lima','mike','november','oscar',...
+%             'papa','quebec','romeo','sierra','tango','uniform','victor','whiskey','x-ray','yankee','zulu'};
+            %english
+            codebook = ...
+                {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x,','y','z'};
+            letters = cell(1,length(sentence));
+            for i=1:length(sentence)
+                ascii = uint8(sentence(i));
+                %space
+                if(ascii==32)
+                    letters{i} = 'space';
+                elseif(ascii==46)
+                    letters{i} = 'full stop';
+                else
+                    letters{i} = codebook{ascii-96};
+                end
+            end
+        end
+        function wav = tts(LSL,txt,voice,pace,fs)
             %TTS text to speech.
             %   TTS (TXT) synthesizes speech from string TXT, and speaks it. The audio
             %   format is mono, 16 bit, 16k Hz by default.
@@ -433,7 +580,7 @@ classdef LSLWrapper < handle
             SV = actxserver('SAPI.SpVoice');
             TK = invoke(SV,'GetVoices');
             
-            if nargin > 1
+            if nargin > 2
                 % Select voice;
                 for k = 0:TK.Count-1
                     if strcmpi(voice,TK.Item(k).GetDescription)
@@ -444,14 +591,14 @@ classdef LSLWrapper < handle
                     end
                 end
                 % Set pace;
-                if nargin > 2
+                if nargin > 3
                     if isempty(pace), pace = 0; end
                     if abs(pace) > 10, pace = sign(pace)*10; end
                     SV.Rate = pace;
                 end
             end
             
-            if nargin < 4 || ~ismember(fs,[8000,11025,12000,16000,22050,24000,32000,...
+            if nargin < 5 || ~ismember(fs,[8000,11025,12000,16000,22050,24000,32000,...
                     44100,48000]), fs = 16000; end
             
             if nargout > 0

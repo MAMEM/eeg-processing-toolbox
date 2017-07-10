@@ -43,9 +43,9 @@ classdef LIBSVM < eegtoolkit.classification.ClassifierBase
                 instances = sparse(LSVM.instanceSet.getInstances);
                 if LSVM.kernel == LSVM.KERNEL_LINEAR;
                     %store the models in an instance variable
-                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f  -q', LSVM.kernel, LSVM.cost));
+                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -q -b 0', LSVM.kernel, LSVM.cost));
                 elseif LSVM.kernel == LSVM.KERNEL_RBF;
-                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -g %f  -q', LSVM.kernel, LSVM.cost, LSVM.gamma));
+                    LSVM.models{i} = svmtrain(labels, instances, sprintf('-t %d -c %f -g %f -q -b 0', LSVM.kernel, LSVM.cost, LSVM.gamma));
                 else
                     error('invalid kernel parameter');
                 end
