@@ -128,6 +128,8 @@ classdef LSLWrapper < handle
                 end
                 pause(0.5);
             end
+        end
+        
         function LSL = runErrPExperiment(LSL)
 %             if(LSL.streamsOK ~=1)
 %                 error('error: Did you call \"resolveStreams\"?');
