@@ -128,8 +128,6 @@ classdef LSLWrapper < handle
                 end
                 pause(0.5);
             end
-        end
-        
         function LSL = runErrPExperiment(LSL)
 %             if(LSL.streamsOK ~=1)
 %                 error('error: Did you call \"resolveStreams\"?');
@@ -372,6 +370,47 @@ classdef LSLWrapper < handle
                 streams{i} = allInfo{i}.name;
             end
         end
+        function LSL = runTetrisSMR(LSL,streamname,channels,windowlength,windowstep,processing,featextraction,trainedClassifier)
+            dataStreamInfo = lsl_resolve_byprop(LSL.lib,'name',streamname);
+            samplingRate = 256;
+            if(length(dataStreamInfo)==0)
+                error('Could not find datastream');
+            end
+            dataInlet = lsl_inlet(dataStreamInfo{1},1);
+            %outInfo = lsl_streaminfo(lib,'MatlabEvents','Classification',2,0,'cf_double64','myuniquesrc004');
+            eventStreamInfo = lsl_streaminfo(LSL.lib,'MatlabEvents','Classification',2,0,'cf_double64','myuniquesrc004');
+            eventOutlet = lsl_outlet(eventStreamInfo);
+            windowlength = windowlength*samplingRate;
+            buffer = zeros(length(channels),windowlength);
+            h = waitbar(100,'Detecting SMR..','Name','SMR Online',...
+                'CreateCancelBtn',...
+                'setappdata(gcbf,''canceling'',1)');
+            setappdata(h,'canceling',0);
+            while 1
+                if getappdata(h,'canceling')
+                   break;
+                end
+                chunk = datainlet.pull_chunk;
+                [~,numPulled] = size(chunk);
+                if(numPulled == 0)
+                    continue;
+                end
+                buffer = circshift(buffer,[1,-numPulled]);
+                buffer(:,windowlength-numPulled + 1:end) = chunk;
+                trial = eegtoolkit.util.Trial(buffer,0,samplingRate,0,0);
+                for i=1:length(preprocessing)
+                    trial = preprocessing{i}.process(trial);
+                end
+                featextraction.trials = {trial};
+                featextraction.extract;
+                instanceSet = featextraction.instanceSet;
+                [label,prob,rank] = trainedClassifier.classifyInstance(instanceSet.instances);
+                outlet.push_sample(rank);
+                drawnow;
+                pause(windowstep/samplingRate);
+            end
+            delete(h);
+        end
         function results = simulateSMROnlineFromFile(LSL, samples, windowLength, preprocessing, featextraction, trainedClassifier,labels)
             samplingRate = 256;
             windowLen = samplingRate * windowLength;
@@ -421,6 +460,7 @@ classdef LSLWrapper < handle
             plot(results*-1),hold on, plot(labels);
             
         end
+
         function LSL = runSMROnline(LSL, windowLength, channel, preprocessing, featextraction, trainedClassifier)
             dataStreamInfo = lsl_resolve_byprop(LSL.lib,'name','EMOTIVStream');
             if(length(dataStreamInfo)==0)
