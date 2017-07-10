@@ -89,6 +89,46 @@ classdef LSLWrapper < handle
                 pause(4);
             end
         end
+        
+        function LSL = tetrisEye(LSL)
+            si = lsl_resolve_byprop(LSL.lib,'name','myGazeLSL');
+            inlet = lsl_inlet(si{1});
+            inlet.pull_chunk;
+            
+            eventoutletInfo = lsl_streaminfo(LSL.lib,'MiddlewareStream','Markers',1,0,'cf_string','myuniquesourceid23442');
+            LSL.eventoutlet = lsl_outlet(eventoutletInfo);
+            inlet.pull_chunk;
+            pause(0.5);
+            while(1)
+                samples = inlet.pull_chunk;
+                size(samples)
+                if(size(samples,2)>10)
+                    last10x = samples(1,end-10:end);
+                    last10l = samples(3,end-10:end);
+                    last10r = samples(4,end-10:end);
+                else
+                    last10x = samples(1,:);
+                    last10l = samples(3,:);
+                    last10r = samples(4,:);
+                end
+                point = mean(last10x(1,:));
+                if(point>826&&point<1230)
+                    num2str(floor(point/44.89))
+                    LSL.eventoutlet.push_sample({num2str(48+floor((point-826)/40.41))});
+                    disp(['push', num2str(48+floor(point/40.41))]);
+                end
+                rotate = mean(last10l(1,:));
+                throttle = mean(last10r(1,:));
+                if(rotate ==0 && throttle~=0)
+                    LSL.eventoutlet.push_sample({'38'});
+                    disp('rotate');
+                elseif(throttle==0)
+                    LSL.eventoutlet.push_sample({'40'});
+                    disp('throttle');
+                end
+                pause(0.5);
+            end
+        end
         function LSL = visualizeEyeTracker(LSL)
             windowlength = 150;
             channel = 1;
@@ -216,12 +256,16 @@ classdef LSLWrapper < handle
             %             import java.util.Qu
             LSL.datastreaminfo = lsl_resolve_byprop(LSL.lib, 'name', datastreamname);
             LSL.datainlet = lsl_inlet(LSL.datastreaminfo{1},windowlength/LSL.datastreaminfo{1}.nominal_srate);
+            
+            eventstreaminfo = lsl_resolve_byprop(LSL.lib,'name','MiddlewareStream');
+            eventinlet = lsl_inlet(eventstreaminfo{1},10);
             %             LSL.eventstreaminfo = lsl_resolve_byprop(LSL.lib,'name',eventstreamname);
             
             %             buffer = eegtoolkit.util.CQueue(windowlength);
             % %             buffer.capacity = windowlength;
             buffer = zeros(1,windowlength);
             timestampBuffer = zeros(1,windowlength);
+            eventTimestampBuffer= zeros(1,windowlength);
             eventBuffer = zeros(1,windowlength);
             indices = 1:windowlength;
             t = 0 ;
@@ -231,12 +275,16 @@ classdef LSLWrapper < handle
             step = 0.1 ; % lowering step has a number of cycles and then acquire more data
             k =1;
             firstTimestamp = [];
-            
+            [b,a] = butter(3,[1,13]/128);
+                            wentInsideIfAtLeastOnce = 0;
             while ( 1 )
                 %                 sample = LSL.datainlet.pull_sample;
                 
+                [event,timestamp] = eventinlet.pull_chunk;
+                [~,numEventPulled] = size(event);
+                timestamp
                 [samples,timestamps] = LSL.datainlet.pull_chunk;
-                size(samples)
+                size(samples);
 
                 [~,numPulled] = size(samples);
                 if(numPulled==0)
@@ -249,15 +297,31 @@ classdef LSLWrapper < handle
                 %                 buffermat = cell2mat(buffer.content);
                 buffer = circshift(buffer,[1,-numPulled]);
                 timestampBuffer = circshift(timestampBuffer,[1,-numPulled]);
+                eventTimestampBuffer = circshift(eventTimestampBuffer,[1,-numEventPulled]);
                 buffer(windowlength-numPulled+1:end) = samples(channel,:);
 %                 size(timestamps)
 %                 size(firstTimestamp)
                 timestampBuffer(windowlength-numPulled+1:end) = timestamps-firstTimestamp;
+                eventTimestampBuffer(windowlength-numEventPulled+1:end) = timestamp-firstTimestamp;
                 %                 buffer(windowlength) = sample(1);
                 minBuff = min(buffer(buffer~=0));
                 maxBuff = max(buffer(buffer~=0));
-                plot(timestampBuffer,buffer);
+                filtered = filtfilt(b,a,buffer);
+                plot(timestampBuffer,filtered);
+
+                if(~isempty(timestamp) || wentInsideIfAtLeastOnce)
+                    wentInsideIfAtLeastOnce = 1;
+                    for i=1:length(eventTimestampBuffer)
+                        if(eventTimestampBuffer(i) > 0)
+                            hold on, plot([eventTimestampBuffer(i),eventTimestampBuffer(i)],[minBuff,maxBuff]);
+                            hold on, plot([eventTimestampBuffer(i)-0.3,eventTimestampBuffer(i)-0.3],[minBuff,maxBuff]);
+                        end
+                    end
+                    hold off;
+                end
+%                 plot([basic2starttime(1),basic2starttime(1)],[gsr1(b),0],'k:');
                 axis([ timestampBuffer(1), timestampBuffer(end)+1, minBuff , maxBuff+1 ]);
+%                 axis([ timestampBuffer(1), timestampBuffer(end)+1, -100 , 100]);
                 xlabel('Seconds');
                 %                 axis([ timestampBuffer(1), timestampBuffer(end), minBuff , maxBuff ]);
                 grid
@@ -267,7 +331,7 @@ classdef LSLWrapper < handle
                 drawnow;
                 k = k+1;
                                 k;
-                                pause(1);
+                                pause(3);
 %                 if (k==2000)
 %                     pause;
 %                 end
