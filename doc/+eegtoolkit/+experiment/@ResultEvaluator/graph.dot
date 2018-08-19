@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  ResultEvaluator -> ResultEvaluator;
+
+  ResultEvaluator [URL="ResultEvaluator.html"];
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exampleL1MCCA</title>
+  <meta name="keywords" content="exampleL1MCCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; exampleL1MCCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>exampleL1MCCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<p><a href="exampleL1MCCA.m">exampleL1MCCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 sess = eegtoolkit.util.Session;
+0003 sess.loadSubject(4,1);
+0004 <span class="comment">% load filters/epocfilter;</span>
+0005 
+0006 sti_f = [9.25, 11.25, 13.25, 9.75, 11.75, 13.75, 10.25, 12.25, 14.25, 10.75, 12.75, 14.75];<span class="comment">%Reference signals -</span>
+0007 extr = eegtoolkit.featextraction.L1MCCA;
+0008 
+0009 refer = eegtoolkit.preprocessing.Rereferencing;
+0010 refer.meanSignal = 1;
+0011 
+0012 [z,p,k]=butter(3,[6,80]/128);
+0013 <span class="comment">% [z,p,k]=butter(3,[5,48]/125);</span>
+0014 [s,g]=zp2sos(z,p,k);
+0015 Hd = dfilt.df2sos(s,g);
+0016 
+0017 m_secs = 5;
+0018 ss = eegtoolkit.preprocessing.SampleSelection;
+0019 ss.sampleRange = [1,1114]; <span class="comment">% Specify the sample range to be used for each Trial</span>
+0020 ss.channels = [1:8];<span class="comment">%Specify the channel(s) to be used</span>
+0021 <span class="comment">%</span>
+0022 df = eegtoolkit.preprocessing.DigitalFilter; <span class="comment">% Apply a filter to the raw data</span>
+0023 df.filt = Hd; <span class="comment">% Hbp is a filter built with &quot;filterbuilder&quot; matlab function</span>
+0024 
+0025 lcca = eegtoolkit.classification.L1MCCA(256,1114/256,4,sti_f);
+0026 
+0027 experiment = eegtoolkit.experiment.Experimenter;
+0028 experiment.session = sess;
+0029 experiment.preprocessing = {ss,refer,df};<span class="comment">% Order of preprocessing steps matters.</span>
+0030 experiment.featextraction = extr;
+0031 experiment.classification = lcca;
+0032 experiment.evalMethod = experiment.EVAL_METHOD_LOBO; <span class="comment">% specify that you want a &quot;leave one subject out&quot; (default is LOOCV)</span>
+0033 <span class="comment">%run the experiment</span>
+0034 experiment.run();
+0035 accuracies = [];
+0036 <span class="keyword">for</span> i=1:length(experiment.results)
+0037     accuracies(i) = experiment.results{i}.getAccuracy();    
+0038 <span class="keyword">end</span>
+0039 accuracies'
+0040 <span class="comment">%mean accuracy for all subjects</span>
+0041 fprintf(<span class="string">'mean acc = %.2f\n'</span>, mean(accuracies));</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

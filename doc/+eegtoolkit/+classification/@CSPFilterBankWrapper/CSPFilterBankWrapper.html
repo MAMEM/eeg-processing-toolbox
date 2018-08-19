@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CSPFilterBankWrapper</title>
+  <meta name="keywords" content="CSPFilterBankWrapper">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@CSPFilterBankWrapper</a> &gt; CSPFilterBankWrapper.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@CSPFilterBankWrapper&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>CSPFilterBankWrapper
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CSPFilterBankWrapper.html" class="code" title="">CSPFilterBankWrapper</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CSPFilterBankWrapper.html" class="code" title="">CSPFilterBankWrapper</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function CSPFB = CSPFilterBankWrapper(filterBanks, samplingRate)</a></li><li><a href="#_sub2" class="code">function CSPFB = build(CSPFB)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(CSPFB,instance)</a></li><li><a href="#_sub4" class="code">function CSPFB = reset(CSPFB)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(CSPFB)</a></li><li><a href="#_sub6" class="code">function time = getTime(CSPFB)</a></li><li><a href="#_sub7" class="code">function [] = learnCSPMatrix(CSPFB, sMatrix, labels)</a></li><li><a href="#_sub8" class="code">function instances = extract(CSPFB,sMatrix)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="CSPFilterBankWrapper.m">CSPFilterBankWrapper.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="CSPFilterBankWrapper.html" class="code" title="">CSPFilterBankWrapper</a> &lt; eegtoolkit.classification.ClassifierBase;
+0002     properties (Constant)
+0003         
+0004     <span class="keyword">end</span>
+0005     properties
+0006         baseClassifier;
+0007         channel;
+0008         cspFilters;
+0009         filterBanks;
+0010         samplingRate;
+0011     <span class="keyword">end</span>
+0012     
+0013     methods (Access = public)
+0014         <a name="_sub0" href="#_subfunctions" class="code">function CSPFB = CSPFilterBankWrapper(filterBanks, samplingRate)</a>
+0015             CSPFB.cspFilters = {};
+0016             CSPFB.filterBanks = filterBanks;
+0017             CSPFB.samplingRate = samplingRate;
+0018             <span class="comment">%filter_banks=[8 12; 12 16; 16 20;20 24;24 28];</span>
+0019 <span class="comment">%             if(isa(instanceSet,'eegtoolkit.util.RawSignalSet')</span>
+0020 <span class="comment">%                 CSP.instanceSet = instanceSet;</span>
+0021 <span class="comment">%             else</span>
+0022 <span class="comment">%                 error('RawSignal extractor should be used with CSPWrapper');</span>
+0023 <span class="comment">%             end</span>
+0024         <span class="keyword">end</span>
+0025         
+0026         
+0027         <a name="_sub1" href="#_subfunctions" class="code">function CSPFB = build(CSPFB)</a>
+0028             <span class="comment">% Builds the classification models</span>
+0029             CSPFB.learnCSPMatrix(CSPFB.instanceSet.sMatrix,CSPFB.instanceSet.labels);
+0030             instanceLocal = CSPFB.extract(CSPFB.instanceSet.sMatrix);
+0031             CSPFB.baseClassifier.instanceSet = eegtoolkit.util.InstanceSet(instanceLocal,CSPFB.instanceSet.labels);
+0032             CSPFB.baseClassifier.build;
+0033             CSPFB.reset;
+0034         <span class="keyword">end</span>
+0035         
+0036         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(CSPFB,instance)</a>
+0037             
+0038 <span class="comment">%             instance = CSP.extract</span>
+0039             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0040             <span class="comment">%output = predicted class</span>
+0041             <span class="comment">%probabilities = probability for predicted class</span>
+0042             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0043             
+0044             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0045             testInstances = CSPFB.extract(instance);
+0046             [output, probabilities, ranking] = CSPFB.baseClassifier.classifyInstance(testInstances);
+0047 <span class="comment">%             numModels = length(LSVM.models);</span>
+0048 <span class="comment">%             [numinstance, ~] = size(testInstances);</span>
+0049 <span class="comment">%             scores = zeros(numModels,numinstance);</span>
+0050 <span class="comment">%             for i=1:numModels</span>
+0051 <span class="comment">%                 %predict using the stored models</span>
+0052 <span class="comment">%                 [~, ~, t] = svmpredict(eye(numinstance,1),testInstances, LSVM.models{i},'-b 1 -q');</span>
+0053 <span class="comment">%                 %store probability for each class</span>
+0054 <span class="comment">%                 scores(i,:) = t(:,1);</span>
+0055 <span class="comment">%             end</span>
+0056 <span class="comment">%             output = zeros(numinstance,1);</span>
+0057 <span class="comment">%             probabilities = zeros(numinstance,1);</span>
+0058 <span class="comment">%             ranking = scores;</span>
+0059 <span class="comment">%             for i=1:numinstance</span>
+0060 <span class="comment">%                 %select the class with the highest probability</span>
+0061 <span class="comment">%                 [prob, idx] = max(scores(:,i));</span>
+0062 <span class="comment">%                 uniqueLabels = unique(LSVM.instanceSet.getLabels);</span>
+0063 <span class="comment">%                 %output the label with highest probability</span>
+0064 <span class="comment">%                 output(i,1) = uniqueLabels(idx);</span>
+0065 <span class="comment">%                 %return the probability for the output label</span>
+0066 <span class="comment">%                 probabilities(i,1) = prob;</span>
+0067 <span class="comment">%             end</span>
+0068         <span class="keyword">end</span>
+0069         
+0070         <a name="_sub3" href="#_subfunctions" class="code">function CSPFB = reset(CSPFB)</a>
+0071             <span class="comment">% 'Resets' the classifier.</span>
+0072 <span class="comment">%             CSP.models = {};</span>
+0073         <span class="keyword">end</span>
+0074         
+0075         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(CSPFB)</a>
+0076             configInfo = <span class="string">'\n'</span>;
+0077         <span class="keyword">end</span>
+0078         
+0079                         
+0080         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(CSPFB)</a>
+0081             time = 0;
+0082         <span class="keyword">end</span>
+0083     <span class="keyword">end</span>
+0084     methods (Access = private)
+0085         <a name="_sub6" href="#_subfunctions" class="code">function [] = learnCSPMatrix(CSPFB, sMatrix, labels)</a>
+0086                        <span class="comment">%[trialsMat,labels] = ssveptoolkit.util.Trial.trialsCellToMat(in);</span>
+0087             [numTrials,numChannels,numSamples] = size(sMatrix);
+0088 <span class="comment">%             numTrials = length(CSPFB.trials);</span>
+0089 <span class="comment">%             [numChannels,numSamples] = size(CSPFB.trials{1}.signal);</span>
+0090 <span class="comment">%             samplingRate = CSPFB.trials{1}.samplingRate;</span>
+0091             filter_banks= CSPFB.filterBanks;
+0092             [nfb, mfb] = size(filter_banks);
+0093 
+0094             <span class="keyword">for</span> iter_fb=1:nfb
+0095                 
+0096                 [b,a]=butter(3,filter_banks(iter_fb)/(CSPFB.samplingRate/2));
+0097 <span class="comment">%                 labels = zeros(numTrials,1);</span>
+0098                 <span class="comment">%numTrials X numChannels X numSamples</span>
+0099                 trialsMat = permute(sMatrix,[2,3,1]);
+0100 <span class="comment">%                 trialsMat = zeros(numChannels,numSamples,numTrials);</span>
+0101 <span class="comment">%                 for i = 1 : length(CSP_Feat.trials)</span>
+0102 <span class="comment">%                     for i_ch = 1:numChannels</span>
+0103 <span class="comment">%                         trialsMat(i_ch,:,i) = filtfilt(b,a,CSP_Feat.trials{i}.signal(i_ch,:));</span>
+0104 <span class="comment">%                     end</span>
+0105 <span class="comment">%                     labels(i) = CSP_Feat.trials{i}.label;</span>
+0106 <span class="comment">%                 end</span>
+0107                 
+0108                 trialsMat = permute(trialsMat,[2 1 3]);
+0109                 [N1, Nch1, Ntr1] = size(trialsMat);
+0110                 <span class="keyword">for</span> i = 1:Nch1
+0111                     <span class="keyword">for</span> j = 1:Ntr1
+0112                         trialsMat(:,i,j) = (trialsMat(:,i,j) - mean(trialsMat(:,i,j)));
+0113                     <span class="keyword">end</span>
+0114                 <span class="keyword">end</span>
+0115                 x_train = trialsMat;<span class="comment">%(:,:,CSP_Feat.trainIdx);</span>
+0116                 y_train = labels;<span class="comment">%(CSP_Feat.trainIdx);</span>
+0117                 [N, Nch, Ntr] = size(x_train);
+0118                 trialCov=zeros(Nch,Nch,Ntr);
+0119                 <span class="keyword">for</span> t=1:length(y_train)
+0120                     E = x_train(:,:,t)';
+0121                     EE = E * E';
+0122                     trialCov(:,:,t) = EE ./ trace(EE);
+0123                 <span class="keyword">end</span>
+0124                 <span class="keyword">for</span> c=1:2
+0125                     covMat{c} = mean(trialCov(:,:,y_train == c),3);
+0126                 <span class="keyword">end</span>
+0127                 [U, D] = eig(covMat{1},covMat{2},<span class="string">'qz'</span>);
+0128                 eigenvalues = diag(D);
+0129                 [~, ind] = sort(eigenvalues, <span class="string">'descend'</span>);
+0130                 U = U(:,ind);
+0131                 CSPFB.cspFilters{iter_fb} = U';
+0132 <span class="comment">%                 CSP_Filter = U';</span>
+0133             <span class="keyword">end</span>
+0134                 <span class="comment">%trialsMat2=zeros(N,3,Ntr);</span>
+0135                
+0136         <span class="keyword">end</span>
+0137         
+0138         <a name="_sub7" href="#_subfunctions" class="code">function instances = extract(CSPFB,sMatrix)</a>
+0139             trialsMat = permute(sMatrix,[2,3,1]);
+0140             trialsMat = permute(trialsMat,[2,1,3]);
+0141             [numTrials,numChannels,~] = size(sMatrix);
+0142             final_instances = zeros(numTrials, numChannels*length(CSPFB.filterBanks));
+0143             <span class="keyword">for</span> iter_fb=1:length(CSPFB.cspFilters)
+0144                 <span class="keyword">for</span> j = 1:size(trialsMat,3)
+0145                     trialsMat(:,:,j) = (CSPFB.cspFilters{iter_fb}*trialsMat(:,:,j)')';
+0146                 <span class="keyword">end</span>
+0147                 
+0148                 instances = zeros(numTrials, numChannels);
+0149                 <span class="comment">%labels = zeros(numTrials,1);</span>
+0150                 
+0151                 <span class="keyword">for</span> i=1:numTrials
+0152                     
+0153                     projectedTrial = trialsMat(:,:,i);<span class="comment">%Filter * CSP_Feat.trials{i}.signal(:,i);% EEGSignals.x(:,:,t)';</span>
+0154                     <span class="comment">%generating the features as the log variance of the projected signals</span>
+0155                     variances = var(projectedTrial,0,1);
+0156                     instances(i,:) = log(variances)';
+0157                     <span class="comment">%labels(i,1) = floor(CSP_Feat.trials{i}.label);</span>
+0158                 <span class="keyword">end</span>
+0159                 final_instances(:,numChannels*(iter_fb-1)+1:numChannels*iter_fb) = instances;
+0160                 <span class="comment">%            CSP_Feat.avgTime = toc/numTrials;</span>
+0161 <span class="comment">%                 CSP_Feat.instanceSet = ssveptoolkit.util.InstanceSet(final_instances,labels);</span>
+0162             <span class="keyword">end</span>
+0163             instances = final_instances;
+0164         <span class="keyword">end</span>
+0165     
+0166     
+0167     
+0168     <span class="keyword">end</span>
+0169     <span class="comment">%             [numTrials,numChannels,~] = size(sMatrix);</span>
+0170     <span class="comment">%             sMatrix = permute(sMatrix,[3,2,1]);</span>
+0171     <span class="comment">%             for i=1:size(sMatrix,3);</span>
+0172     <span class="comment">%                 sMatrix(:,:,i) = (CSPFB.cspFilter*sMatrix(:,:,i)')';</span>
+0173     <span class="comment">%             end</span>
+0174     <span class="comment">%             instances = zeros(numTrials,numChannels);</span>
+0175     <span class="comment">%             for i=1:numTrials</span>
+0176     <span class="comment">%                 projectedTrial = sMatrix(:,:,i);</span>
+0177     <span class="comment">%                 variances = var(projectedTrial,0,1);</span>
+0178     <span class="comment">%                 instances(i,:) = log(variances)';</span>
+0179     <span class="comment">%             end</span>
+0180     <span class="comment">% %             instanceSet = eegtoolkit.util.InstanceSet(instances,labels);</span>
+0181     <span class="comment">%         end</span>
+0182     <span class="comment">%end</span>
+0183 <span class="keyword">end</span>
+0184</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

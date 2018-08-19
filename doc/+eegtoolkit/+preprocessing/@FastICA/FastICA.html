@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FastICA</title>
+  <meta name="keywords" content="FastICA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+preprocessing</a> &gt; <a href="index.html">@FastICA</a> &gt; FastICA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+preprocessing/@FastICA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>FastICA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FastICA.html" class="code" title="">FastICA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FastICA.html" class="code" title="">FastICA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ICA = FastICA()</a></li><li><a href="#_sub2" class="code">function out = process(ICA,in )</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(ICA)</a></li><li><a href="#_sub4" class="code">function time = getTime(ICA)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="FastICA.m">FastICA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="FastICA.html" class="code" title="">FastICA</a> &lt; eegtoolkit.preprocessing.PreprocessingBase
+0002     
+0003     properties
+0004         first;
+0005         last;
+0006         avgTime;
+0007     <span class="keyword">end</span>
+0008     
+0009     methods
+0010         <a name="_sub0" href="#_subfunctions" class="code">function ICA = FastICA()</a>
+0011             ICA.first = 2;
+0012             ICA.last = 256;
+0013         <span class="keyword">end</span>
+0014         
+0015         <a name="_sub1" href="#_subfunctions" class="code">function out = process(ICA,in )</a>
+0016             out = {};
+0017             total = 0;
+0018             <span class="keyword">for</span> i=1:length(in)
+0019                 i
+0020 <span class="comment">%                 in{i}.signal(end,:) = [];</span>
+0021                 tic
+0022                 signal = in{i}.signal;
+0023 <span class="comment">%                 signal(end,:) = [];</span>
+0024 <span class="comment">%                 [W,~,yest] = amuse(signal);</span>
+0025 <span class="comment">%                 signal = pinv(W(ICA.first:ICA.last,:))*yest(ICA.first:ICA.last,: );</span>
+0026                 [icasig, A, W] = fastica (signal);
+0027                 signal = A(:,ICA.first:end)*icasig(ICA.first:<span class="keyword">end</span>,:);
+0028                 total = total + toc;
+0029 <span class="comment">%                 in{i}.signal = signal;</span>
+0030                 out{i} = eegtoolkit.util.Trial(signal,in{i}.label,in{i}.samplingRate,in{i}.subjectid,in{i}.sessionid,in{i}.type);
+0031             <span class="keyword">end</span>
+0032 <span class="comment">%             out = in;</span>
+0033 <span class="comment">%             total = toc;</span>
+0034             ICA.avgTime = total/length(in);
+0035         <span class="keyword">end</span>
+0036         
+0037         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(ICA)</a>
+0038             configInfo = sprintf(<span class="string">'FastICA:\t%d-%d'</span>,ICA.first,ICA.last);
+0039         <span class="keyword">end</span>
+0040         
+0041         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(ICA)</a>
+0042             time = ICA.avgTime;
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045     
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

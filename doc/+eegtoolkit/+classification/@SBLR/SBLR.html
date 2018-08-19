@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SBLR</title>
+  <meta name="keywords" content="SBLR">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@SBLR</a> &gt; SBLR.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@SBLR&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SBLR
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SBLR.html" class="code" title="">SBLR</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SBLR.html" class="code" title="">SBLR</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function SBLR = SBLR(instanceSet)</a></li><li><a href="#_sub2" class="code">function SBLR = build(SBLR)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(SBLR,instance)</a></li><li><a href="#_sub4" class="code">function SBLR = reset(SBLR)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(SBLR)</a></li><li><a href="#_sub6" class="code">function time = getTime(MLR_Classifier)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="SBLR.m">SBLR.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SBLR.html" class="code" title="">SBLR</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004 
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008        <span class="comment">%Coding; % Coding design 'onevsall' (default) | 'allpairs' | 'binarycomplete' | 'denserandom' | 'onevsone' | 'ordinal' | 'sparserandom' | 'ternarycomplete' | numeric matrix</span>
+0009        <span class="comment">%FitPosterior; % Flag indicating whether to transform scores to posterior probabilities false or 0 (default) | true or 1</span>
+0010        <span class="comment">%Prior % 'empirical' (default) or 'uniform'.  Prior probabilities for each class.</span>
+0011        models;
+0012        Wmatrix;
+0013     <span class="keyword">end</span>
+0014     
+0015     methods (Access = public)
+0016         <a name="_sub0" href="#_subfunctions" class="code">function SBLR = SBLR(instanceSet)</a>
+0017             <span class="comment">%set default parameters</span>
+0018             <span class="keyword">if</span> nargin &gt; 0
+0019                 SBLR.instanceSet = instanceSet;
+0020             <span class="keyword">end</span>                   
+0021         <span class="keyword">end</span>
+0022         
+0023         <a name="_sub1" href="#_subfunctions" class="code">function SBLR = build(SBLR)</a>
+0024             <span class="comment">%clear all from previous calls to &quot;build&quot;</span>
+0025             SBLR.reset;
+0026             numLabels = SBLR.instanceSet.getNumLabels;
+0027             uniqueLabels = unique(SBLR.instanceSet.getLabels);
+0028            
+0029             <span class="comment">% ---- Multi-Class ----- %</span>
+0030             instances=SBLR.instanceSet.instances;
+0031             labels=SBLR.instanceSet.labels;
+0032             [~,Nfeat] = size(instances)
+0033             size(instances)
+0034             <span class="comment">%X = instances*instances;</span>
+0035           <span class="comment">%[w, ix_eff, W, AX] = slr_learning_var2(labels, instances,'nlearn', 100, 'nstep', 10);</span>
+0036           [w, ix_eff, W, AXall] = smlr_learning(labels, instances, Nfeat,<span class="string">'nlearn'</span>, 0,<span class="string">'gamma0'</span>, 0);<span class="comment">%,...</span>
+0037               <span class="comment">%'wdisp_mode', 'off', 'nlearn',10,'mean_mode', 'none', 'scale_mode', 'none');%, ...</span>
+0038             <span class="comment">%'wdisplay', wdisp_mode, 'wmaxiter', wmaxiter', 'nlearn', Nlearn, 'nstep', Nstep,...</span>
+0039             <span class="comment">%'amax', AMAX, 'isplot', isplot', 'gamma0', gamma0);</span>
+0040         
+0041           SBLR.Wmatrix = reshape(w, [Nfeat, 5]);           
+0042         
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(SBLR,instance)</a>
+0046             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0047             <span class="comment">%output = predicted class</span>
+0048             <span class="comment">%probabilities = probability for predicted class</span>
+0049             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0050             
+0051             
+0052             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0053 <span class="comment">%             numModels = length(MLSVM.models);</span>
+0054             [numinstance, ~] = size(instance);
+0055             <span class="comment">%scores = zeros(numModels,numinstance);</span>
+0056             
+0057             [output, Pte] = calc_label(instance, SBLR.Wmatrix);
+0058             <span class="comment">% ---- One (vs) All -----%</span>
+0059 <span class="comment">%              for i=1:numModels</span>
+0060 <span class="comment">%                  %predict using the stored models</span>
+0061 <span class="comment">%                  [label,score,cost] = predict(LDA.models{i},instance);</span>
+0062 <span class="comment">%                  %libsvmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');</span>
+0063 <span class="comment">%                 %store probability for each class</span>
+0064 <span class="comment">%                 scores(i,:) = score(:,1);</span>
+0065 <span class="comment">%             end</span>
+0066 
+0067             ranking=zeros(5,1)';
+0068             probabilities=0;          
+0069         <span class="keyword">end</span>
+0070         
+0071         <a name="_sub3" href="#_subfunctions" class="code">function SBLR = reset(SBLR)</a>
+0072             <span class="comment">%delete all stored models</span>
+0073             SBLR.models = {};
+0074             SBLR.Wmatrix=[];
+0075         <span class="keyword">end</span>
+0076         
+0077         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(SBLR)</a>
+0078            
+0079             configInfo = <span class="string">'SBLR_Classifier (Config info not supported yet)'</span>;
+0080         <span class="keyword">end</span>
+0081         
+0082         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(MLR_Classifier)</a>
+0083             time = 0;
+0084         <span class="keyword">end</span>
+0085                 
+0086     <span class="keyword">end</span>
+0087 <span class="keyword">end</span>
+0088</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FeatureSelectionBase</title>
+  <meta name="keywords" content="FeatureSelectionBase">
+  <meta name="description" content="Abstract class for feature selection. Implement the functions for any">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featselection</a> &gt; <a href="index.html">@FeatureSelectionBase</a> &gt; FeatureSelectionBase.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featselection/@FeatureSelectionBase&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>FeatureSelectionBase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Abstract class for feature selection. Implement the functions for any</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Abstract class for feature selection. Implement the functions for any
+ feature selection method (e.g. PCA, SVD, FEAST, etc.)
+ 
+ Properties:
+ originalInstanceSet: Input - the original instanceSet with the features
+ filteredInstanceSet: Output - the filtered instanceSet
+ 
+ Functions:
+Implement this function to process the originalInstanceSet trials and 
+return the filteredInstanceSet
+   obj.compute();
+Info &amp; run time so that the experiments are easily documented. configInfo
+is a string with the configuration information and time is of type double.
+   configInfo = obj.getConfigInfo();
+   time = obj.getTime();</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FeatureSelectionBase.html" class="code" title="">FeatureSelectionBase</a>	Abstract class for feature selection. Implement the functions for any</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FeatureSelectionBase.html" class="code" title="">FeatureSelectionBase</a>	Abstract class for feature selection. Implement the functions for any</li></ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="FeatureSelectionBase.m">FeatureSelectionBase.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Abstract class for feature selection. Implement the functions for any</span>
+0002 <span class="comment">% feature selection method (e.g. PCA, SVD, FEAST, etc.)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Properties:</span>
+0005 <span class="comment">% originalInstanceSet: Input - the original instanceSet with the features</span>
+0006 <span class="comment">% filteredInstanceSet: Output - the filtered instanceSet</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Functions:</span>
+0009 <span class="comment">%Implement this function to process the originalInstanceSet trials and</span>
+0010 <span class="comment">%return the filteredInstanceSet</span>
+0011 <span class="comment">%   obj.compute();</span>
+0012 <span class="comment">%Info &amp; run time so that the experiments are easily documented. configInfo</span>
+0013 <span class="comment">%is a string with the configuration information and time is of type double.</span>
+0014 <span class="comment">%   configInfo = obj.getConfigInfo();</span>
+0015 <span class="comment">%   time = obj.getTime();</span>
+0016 
+0017 classdef (Abstract) <a href="FeatureSelectionBase.html" class="code" title="">FeatureSelectionBase</a> &lt; handle
+0018     
+0019     properties
+0020         originalInstanceSet; <span class="comment">% Input: The original dataset</span>
+0021         filteredInstanceSet; <span class="comment">% Output: The filtered dataset</span>
+0022     <span class="keyword">end</span>
+0023     
+0024     methods (Abstract = true)
+0025         obj = compute(obj);
+0026         configInfo = getConfigInfo(obj);
+0027         time = getTime(obj);
+0028     <span class="keyword">end</span>
+0029     
+0030 <span class="keyword">end</span>
+0031</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

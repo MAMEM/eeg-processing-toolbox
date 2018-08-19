@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  FastICA -> FastICA;
+
+  FastICA [URL="FastICA.html"];
+}

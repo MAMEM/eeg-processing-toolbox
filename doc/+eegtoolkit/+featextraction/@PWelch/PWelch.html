@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PWelch</title>
+  <meta name="keywords" content="PWelch">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="index.html">@PWelch</a> &gt; PWelch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featextraction/@PWelch&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>PWelch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PWelch.html" class="code" title="">PWelch</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PWelch.html" class="code" title="">PWelch</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function PW = PWelch(trials, seconds, channel, nfft)</a></li><li><a href="#_sub2" class="code">function extract(PW)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(PW)</a></li><li><a href="#_sub4" class="code">function time = getTime(PW)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="PWelch.m">PWelch.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="PWelch.html" class="code" title="">PWelch</a> &lt; eegtoolkit.featextraction.PSDExtractionBase
+0002 <span class="comment">%Computes the psd using the welch method</span>
+0003 <span class="comment">%Usage:</span>
+0004 <span class="comment">%   session = eegtoolkit.util.Session();</span>
+0005 <span class="comment">%   session.loadSubject(1);</span>
+0006 <span class="comment">%   pwt = ssveptolkit.transform.PWelchTransformer(session.trials);</span>
+0007 <span class="comment">%Specify the channel to be used (default = 126)</span>
+0008 <span class="comment">%   pwt.channel = 150;</span>
+0009 <span class="comment">%Specify the number of seconds to be used (default = 0, use all signal)</span>
+0010 <span class="comment">%   pwt.seconds = 3;</span>
+0011 <span class="comment">%Specify the nfft parameter (default = 512, computes 257 features)</span>
+0012 <span class="comment">%   pwt.nfft = 512;</span>
+0013 <span class="comment">%Transform the signal</span>
+0014 <span class="comment">%   pwt.transform();</span>
+0015     properties (Access = public)
+0016         channel;
+0017         seconds;
+0018         nfft;
+0019         avgTime;
+0020     <span class="keyword">end</span>
+0021     
+0022     methods (Access = public)
+0023         <a name="_sub0" href="#_subfunctions" class="code">function PW = PWelch(trials, seconds, channel, nfft)</a>
+0024 <span class="comment">%             if ~iscell(trials)</span>
+0025 <span class="comment">%                 error('trials must be cell array of Trial object');</span>
+0026 <span class="comment">%             end</span>
+0027             <span class="keyword">if</span> nargin == 0
+0028                 PW.trials = {};
+0029                 PW.seconds = 0;
+0030                 PW.channel = 1;
+0031                 PW.nfft = 512;
+0032             <span class="keyword">elseif</span> nargin == 1
+0033                 PW.trials = trials;
+0034                 PW.seconds = 0;
+0035                 PW.channel = 1;
+0036                 PW.nfft = 512;
+0037             <span class="keyword">elseif</span> nargin == 2
+0038                 PW.trials = trials;
+0039                 PW.channel = 1;
+0040                 PW.seconds = seconds;
+0041                 PW.nfft = 512;
+0042             <span class="keyword">elseif</span> nargin == 3
+0043                 PW.trials = trials;
+0044                 PW.channel = channel;
+0045                 PW.seconds = seconds;
+0046                 PW.nfft = 512;
+0047             <span class="keyword">elseif</span> nargin == 4
+0048                 PW.trials = trials;
+0049                 PW.channel = channel;
+0050                 PW.seconds = seconds;
+0051                 PW.nfft = nfft;
+0052             <span class="keyword">else</span>
+0053 <span class="comment">%                 error('invalid number of arguments');</span>
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056         
+0057         <a name="_sub1" href="#_subfunctions" class="code">function extract(PW)</a>
+0058             <span class="keyword">if</span> length(PW.nfft)==1
+0059                 numFeatures = PW.nfft/2+1;
+0060             <span class="keyword">else</span>
+0061                 numFeatures = length(PW.nfft);
+0062             <span class="keyword">end</span>
+0063             numTrials = length(PW.trials);
+0064             instances = zeros(numTrials, numFeatures);
+0065             labels = zeros(numTrials,1);
+0066 <span class="comment">%             PWT.instances = zeros(numTrials, numFeatures);</span>
+0067 <span class="comment">%             PWT.labels = zeros(numTrials,1);</span>
+0068             tic;
+0069             <span class="keyword">for</span> i=1:numTrials
+0070                 <span class="keyword">if</span> length(PW.seconds) == 1
+0071                     numsamples = PW.trials{i}.samplingRate * PW.seconds;
+0072                     <span class="keyword">if</span>(numsamples == 0)
+0073                         y = PW.trials{i}.signal(PW.channel,:);
+0074                     <span class="keyword">else</span>
+0075                         y = PW.trials{i}.signal(PW.channel, 1:numsamples);
+0076                     <span class="keyword">end</span>
+0077                 <span class="keyword">elseif</span> length(PW.seconds) == 2
+0078                     sampleA = PW.trials{i}.samplingRate*PW.seconds(1) +1;
+0079                     sampleB = PW.trials{i}.samplingRate*PW.seconds(2);
+0080                     y = PW.trials{i}.signal(PW.channel, sampleA:sampleB);
+0081                 <span class="keyword">else</span> 
+0082                     error(<span class="string">'invalid seconds parameter'</span>);
+0083                 <span class="keyword">end</span>
+0084                 <span class="keyword">if</span> isa(PW.filter,<span class="string">'dfilt.df2sos'</span>) || isa(PW.filter,<span class="string">'dfilt.df2'</span>)
+0085                     y = filter(PW.filter,y);
+0086                 <span class="keyword">elseif</span> isa(PW.filter,<span class="string">'dfilt.dffir'</span>)
+0087                     y = filtfilt(PW.filter.Numerator,1,y);
+0088                 <span class="keyword">end</span>
+0089                 <span class="keyword">if</span> length(PW.nfft&gt;1)
+0090                     [pxx, pff]=pwelch(y,[],[],PW.nfft,PW.trials{i}.samplingRate);
+0091                 <span class="keyword">else</span>
+0092                     [pxx, pff]=pwelch(y,[],[],PW.nfft,PW.trials{i}.samplingRate,<span class="string">'onesided'</span>);
+0093                 <span class="keyword">end</span>
+0094                 instances(i,:) = pxx;
+0095                 labels(i,1) = floor(PW.trials{i}.label);
+0096             <span class="keyword">end</span>
+0097             total = toc;
+0098             PW.avgTime = total/numTrials;
+0099             PW.instanceSet = eegtoolkit.util.InstanceSet(instances, labels);
+0100             PW.pff = pff;
+0101         <span class="keyword">end</span>
+0102         
+0103         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(PW)</a>
+0104             <span class="keyword">if</span> length(PW.nfft)&gt;1
+0105                 configInfo = sprintf(<span class="string">'PWelch\tchannel:%d\tseconds:%d\t freq range:%.3f to %.3f'</span>,PW.channel,PW.seconds,PW.nfft(1),PW.nfft(end));
+0106             <span class="keyword">else</span>
+0107                 configInfo = sprintf(<span class="string">'PWelch\tchannel:%d\tseconds:%d\tnfft:%d'</span>,PW.channel,PW.seconds,PW.nfft);
+0108             <span class="keyword">end</span>
+0109         <span class="keyword">end</span>
+0110         
+0111         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(PW)</a>
+0112             time = PW.avgTime;
+0113         <span class="keyword">end</span>
+0114     <span class="keyword">end</span>
+0115    
+0116 <span class="keyword">end</span>
+0117</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

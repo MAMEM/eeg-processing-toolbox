@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FEAST</title>
+  <meta name="keywords" content="FEAST">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featselection</a> &gt; <a href="index.html">@FEAST</a> &gt; FEAST.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featselection/@FEAST&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>FEAST
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FEAST.html" class="code" title="">FEAST</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FEAST.html" class="code" title="">FEAST</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function FF = FEAST(instanceSet,algorithm, numtoSelect, param1, param2)</a></li><li><a href="#_sub2" class="code">function FF = compute(FF)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(FF)</a></li><li><a href="#_sub4" class="code">function time = getTime(FF)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="FEAST.m">FEAST.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="FEAST.html" class="code" title="">FEAST</a> &lt; eegtoolkit.featselection.FeatureSelectionBase
+0002     properties (Constant)
+0003         ALGORITHM_MIM = <span class="string">'mim'</span>;
+0004         ALGORITHM_MRMR = <span class="string">'mrmr'</span>;
+0005         ALGORITHM_CMIM = <span class="string">'cmim'</span>;
+0006         ALGORITHM_JMI = <span class="string">'jmi'</span>;
+0007         ALGORITHM_DISR = <span class="string">'disr'</span>;
+0008         ALGORITHM_CIFE = <span class="string">'cife'</span>;
+0009         ALGORITHM_ICAP = <span class="string">'icap'</span>;
+0010         ALGORITHM_CONDRED = <span class="string">'condred'</span>;
+0011         ALGORITHM_CMI = <span class="string">'cmi'</span>;
+0012         ALGORITHM_RELIEF = <span class="string">'relief'</span>;
+0013         ALGORITHM_MIFS = <span class="string">'mifs'</span> <span class="comment">%beta parameter required</span>
+0014         ALGORITHM_BETAGAMMA = <span class="string">'betagamma'</span>; <span class="comment">%beta and gamma parameters required</span>
+0015         ALGORITHM_FCBF = <span class="string">'fcbf'</span>; <span class="comment">%threshold parameter required</span>
+0016     <span class="keyword">end</span>
+0017     properties (Access = public)
+0018         algorithm;
+0019         numToSelect;
+0020         parameter1;
+0021         parameter2;
+0022         avgTime;
+0023     <span class="keyword">end</span>
+0024     
+0025     methods
+0026         <a name="_sub0" href="#_subfunctions" class="code">function FF = FEAST(instanceSet,algorithm, numtoSelect, param1, param2)</a>
+0027             <span class="keyword">if</span> nargin == 0
+0028                 FF.algorithm = <span class="string">'icap'</span>;
+0029                 FF.numToSelect = 85;
+0030             <span class="keyword">end</span>
+0031             <span class="keyword">if</span> nargin &gt; 1
+0032                 FF.originalInstanceSet = instanceSet;
+0033                 FF.algorithm = algorithm;
+0034             <span class="keyword">end</span>
+0035             <span class="keyword">if</span> nargin &gt; 2
+0036                 FF.numToSelect = numtoSelect;
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin &gt; 3
+0039                 FF.parameter1 = param1;
+0040             <span class="keyword">end</span>
+0041             <span class="keyword">if</span> nargin &gt; 4
+0042                 FF.parameter2 = param2;
+0043             <span class="keyword">end</span>
+0044         <span class="keyword">end</span>
+0045         
+0046         <a name="_sub1" href="#_subfunctions" class="code">function FF = compute(FF)</a>
+0047             tic
+0048             <span class="keyword">if</span> (strcmp(FF.algorithm,FF.ALGORITHM_MIFS) == 1) || (strcmp(FF.algorithm, FF.ALGORITHM_FCBF) == 1)
+0049                 indices = feast(FF.algorithm, FF.numToSelect, FF.originalInstanceSet.getInstances, FF.originalInstanceSet.getLabels, FF.parameter1);
+0050             <span class="keyword">elseif</span> strcmp(FF.algorithm, FF.ALGORITHM_BETAGAMMA) == 1
+0051                 indices = feast(FF.algorithm, FF.numToSelect, FF.originalInstanceSet.getInstances, FF.originalInstanceSet.getLabels, FF.parameter1, FF.parameter2);
+0052             <span class="keyword">else</span>
+0053                 indices = feast(FF.algorithm, FF.numToSelect, FF.originalInstanceSet.getInstances, FF.originalInstanceSet.getLabels);
+0054             <span class="keyword">end</span>
+0055             dataset = FF.originalInstanceSet.getInstances;
+0056             [inst, ~] = size(dataset);
+0057             FF.avgTime = toc/inst;
+0058             FF.filteredInstanceSet = eegtoolkit.util.InstanceSet([dataset(:,indices) FF.originalInstanceSet.getLabels]);
+0059         <span class="keyword">end</span>
+0060         
+0061         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(FF)</a>
+0062             <span class="keyword">if</span> (strcmp(FF.algorithm,FF.ALGORITHM_MIFS) == 1) || (strcmp(FF.algorithm, FF.ALGORITHM_FCBF) == 1)
+0063                 configInfo = sprintf(<span class="string">'FEAST\talgorithm:%s\tnumtoselect:%d\tparam1:%d'</span>,FF.algorithm, FF.numToSelect, FF.parameter1);
+0064             <span class="keyword">elseif</span> strcmp(FF.algorithm, FF.ALGORITHM_BETAGAMMA) == 1
+0065                 configInfo = sprintf(<span class="string">'FEAST\talgorithm:%s\tnumtoselect:%d\tparam1:%d\tparam2:%d'</span>,FF.algorithm, FF.numToSelect, FF.parameter1, FF.parameter2);
+0066             <span class="keyword">else</span>
+0067                 configInfo = sprintf(<span class="string">'FEAST\talgorithm:%s\tnumtoselect:%d'</span>,FF.algorithm, FF.numToSelect);
+0068             <span class="keyword">end</span>
+0069         <span class="keyword">end</span>
+0070         
+0071         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(FF)</a>
+0072             time = FF.avgTime;
+0073         <span class="keyword">end</span>
+0074     <span class="keyword">end</span>
+0075     
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

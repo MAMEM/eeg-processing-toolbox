@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ITCCA</title>
+  <meta name="keywords" content="ITCCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@ITCCA</a> &gt; ITCCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@ITCCA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>ITCCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ITCCA.html" class="code" title="">ITCCA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ITCCA.html" class="code" title="">ITCCA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function IT = ITCCA(instanceSet)</a></li><li><a href="#_sub2" class="code">function IT = build(IT)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(CSP,instance)</a></li><li><a href="#_sub4" class="code">function CSP = reset(CSP)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(CSP)</a></li><li><a href="#_sub6" class="code">function time = getTime(CSP)</a></li><li><a href="#_sub7" class="code">function [Wx, Wy, r] = cca(CCA,X,Y)</a></li><li><a href="#_sub8" class="code">function instancesOutput = extract(IT,sMatrix)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="ITCCA.m">ITCCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="ITCCA.html" class="code" title="">ITCCA</a> &lt; eegtoolkit.classification.ClassifierBase;
+0002     <span class="comment">%                 instanceStruct = struct('sMatrix',sMatrix, 'labels', labels);</span>
+0003     <span class="comment">%     it=cell(12,1);</span>
+0004     <span class="comment">%                         for iN = 1:nClasses</span>
+0005     <span class="comment">%                             it{iN} = mean(SSVEPdata(chan_used,1:TW_p(tw_length),idx_traindata,iN),3);</span>
+0006     <span class="comment">%                         end</span>
+0007     <span class="comment">%                         % recognize SSVEP</span>
+0008     <span class="comment">%                         for j=1:nClasses</span>
+0009     <span class="comment">%                             tempvec=zeros(nClasses,1);</span>
+0010     <span class="comment">%                             for jj=1:nClasses</span>
+0011     <span class="comment">%                                 [wx1,wy1,r1]=cca(SSVEPdata(chan_used,1:TW_p(tw_length),run,j),it{jj}(:,1:TW_p(tw_length)));</span>
+0012     <span class="comment">%                                 tempvec(jj) = max(r1);</span>
+0013     <span class="comment">%                             end</span>
+0014     <span class="comment">%</span>
+0015     <span class="comment">%                             [v,idx]=max(tempvec);</span>
+0016     <span class="comment">%                             sub_lab(mth,(run-1)*nClasses+j,tw_length)=idx;</span>
+0017     <span class="comment">%                             if idx==j</span>
+0018     <span class="comment">%                                 n_correct(tw_length,mth)=n_correct(tw_length,mth)+1;</span>
+0019     <span class="comment">%                             end</span>
+0020     <span class="comment">%                         end</span>
+0021     properties (Constant)
+0022         
+0023     <span class="keyword">end</span>
+0024     properties
+0025         baseClassifier;
+0026         individualTemplates;
+0027     <span class="keyword">end</span>
+0028     
+0029     methods (Access = public)
+0030         <a name="_sub0" href="#_subfunctions" class="code">function IT = ITCCA(instanceSet)</a>
+0031             <span class="comment">%             if(isa(instanceSet,'eegtoolkit.util.RawSignalSet')</span>
+0032             <span class="comment">%                 CSP.instanceSet = instanceSet;</span>
+0033             <span class="comment">%             else</span>
+0034             <span class="comment">%                 error('RawSignal extractor should be used with CSPWrapper');</span>
+0035             <span class="comment">%             end</span>
+0036         <span class="keyword">end</span>
+0037         
+0038         
+0039         <a name="_sub1" href="#_subfunctions" class="code">function IT = build(IT)</a>
+0040             <span class="comment">% Builds the classification models</span>
+0041             <span class="comment">%             IT.learnCSPMatrix(IT.instanceSet.sMatrix,IT.instanceSet.labels);</span>
+0042             numLabels = length(unique(IT.instanceSet.labels));
+0043             IT.individualTemplates = cell(numLabels,1);
+0044             unLabels = unique(IT.instanceSet.labels);
+0045             <span class="keyword">for</span> i = 1:numLabels
+0046                 trialsIndices = IT.instanceSet.labels==unLabels(i);
+0047                 IT.individualTemplates{i} = squeeze(mean(IT.instanceSet.sMatrix(trialsIndices,:,:),1));
+0048             <span class="keyword">end</span>
+0049             <span class="comment">%             instances = IT.extract(IT.instanceSet.sMatrix);</span>
+0050             <span class="comment">%             instanceSet = eegtoolkit.util.InstanceSet(instances,IT.instanceSet.labels);</span>
+0051             <span class="comment">%             IT.baseClassifier.instanceSet = instanceSet;</span>
+0052             <span class="comment">%             IT.baseClassifier.build();</span>
+0053         <span class="keyword">end</span>
+0054         
+0055         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(CSP,instance)</a>
+0056             <span class="comment">%                         for j=1:nClasses</span>
+0057             <span class="comment">%                             tempvec=zeros(nClasses,1);</span>
+0058             <span class="comment">%                             for jj=1:nClasses</span>
+0059             <span class="comment">%                                 [wx1,wy1,r1]=cca(SSVEPdata(chan_used,1:TW_p(tw_length),run,j),it{jj}(:,1:TW_p(tw_length)));</span>
+0060             <span class="comment">%                                 tempvec(jj) = max(r1);</span>
+0061             <span class="comment">%                             end</span>
+0062             <span class="comment">%</span>
+0063             <span class="comment">%                             [v,idx]=max(tempvec);</span>
+0064             <span class="comment">%                             sub_lab(mth,(run-1)*nClasses+j,tw_length)=idx;</span>
+0065             <span class="comment">%                             if idx==j</span>
+0066             <span class="comment">%                                 n_correct(tw_length,mth)=n_correct(tw_length,mth)+1;</span>
+0067             <span class="comment">%                             end</span>
+0068             <span class="comment">%                         end</span>
+0069             <span class="comment">%             instance = CSP.extract</span>
+0070             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0071             <span class="comment">%output = predicted class</span>
+0072             <span class="comment">%probabilities = probability for predicted class</span>
+0073             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0074             
+0075             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0076             testInstances = CSP.extract(instance);
+0077             [output, probabilities, ranking] = CSP.baseClassifier.classifyInstance(testInstances);
+0078             <span class="comment">%             numModels = length(LSVM.models);</span>
+0079             <span class="comment">%             [numinstance, ~] = size(testInstances);</span>
+0080             <span class="comment">%             scores = zeros(numModels,numinstance);</span>
+0081             <span class="comment">%             for i=1:numModels</span>
+0082             <span class="comment">%                 %predict using the stored models</span>
+0083             <span class="comment">%                 [~, ~, t] = svmpredict(eye(numinstance,1),testInstances, LSVM.models{i},'-b 1 -q');</span>
+0084             <span class="comment">%                 %store probability for each class</span>
+0085             <span class="comment">%                 scores(i,:) = t(:,1);</span>
+0086             <span class="comment">%             end</span>
+0087             <span class="comment">%             output = zeros(numinstance,1);</span>
+0088             <span class="comment">%             probabilities = zeros(numinstance,1);</span>
+0089             <span class="comment">%             ranking = scores;</span>
+0090             <span class="comment">%             for i=1:numinstance</span>
+0091             <span class="comment">%                 %select the class with the highest probability</span>
+0092             <span class="comment">%                 [prob, idx] = max(scores(:,i));</span>
+0093             <span class="comment">%                 uniqueLabels = unique(LSVM.instanceSet.getLabels);</span>
+0094             <span class="comment">%                 %output the label with highest probability</span>
+0095             <span class="comment">%                 output(i,1) = uniqueLabels(idx);</span>
+0096             <span class="comment">%                 %return the probability for the output label</span>
+0097             <span class="comment">%                 probabilities(i,1) = prob;</span>
+0098             <span class="comment">%             end</span>
+0099         <span class="keyword">end</span>
+0100         
+0101         <a name="_sub3" href="#_subfunctions" class="code">function CSP = reset(CSP)</a>
+0102             <span class="comment">% 'Resets' the classifier.</span>
+0103             <span class="comment">%             CSP.models = {};</span>
+0104         <span class="keyword">end</span>
+0105         
+0106         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(CSP)</a>
+0107             configInfo = <span class="string">'\n'</span>;
+0108         <span class="keyword">end</span>
+0109         
+0110         
+0111         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(CSP)</a>
+0112             time = 0;
+0113         <span class="keyword">end</span>
+0114     <span class="keyword">end</span>
+0115     
+0116     
+0117     methods (Access = private)
+0118         <a name="_sub6" href="#_subfunctions" class="code">function [Wx, Wy, r] = cca(CCA,X,Y)</a>
+0119             <span class="comment">%</span>
+0120             <span class="comment">% CCA calculate canonical correlations</span>
+0121             <span class="comment">%</span>
+0122             <span class="comment">% [Wx Wy r] = cca(X,Y) where Wx and Wy contains the canonical correlation</span>
+0123             
+0124             <span class="comment">% vectors as columns and r is a vector with corresponding canonical</span>
+0125             <span class="comment">% correlations. The correlations are sorted in descending order. X and Y</span>
+0126             <span class="comment">% are matrices where each column is a sample. Hence, X and Y must have</span>
+0127             <span class="comment">% the same number of columns.</span>
+0128             <span class="comment">%</span>
+0129             <span class="comment">% Example: If X is M*K and Y is N*K there are L=MIN(M,N) solutions. Wx is</span>
+0130             <span class="comment">% then M*L, Wy is N*L and r is L*1.</span>
+0131             <span class="comment">%</span>
+0132             <span class="comment">%</span>
+0133             <span class="comment">% ?? 2000 Magnus Borga, Link?pings universitet</span>
+0134             
+0135             <span class="comment">% --- Calculate covariance matrices ---??????????????</span>
+0136             
+0137             z = [X;Y];
+0138             C = cov(z.');
+0139             sx = size(X,1);   <span class="comment">%X??????(??),</span>
+0140             sy = size(Y,1);
+0141             Cxx = C(1:sx, 1:sx) + 10^(-8)*eye(sx);
+0142             Cxy = C(1:sx, sx+1:sx+sy);
+0143             Cyx = Cxy';
+0144             Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + 10^(-8)*eye(sy);<span class="comment">%eye()????????</span>
+0145             invCyy = inv(Cyy);
+0146             
+0147             <span class="comment">% --- Calcualte Wx and r ---</span>
+0148             
+0149             [Wx,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); <span class="comment">% Basis in X eig????????????</span>
+0150             r = sqrt(real(r));      <span class="comment">% Canonical correlations</span>
+0151             
+0152             <span class="comment">% --- Sort correlations ---</span>
+0153             
+0154             V = fliplr(Wx);        <span class="comment">% reverse order of eigenvectors??????????????????????i??????????i??????</span>
+0155             r = flipud(diag(r));    <span class="comment">% extract eigenvalues and reverse their order</span>
+0156             [r,I]= sort((real(r)));    <span class="comment">% sort reversed eigenvalues in ascending order</span>
+0157             r = flipud(r);        <span class="comment">% restore sorted eigenvalues into descending order??????????????</span>
+0158             <span class="keyword">for</span> j = 1:length(I)
+0159                 Wx(:,j) = V(:,I(j));  <span class="comment">% sort reversed eigenvectors in ascending order</span>
+0160             <span class="keyword">end</span>
+0161             Wx = fliplr(Wx);    <span class="comment">% restore sorted eigenvectors into descending order</span>
+0162             
+0163             <span class="comment">% --- Calcualte Wy  ---</span>
+0164             
+0165             Wy = invCyy*Cyx*Wx;     <span class="comment">% Basis in Y</span>
+0166             <span class="comment">% Wy = Wy./repmat(sqrt(sum(abs(Wy).^2)),sy,1); % Normalize Wy</span>
+0167             
+0168         <span class="keyword">end</span>
+0169         
+0170         
+0171         <a name="_sub7" href="#_subfunctions" class="code">function instancesOutput = extract(IT,sMatrix)</a>
+0172             
+0173             numClasses = length(IT.individualTemplates);
+0174             numInstances = size(sMatrix,1);
+0175             tempvec=zeros(numClasses,1);
+0176             instancesOutput = zeros(numInstances,numClasses);
+0177             <span class="keyword">for</span> i=1:numInstances
+0178                 <span class="keyword">for</span> j=1:numClasses
+0179                     [~,~,r1] = IT.cca(squeeze(sMatrix(i,:,:)),IT.individualTemplates{j});
+0180                     <span class="comment">%                     [wx1,wy1,r1]=cca(SSVEPdata(chan_used,1:TW_p(tw_length),run,j),IT.individualTemplates{j});</span>
+0181                     instancesOutput(i,j) = max(r1);
+0182                 <span class="keyword">end</span>
+0183             <span class="keyword">end</span>
+0184             
+0185             <span class="comment">%             [v,idx]=max(tempvec);</span>
+0186             <span class="comment">%             sub_lab(mth,(run-1)*nClasses+j,tw_length)=idx;</span>
+0187             <span class="comment">%             if idx==j</span>
+0188             <span class="comment">%                 n_correct(tw_length,mth)=n_correct(tw_length,mth)+1;</span>
+0189             <span class="comment">%             end</span>
+0190             <span class="comment">%</span>
+0191             <span class="comment">%             [numTrials,numChannels,~] = size(sMatrix);</span>
+0192             <span class="comment">%             sMatrix = permute(sMatrix,[3,2,1]);</span>
+0193             <span class="comment">%             for i=1:size(sMatrix,3);</span>
+0194             <span class="comment">%                 sMatrix(:,:,i) = (CSP.cspFilter*sMatrix(:,:,i)')';</span>
+0195             <span class="comment">%             end</span>
+0196             <span class="comment">%             instances = zeros(numTrials,numChannels);</span>
+0197             <span class="comment">%             for i=1:numTrials</span>
+0198             <span class="comment">%                 projectedTrial = sMatrix(:,:,i);</span>
+0199             <span class="comment">%                 variances = var(projectedTrial,0,1);</span>
+0200             <span class="comment">%                 instances(i,:) = log(variances)';</span>
+0201             <span class="comment">%             end</span>
+0202             <span class="comment">%             instanceSet = eegtoolkit.util.InstanceSet(instances,labels);</span>
+0203         <span class="keyword">end</span>
+0204     <span class="keyword">end</span>
+0205 <span class="keyword">end</span>
+0206</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

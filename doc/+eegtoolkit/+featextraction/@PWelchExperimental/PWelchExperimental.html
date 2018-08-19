@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PWelchExperimental</title>
+  <meta name="keywords" content="PWelchExperimental">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="index.html">@PWelchExperimental</a> &gt; PWelchExperimental.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featextraction/@PWelchExperimental&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>PWelchExperimental
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PWelchExperimental.html" class="code" title="">PWelchExperimental</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PWelchExperimental.html" class="code" title="">PWelchExperimental</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function PWT = PWelchExperimental(trials, seconds, channel, nfft,win_len,over_len)</a></li><li><a href="#_sub2" class="code">function extract(PWT)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(PWT)</a></li><li><a href="#_sub4" class="code">function time = getTime(PWT)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="PWelchExperimental.m">PWelchExperimental.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="PWelchExperimental.html" class="code" title="">PWelchExperimental</a> &lt; eegtoolkit.featextraction.FeatureExtractionBase
+0002 <span class="comment">%Computes the psd using the welch method</span>
+0003 <span class="comment">%Usage:</span>
+0004 <span class="comment">%   session = eegtoolkit.util.Session();</span>
+0005 <span class="comment">%   session.loadSubject(1);</span>
+0006 <span class="comment">%   pwt = ssveptolkit.transform.PWelchTransformer(session.trials);</span>
+0007 <span class="comment">%Specify the channel to be used (default = 126)</span>
+0008 <span class="comment">%   pwt.channel = 150;</span>
+0009 <span class="comment">%Specify the number of seconds to be used (default = 0, use all signal)</span>
+0010 <span class="comment">%   pwt.seconds = 3;</span>
+0011 <span class="comment">%Specify the nfft parameter (default = 512, computes 257 features)</span>
+0012 <span class="comment">%   pwt.nfft = 512;</span>
+0013 <span class="comment">%Transform the signal</span>
+0014 <span class="comment">%   pwt.transform();</span>
+0015     properties (Access = public)
+0016         channel;
+0017         seconds;
+0018         nfft;
+0019         pff;
+0020         win_len;
+0021         over_len;
+0022         avgTime;
+0023     <span class="keyword">end</span>
+0024     
+0025     methods (Access = public)
+0026         <a name="_sub0" href="#_subfunctions" class="code">function PWT = PWelchExperimental(trials, seconds, channel, nfft,win_len,over_len)</a>
+0027 <span class="comment">%             if ~iscell(trials)</span>
+0028 <span class="comment">%                 error('trials must be cell array of Trial object');</span>
+0029 <span class="comment">%             end</span>
+0030             <span class="keyword">if</span> nargin == 0
+0031                 PWT.trials = {};
+0032                 PWT.seconds = 0;
+0033                 PWT.channel = 1;
+0034                 PWT.nfft = 512;
+0035                 PWT.win_len=[];
+0036                 PWT.over_len=[];
+0037             <span class="keyword">elseif</span> nargin == 1
+0038                 PWT.trials = trials;
+0039                 PWT.seconds = 0;
+0040                 PWT.channel = 1;
+0041                 PWT.nfft = 512;
+0042                 PWT.win_len=[];
+0043                 PWT.over_len=[];
+0044             <span class="keyword">elseif</span> nargin == 2
+0045                 PWT.trials = trials;
+0046                 PWT.channel = 1;
+0047                 PWT.seconds = seconds;
+0048                 PWT.nfft = 512;
+0049                 PWT.win_len=[];
+0050                 PWT.over_len=[];
+0051             <span class="keyword">elseif</span> nargin == 3
+0052                 PWT.trials = trials;
+0053                 PWT.channel = channel;
+0054                 PWT.seconds = seconds;
+0055                 PWT.nfft = 512;
+0056                 PWT.win_len=[];
+0057                 PWT.over_len=[];
+0058             <span class="keyword">elseif</span> nargin == 4
+0059                 PWT.trials = trials;
+0060                 PWT.channel = channel;
+0061                 PWT.seconds = seconds;
+0062                 PWT.nfft = nfft;
+0063                 PWT.win_len=[];
+0064                 PWT.over_len=[];
+0065             <span class="keyword">elseif</span> nargin == 5
+0066                 PWT.trials = trials;
+0067                 PWT.channel = channel;
+0068                 PWT.seconds = seconds;
+0069                 PWT.nfft = nfft;
+0070                 PWT.win_len=win_len;
+0071                 PWT.over_len=[];
+0072             <span class="keyword">elseif</span> nargin == 6
+0073                 PWT.trials = trials;
+0074                 PWT.channel = channel;
+0075                 PWT.seconds = seconds;
+0076                 PWT.nfft = nfft;
+0077                 PWT.win_len=win_len;
+0078                 PWT.over_len=over_len;
+0079             <span class="keyword">else</span>
+0080 <span class="comment">%                 error('invalid number of arguments');</span>
+0081             <span class="keyword">end</span>
+0082         <span class="keyword">end</span>
+0083         
+0084         <a name="_sub1" href="#_subfunctions" class="code">function extract(PWT)</a>
+0085             <span class="keyword">if</span> length(PWT.nfft)==1
+0086                 numFeatures = PWT.nfft/2+1;
+0087             <span class="keyword">else</span>
+0088                 numFeatures = length(PWT.nfft);
+0089             <span class="keyword">end</span>
+0090             numTrials = length(PWT.trials);
+0091             instances = zeros(numTrials, numFeatures);
+0092             labels = zeros(numTrials,1);
+0093 <span class="comment">%             PWT.instances = zeros(numTrials, numFeatures);</span>
+0094 <span class="comment">%             PWT.labels = zeros(numTrials,1);</span>
+0095             tic;
+0096             <span class="keyword">for</span> i=1:numTrials
+0097                 numsamples = PWT.trials{i}.samplingRate * PWT.seconds;
+0098                 <span class="keyword">if</span>(numsamples == 0)
+0099                     y = PWT.trials{i}.signal(PWT.channel,:);
+0100                 <span class="keyword">else</span>
+0101                     y = PWT.trials{i}.signal(PWT.channel, 1:numsamples);
+0102                 <span class="keyword">end</span>
+0103 <span class="comment">%                 if length(PWT.nfft&gt;1)</span>
+0104 <span class="comment">%                     [pxx, pff]=pwelch(y,[],[],PWT.nfft,PWT.trials{i}.samplingRate);</span>
+0105 <span class="comment">%                 else</span>
+0106                     [pxx, pff]=pwelch(y,PWT.win_len,round(PWT.over_len*PWT.win_len),PWT.nfft,PWT.trials{i}.samplingRate,<span class="string">'onesided'</span>);
+0107 <span class="comment">%                 end</span>
+0108                 <span class="comment">%xv = [1 -2 1 zeros(1,length(pxx)-3)];</span>
+0109 <span class="comment">%                 xv = [1/5 1/5 1/5 1/5 1/5 zeros(1,length(pxx)-5)];</span>
+0110 <span class="comment">%                 A = gallery('circul',xv);</span>
+0111                 instances(i,:) = pxx;
+0112                 labels(i,1) = floor(PWT.trials{i}.label);
+0113             <span class="keyword">end</span>
+0114             PWT.avgTime = toc/numTrials;
+0115             PWT.instanceSet = eegtoolkit.util.InstanceSet(instances, labels);
+0116             PWT.pff = pff;
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(PWT)</a>
+0120             <span class="keyword">if</span> length(PWT.nfft)&gt;1
+0121                 configInfo = sprintf(<span class="string">'PWelchExperimental\tchannel:%d\tseconds:%d\t freq range:%.3f to %.3f'</span>,PWT.channel,PWT.seconds,PWT.nfft(1),PWT.nfft(end));
+0122             <span class="keyword">else</span>
+0123                 configInfo = sprintf(<span class="string">'PWelchExperimental\tchannel:%d\tseconds:%d\tnfft:%d'</span>,PWT.channel,PWT.seconds,PWT.nfft);
+0124             <span class="keyword">end</span>
+0125         <span class="keyword">end</span>
+0126         
+0127         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(PWT)</a>
+0128             time = PWT.avgTime;
+0129         <span class="keyword">end</span>
+0130     <span class="keyword">end</span>
+0131    
+0132 <span class="keyword">end</span>
+0133</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

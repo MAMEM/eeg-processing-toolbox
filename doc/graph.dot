@@ -1,0 +1,19 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  exampleCSP [URL="exampleCSP.html"];
+  exampleCombiCCA [URL="exampleCombiCCA.html"];
+  exampleDefault [URL="exampleDefault.html"];
+  exampleEPOCCCASVM [URL="exampleEPOCCCASVM.html"];
+  exampleERRP [URL="exampleERRP.html"];
+  exampleERRPSSVEPDemo [URL="exampleERRPSSVEPDemo.html"];
+  exampleEarlyFusion [URL="exampleEarlyFusion.html"];
+  exampleEpoc [URL="exampleEpoc.html"];
+  exampleITCCA [URL="exampleITCCA.html"];
+  exampleL1MCCA [URL="exampleL1MCCA.html"];
+  exampleLSL [URL="exampleLSL.html"];
+  exampleLateFusion [URL="exampleLateFusion.html"];
+  exampleMotorPWelch [URL="exampleMotorPWelch.html"];
+  exampleOptimal [URL="exampleOptimal.html"];
+  exampleSMFA [URL="exampleSMFA.html"];
+}

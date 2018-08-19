@@ -1,0 +1,455 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Experimenter</title>
+  <meta name="keywords" content="Experimenter">
+  <meta name="description" content="EXPERIMENTER class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+experiment</a> &gt; <a href="index.html">@Experimenter</a> &gt; Experimenter.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+experiment/@Experimenter&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Experimenter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EXPERIMENTER class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EXPERIMENTER class
+ Wraps all the necessary objects for performing an experiment. 
+Before running an experiment all the required properties must be set.
+ Required:
+ - session
+ - featextraction
+ - evalMethod
+ - classification
+ Optional:
+ - featselection
+ - aggregator
+ - preprocessing
+
+ to run the experiment execute the &quot;run()&quot; method.
+ Example:
+ experiment = eegtoolkit.experiment.Experimenter;
+ experiment.session = eegtoolkit.util.Session;
+ experiment.session.loadSubject(1);
+ experiment.transformer = eegtoolkit.featextraction.PWelch;
+ experiment.extractor = eegtoolkit.featselection.FEAST;
+ experiment.classification = eegtoolkit.classification.LIBSVM;
+ experiment.evalMethod = experiment.evalMethod.EVAL_METHOD_LOSO;
+ experiment.run;
+ results = experiment.results;
+ confmatrix = results{1}.getConfusionMatrix;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Experimenter.html" class="code" title="">Experimenter</a>	EXPERIMENTER class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Experimenter.html" class="code" title="">Experimenter</a>	EXPERIMENTER class</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function E = Experimenter(evalMethod)</a></li><li><a href="#_sub2" class="code">function E = run(E,varargin)</a></li><li><a href="#_sub3" class="code">function itrs = getITR(E)</a></li><li><a href="#_sub4" class="code">function time = getTime(E)</a></li><li><a href="#_sub5" class="code">function info = getExperimentInfo(E)</a></li><li><a href="#_sub6" class="code">function E = checkCompatibility(E)</a></li><li><a href="#_sub7" class="code">function E = leaveOneOutCV(E)</a></li><li><a href="#_sub8" class="code">function E = kfoldCrossValidation(E,instanceSet,numFolds)</a></li><li><a href="#_sub9" class="code">function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)</a></li><li><a href="#_sub10" class="code">function resultSet = leaveOneSubjectOutLeaveOneBlockOut(E, instanceSet)</a></li><li><a href="#_sub11" class="code">function resultSet = leaveOneSessionOut(E, sessionId, instanceSet)</a></li><li><a href="#_sub12" class="code">function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)</a></li><li><a href="#_sub13" class="code">function resultSet = splitTest(E,trainIDx,testIDx, instanceSet)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Experimenter.m">Experimenter.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% EXPERIMENTER class</span>
+0002 <span class="comment">% Wraps all the necessary objects for performing an experiment.</span>
+0003 <span class="comment">%Before running an experiment all the required properties must be set.</span>
+0004 <span class="comment">% Required:</span>
+0005 <span class="comment">% - session</span>
+0006 <span class="comment">% - featextraction</span>
+0007 <span class="comment">% - evalMethod</span>
+0008 <span class="comment">% - classification</span>
+0009 <span class="comment">% Optional:</span>
+0010 <span class="comment">% - featselection</span>
+0011 <span class="comment">% - aggregator</span>
+0012 <span class="comment">% - preprocessing</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% to run the experiment execute the &quot;run()&quot; method.</span>
+0015 <span class="comment">% Example:</span>
+0016 <span class="comment">% experiment = eegtoolkit.experiment.Experimenter;</span>
+0017 <span class="comment">% experiment.session = eegtoolkit.util.Session;</span>
+0018 <span class="comment">% experiment.session.loadSubject(1);</span>
+0019 <span class="comment">% experiment.transformer = eegtoolkit.featextraction.PWelch;</span>
+0020 <span class="comment">% experiment.extractor = eegtoolkit.featselection.FEAST;</span>
+0021 <span class="comment">% experiment.classification = eegtoolkit.classification.LIBSVM;</span>
+0022 <span class="comment">% experiment.evalMethod = experiment.evalMethod.EVAL_METHOD_LOSO;</span>
+0023 <span class="comment">% experiment.run;</span>
+0024 <span class="comment">% results = experiment.results;</span>
+0025 <span class="comment">% confmatrix = results{1}.getConfusionMatrix;</span>
+0026 classdef <a href="Experimenter.html" class="code" title="">Experimenter</a> &lt; handle
+0027     properties (Constant)
+0028         EVAL_METHOD_LOOCV = 0; <span class="comment">% Leave One Out Cross-Validation</span>
+0029         EVAL_METHOD_LOSO = 1; <span class="comment">% Leave One Subject Out</span>
+0030         EVAL_METHOD_LOBO = 2;
+0031         EVAL_METHOD_SPLIT = 3;
+0032         EVAL_METHOD_XFOLD_CV = 4;
+0033         EVAL_METHOD_LOSO_LOBO = 5;
+0034     <span class="keyword">end</span>
+0035     
+0036     properties (Access = public)
+0037         session; <span class="comment">% The Session object. Trials must be loaded before run() is executed</span>
+0038         preprocessing;
+0039         featextraction; <span class="comment">% A transformer object</span>
+0040         aggregator;
+0041         featselection; <span class="comment">% An extractor object</span>
+0042         evalMethod; <span class="comment">% The evaluation method</span>
+0043         classification; <span class="comment">% A classifier object</span>
+0044         results; <span class="comment">% A cell array containing objects of the 'ResultEvaluator' class.</span>
+0045         trainresults;
+0046         subjectids;
+0047         sessionids;
+0048     <span class="keyword">end</span>
+0049     
+0050     methods
+0051         <a name="_sub0" href="#_subfunctions" class="code">function E = Experimenter(evalMethod)</a>
+0052             <span class="keyword">if</span> nargin &gt; 0
+0053                 E.evalMethod = evalMethod;
+0054             <span class="keyword">else</span> E.evalMethod = 0;
+0055             <span class="keyword">end</span>
+0056             E.results = {};
+0057         <span class="keyword">end</span>
+0058         <a name="_sub1" href="#_subfunctions" class="code">function E = run(E,varargin)</a>
+0059             <span class="keyword">if</span>(length(varargin)==1)
+0060                 numFolds = varargin{1};
+0061             <span class="keyword">elseif</span>(length(varargin)==2)
+0062                 trainIDx = varargin{1};
+0063                 testIDx = varargin{2};
+0064             <span class="keyword">end</span>
+0065             <span class="comment">% Runs an experiment</span>
+0066             E.checkCompatibility;
+0067             E.subjectids = E.session.subjectids;
+0068             E.sessionids = E.session.sessionids;
+0069             trials = {};
+0070             <span class="keyword">for</span> i=1:length(E.session.trials)
+0071                 trials{i} = eegtoolkit.util.Trial(E.session.trials{i}.signal,<span class="keyword">...</span>
+0072                             E.session.trials{i}.label,E.session.trials{i}.samplingRate,E.session.trials{i}.subjectid,E.session.trials{i}.sessionid,E.session.trials{i}.type);
+0073             <span class="keyword">end</span>
+0074             <span class="keyword">if</span> ~isempty(E.preprocessing)
+0075                 <span class="keyword">for</span> i=1:length(E.preprocessing)
+0076                     <span class="keyword">if</span> isa(E.preprocessing{i},<span class="string">'eegtoolkit.preprocessing.Windsorize'</span>)
+0077                         E.preprocessing{i}.subjectids = E.subjectids;
+0078                     <span class="keyword">end</span>
+0079                     trials = E.preprocessing{i}.process(trials);
+0080                 <span class="keyword">end</span>
+0081             <span class="keyword">end</span>
+0082             disp(<span class="string">'feature extraction ...'</span>);
+0083             <span class="keyword">if</span> iscell(E.featextraction)
+0084                 numExtract = length(E.featextraction);
+0085                 <span class="keyword">for</span> i=1:numExtract
+0086                     E.featextraction{i}.trials = trials;
+0087                     E.featextraction{i}.extract;    
+0088                 <span class="keyword">end</span>
+0089                 E.aggregator.featextractors = E.featextraction;
+0090                 E.aggregator.aggregate;
+0091                 instanceSet = E.aggregator.instanceSet;
+0092             <span class="keyword">else</span>
+0093                 E.featextraction.trials = trials;
+0094                 E.featextraction.extract;
+0095                 instanceSet = E.featextraction.getInstanceSet;
+0096             <span class="keyword">end</span>
+0097             <span class="keyword">if</span> ~isempty(E.featselection)
+0098                 E.featselection.originalInstanceSet = instanceSet;
+0099                 disp(<span class="string">'feature selection ...'</span>);
+0100                 E.featselection.compute;
+0101                 E.classification.instanceSet = E.featselection.filteredInstanceSet;
+0102             <span class="keyword">else</span>
+0103                 E.classification.instanceSet = instanceSet;
+0104             <span class="keyword">end</span>
+0105             disp(<span class="string">'evaluating..'</span>);
+0106             <span class="keyword">switch</span> E.evalMethod
+0107                 <span class="keyword">case</span> E.EVAL_METHOD_LOOCV
+0108                     E.leaveOneOutCV();
+0109                 <span class="keyword">case</span> E.EVAL_METHOD_LOSO
+0110                     subjects = unique(E.subjectids);
+0111                     instanceSet = E.classification.instanceSet;
+0112                     <span class="keyword">if</span> isa(E.classification,<span class="string">'eegtoolkit.classification.LIBSVMFast'</span>)
+0113                         instanceSet.K = instanceSet.computeKernel(E.classification.kernel,E.classification.gamma,E.classification.maxlag,E.classification.scaleopt);
+0114                     <span class="keyword">end</span>
+0115                     <span class="keyword">for</span> i=1:length(subjects)
+0116                         fprintf(<span class="string">'leaving subject #%d out\n'</span>, i);
+0117                         <span class="keyword">if</span> isa(E.classification,<span class="string">'eegtoolkit.classification.LIBSVMFast'</span>)
+0118                             E.leaveOneSubjectOutFast(subjects(i), instanceSet);
+0119                         <span class="keyword">else</span>
+0120                             
+0121                             E.leaveOneSubjectOut(subjects(i), instanceSet);
+0122                         <span class="keyword">end</span>
+0123                         
+0124                     <span class="keyword">end</span>
+0125                 <span class="keyword">case</span> E.EVAL_METHOD_LOBO
+0126                     sessions = unique(E.sessionids);
+0127                     instanceSet = E.classification.instanceSet;
+0128                     <span class="keyword">for</span> i=1:length(sessions)
+0129                         fprintf(<span class="string">'leaving session #%d out\n'</span>, i);
+0130                         E.leaveOneSessionOut(sessions(i), instanceSet);
+0131                     <span class="keyword">end</span>
+0132                 <span class="keyword">case</span> E.EVAL_METHOD_SPLIT
+0133                     instanceSet = E.classification.instanceSet;
+0134                     E.splitTest(trainIDx,testIDx,instanceSet);
+0135                 <span class="keyword">case</span> E.EVAL_METHOD_XFOLD_CV
+0136                     instanceSet = E.classification.instanceSet;
+0137                     E.kfoldCrossValidation(instanceSet,numFolds);
+0138                 <span class="keyword">case</span> E.EVAL_METHOD_LOSO_LOBO
+0139                     instanceSet = E.classification.instanceSet;
+0140                     E.leaveOneSubjectOutLeaveOneBlockOut(instanceSet);
+0141                 <span class="keyword">otherwise</span>
+0142                     error (<span class="string">'eval method not set or invalid'</span>);
+0143             <span class="keyword">end</span>
+0144         <span class="keyword">end</span>
+0145         
+0146         <a name="_sub2" href="#_subfunctions" class="code">function itrs = getITR(E)</a>
+0147             <span class="keyword">for</span> i=1:length(E.preprocessing)
+0148                 <span class="keyword">if</span> isa(E.preprocessing{i},<span class="string">'eegtoolkit.preprocessing.SampleSelection'</span>)
+0149                     <span class="comment">%T = time in seconds;</span>
+0150                     T = (E.preprocessing{i}.sampleRange(2)-E.preprocessing{i}.sampleRange(1)+1)/E.preprocessing{i}.samplingRate;
+0151                 <span class="keyword">end</span>
+0152             <span class="keyword">end</span>
+0153             <span class="keyword">if</span> isempty(T)
+0154                 error(<span class="string">'to calculate ITR the SampleSelection preprocessing step must be added to the experiment'</span>);
+0155             <span class="keyword">end</span>
+0156             <span class="keyword">for</span> i=1:length(E.results)
+0157                 itrs(i) = E.results{i}.getITR(T);
+0158             <span class="keyword">end</span>
+0159         <span class="keyword">end</span>
+0160         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(E)</a>
+0161             info = <span class="string">'Average time elapsed for trial:\n'</span>;
+0162             total = 0;
+0163             <span class="keyword">if</span> ~isempty(E.preprocessing)
+0164                 info = strcat(info, <span class="string">'Preprocessing:\n'</span>);
+0165                 <span class="keyword">for</span> i=1:length(E.preprocessing)
+0166                     info = strcat(info, num2str(E.preprocessing{i}.getTime));
+0167                     total = total + E.preprocessing{i}.getTime;
+0168                     info = strcat(info, <span class="string">'\n'</span>);
+0169                 <span class="keyword">end</span>
+0170             <span class="keyword">end</span>
+0171             <span class="keyword">if</span> ~isempty(E.featextraction)
+0172                 info = strcat(info, <span class="string">'Feature Extraction:\n'</span>);
+0173                 <span class="keyword">if</span> ~iscell(E.featextraction)
+0174                     info = strcat(info, num2str(E.featextraction.getTime));
+0175                     total = total + E.featextraction.getTime;
+0176                     info = strcat(info, <span class="string">'\n'</span>);
+0177                 <span class="keyword">else</span>
+0178                     <span class="keyword">for</span> i=1:length(E.featextraction)
+0179                         info = strcat(info, num2str(E.featextraction{i}.getTime));
+0180                         total = total + E.featextraction{i}.getTime;
+0181                         info = strcat(info,<span class="string">'\n'</span>);
+0182                     <span class="keyword">end</span>
+0183                 <span class="keyword">end</span>
+0184             <span class="keyword">end</span>
+0185             <span class="keyword">if</span> ~isempty(E.aggregator)
+0186                 info = strcat(info, <span class="string">'Aggregation:\n'</span>);
+0187                 info = strcat(info, num2str(E.aggregator.getTime));
+0188                 total = total + E.aggregator.getTime;
+0189                 info = strcat(info, <span class="string">'\n'</span>);
+0190             <span class="keyword">end</span>
+0191             <span class="keyword">if</span> ~isempty(E.featselection)
+0192                 info = strcat(info, <span class="string">'FeatureSelection:\n'</span>);
+0193                 info = strcat(info, num2str(E.featselection.getTime));
+0194                 total = total + E.featselection.getTime;
+0195                 info = strcat(info, <span class="string">'\n'</span>);
+0196             <span class="keyword">end</span>
+0197             <span class="keyword">if</span> ~isempty(E.classification)
+0198                 info = strcat(info, <span class="string">'Classification (Prediction):\n'</span>);
+0199                 info = strcat(info, num2str(E.classification.getTime));
+0200                 total = total + E.classification.getTime;
+0201                 info = strcat(info, <span class="string">'\n'</span>);
+0202             <span class="keyword">end</span>
+0203             info = strcat(info, <span class="string">'Total:\n'</span>);
+0204             info = strcat(info, num2str(total));
+0205             time = sprintf(info);
+0206         <span class="keyword">end</span>
+0207         
+0208         <a name="_sub4" href="#_subfunctions" class="code">function info = getExperimentInfo(E)</a>
+0209             <span class="comment">% Prints the configuration info of the experiment</span>
+0210             info = <span class="string">'Experiment Configuration:\n'</span>;
+0211             <span class="keyword">if</span> ~isempty(E.preprocessing)
+0212                 <span class="keyword">for</span> i=1:length(E.preprocessing)
+0213                     info = strcat(info, E.preprocessing{i}.getConfigInfo);
+0214                     info = strcat(info,<span class="string">'\n'</span>);
+0215                 <span class="keyword">end</span>
+0216             <span class="keyword">end</span>
+0217             <span class="keyword">if</span> ~isempty(E.featextraction)
+0218                 <span class="keyword">if</span> ~iscell(E.featextraction)
+0219                     info = strcat(info, E.featextraction.getConfigInfo);
+0220                     info = strcat(info,<span class="string">'\n'</span>);
+0221                 <span class="keyword">else</span>
+0222                     <span class="keyword">for</span> i=1:length(E.featextraction)
+0223                         info = strcat(info, E.featextraction{i}.getConfigInfo);
+0224                         info = strcat(info,<span class="string">'\n'</span>);
+0225                     <span class="keyword">end</span>
+0226                 <span class="keyword">end</span>
+0227             <span class="keyword">end</span>
+0228             <span class="keyword">if</span> ~isempty(E.aggregator)
+0229                 info = strcat(info, E.aggregator.getConfigInfo);
+0230                 info = strcat(info, <span class="string">'\n'</span>);
+0231             <span class="keyword">end</span>
+0232             <span class="keyword">if</span> ~isempty(E.featselection)
+0233                 info = strcat(info, E.featselection.getConfigInfo);
+0234                 info = strcat(info, <span class="string">'\n'</span>);
+0235             <span class="keyword">end</span>
+0236             <span class="keyword">if</span> ~isempty(E.classification)
+0237                 info = strcat(info, E.classification.getConfigInfo);
+0238                 info = strcat(info, <span class="string">'\n'</span>);
+0239             <span class="keyword">end</span>
+0240             info = sprintf(info);
+0241         <span class="keyword">end</span>
+0242         
+0243     <span class="keyword">end</span>
+0244     
+0245     methods (Access = private)
+0246         
+0247         <a name="_sub5" href="#_subfunctions" class="code">function E = checkCompatibility(E)</a>
+0248             <span class="keyword">if</span> iscell(E.featextraction)
+0249                 <span class="keyword">if</span> isempty(E.aggregator)
+0250                     error (<span class="string">'Provided many feature extractors but not an Aggregator'</span>);
+0251                 <span class="keyword">end</span>
+0252             <span class="keyword">end</span>
+0253             <span class="keyword">if</span> isa(E.classification,<span class="string">'eegtoolkit.classification.LIBSVMFast'</span>) &amp;&amp; E.evalMethod == 0
+0254                 error(<span class="string">'LIBSVMFast not supported for LOOCV eval method'</span>);
+0255             <span class="keyword">end</span>
+0256         <span class="keyword">end</span>
+0257             
+0258         <a name="_sub6" href="#_subfunctions" class="code">function E = leaveOneOutCV(E)</a>
+0259             <span class="comment">%leave one out cross validation</span>
+0260             instanceSet = E.classification.instanceSet;
+0261             numInstances = instanceSet.getNumInstances;
+0262             outputLabels = zeros(numInstances,1);
+0263             outputScores = zeros(numInstances,1);
+0264             outputRanking = zeros(numInstances, instanceSet.getNumLabels);
+0265             h = waitbar(0,<span class="string">'Cross-validating..'</span>);
+0266             <span class="keyword">for</span> i=1:numInstances
+0267                 waitbar(i/numInstances,h,sprintf(<span class="string">'Cross-validating fold: %d/%d'</span>, i, numInstances));
+0268                 <span class="comment">%train the classifier without 1 instance</span>
+0269                 E.classification.instanceSet = instanceSet.removeInstancesWithIndices(i);
+0270                 E.classification.build();
+0271                 <span class="comment">%predict the label of the omitted instance</span>
+0272                 [outputLabels(i,1), outputScores(i,1), outputRanking(i,:)] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(i));
+0273             <span class="keyword">end</span>
+0274             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+0275             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0276             close(h);
+0277         <span class="keyword">end</span>
+0278         
+0279         <a name="_sub7" href="#_subfunctions" class="code">function E = kfoldCrossValidation(E,instanceSet,numFolds)</a>
+0280             numInstances = instanceSet.getNumInstances;
+0281             indices = crossvalind(<span class="string">'Kfold'</span>, numInstances, numFolds);
+0282             outputLabels = zeros(numInstances,1);
+0283             outputScores = zeros(numInstances,1);
+0284             outputRanking = zeros(numInstances,instanceSet.getNumLabels);
+0285             h = waitbar(0,<span class="string">'Cross-validating..'</span>);
+0286             <span class="keyword">for</span> i=1:numFolds
+0287                 waitbar(i/numFolds,h,sprintf(<span class="string">'Cross-validating fold: %d/%d'</span>,i,numFolds));
+0288                 testSet = find(indices==i);
+0289                 E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testSet);
+0290                 E.classification.build();
+0291                 
+0292                 [outputLabels(testSet,1), outputScores(testSet,1), outputRanking(testSet,:)] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testSet));
+0293             <span class="keyword">end</span>
+0294             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDataset, outputLabels, outputScores, outputRanking);
+0295             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0296             close(h);
+0297         <span class="keyword">end</span>
+0298         
+0299         <a name="_sub8" href="#_subfunctions" class="code">function resultSet = leaveOneSubjectOut(E, subjectid, instanceSet)</a>
+0300             testingset = find(E.subjectids == subjectid);
+0301             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+0302             E.classification.build();
+0303             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+0304             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+0305             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0306         <span class="keyword">end</span>
+0307         
+0308                 
+0309         <a name="_sub9" href="#_subfunctions" class="code">function resultSet = leaveOneSubjectOutLeaveOneBlockOut(E, instanceSet)</a>
+0310             subjects = unique(E.subjectids);
+0311             sessions = unique(E.sessionids);
+0312             <span class="keyword">for</span> i=1:length(subjects)
+0313                 numInstancesForSubject = sum(E.subjectids==subjects(i));
+0314                 outputLabels = zeros(numInstancesForSubject,1);
+0315                 outputScores = zeros(numInstancesForSubject,1);
+0316                 outputRanking = zeros(numInstancesForSubject,instanceSet.getNumLabels());
+0317                 <span class="keyword">for</span> j=1:length(sessions)
+0318 <span class="comment">%                     tempResults{j} = E.leaveOneSessionOut(sessions(j),tempInstanceSet);</span>
+0319                     sessionidsSubset = E.sessionids(E.subjectids==subjects(i));
+0320                     testIndices = sessionidsSubset==sessions(j);
+0321                     numInstancesForSession = sum(E.sessionids==sessions(j)&amp;E.subjectids==subjects(i));
+0322                     testingset = find(E.sessionids==sessions(j)&amp;E.subjectids==subjects(i));
+0323                     nottrainset = find(E.sessionids==sessions(j)|E.subjectids~=subjects(i));
+0324                     E.classification.instanceSet = instanceSet.removeInstancesWithIndices(nottrainset);
+0325                     E.classification.build();
+0326                     [outputLabels(testIndices,:), outputScores(testIndices,:), outputRanking(testIndices,:)] = <span class="keyword">...</span>
+0327                         E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+0328                     
+0329                 <span class="keyword">end</span>
+0330                 sIndices = find(E.subjectids==subjects(i));
+0331                 resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(sIndices),outputLabels,outputScores,outputRanking);
+0332                 E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0333                 <span class="comment">%merge the results</span>
+0334             <span class="keyword">end</span>
+0335         <span class="keyword">end</span>
+0336         
+0337         
+0338         <a name="_sub10" href="#_subfunctions" class="code">function resultSet = leaveOneSessionOut(E, sessionId, instanceSet)</a>
+0339             testingset = find(E.sessionids == sessionId);
+0340             trainset = find(E.sessionids ~= sessionId);
+0341             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+0342             E.classification.build();
+0343             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testingset));
+0344             [trainoutputLabels, trainoutputScores, trainoutputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(trainset));
+0345             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+0346             trainresultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(trainset), trainoutputLabels, trainoutputScores, trainoutputRanking);
+0347             E.results{length(E.results)+1} = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0348             E.trainresults{length(E.trainresults)+1} = eegtoolkit.experiment.ResultEvaluator(trainresultSet);
+0349         <span class="keyword">end</span>
+0350         
+0351         <a name="_sub11" href="#_subfunctions" class="code">function resultSet = leaveOneSubjectOutFast(E, subjectid, instanceSet)</a>
+0352             testingset = E.subjectids == subjectid;
+0353             E.classification.Ktrain = instanceSet.getTrainKernel(~testingset);
+0354             E.classification.Ktest = instanceSet.getTestKernel(~testingset,testingset);
+0355             testingset = find(E.subjectids == subjectid);
+0356             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testingset);
+0357             E.classification.build();
+0358             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance();
+0359             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testingset), outputLabels, outputScores, outputRanking);
+0360             resultEvaluator = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0361             resultEvaluator.subjectid = E.subjectids(E.subjectids==subjectid);
+0362             resultEvaluator.sessionid = E.session.sessionids(E.subjectids==subjectid);
+0363             E.results{length(E.results)+1} = resultEvaluator;
+0364         <span class="keyword">end</span>
+0365 
+0366         <a name="_sub12" href="#_subfunctions" class="code">function resultSet = splitTest(E,trainIDx,testIDx, instanceSet)</a>
+0367             E.classification.instanceSet = instanceSet.removeInstancesWithIndices(testIDx);
+0368             E.classification.build();
+0369             [outputLabels, outputScores, outputRanking] = E.classification.classifyInstance(instanceSet.getInstancesWithIndices(testIDx));
+0370             resultSet = eegtoolkit.util.ResultSet(instanceSet.getDatasetWithIndices(testIDx), outputLabels, outputScores, outputRanking);
+0371             resultEvaluator = eegtoolkit.experiment.ResultEvaluator(resultSet);
+0372             E.results{length(E.results) + 1} = resultEvaluator;
+0373         <span class="keyword">end</span>
+0374         
+0375 
+0376                 
+0377             
+0378     <span class="keyword">end</span>
+0379     
+0380 <span class="keyword">end</span>
+0381</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

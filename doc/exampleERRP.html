@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exampleERRP</title>
+  <meta name="keywords" content="exampleERRP">
+  <meta name="description" content="d2 = designfilt('bandpassiir', 'SampleRate', 256, 'FilterOrder', 8 ,'HalfPowerFrequency1', 1, 'HalfPowerFrequency2', 10,'DesignMethod', 'butter');">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; exampleERRP.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>exampleERRP
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>d2 = designfilt('bandpassiir', 'SampleRate', 256, 'FilterOrder', 8 ,'HalfPowerFrequency1', 1, 'HalfPowerFrequency2', 10,'DesignMethod', 'butter');</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> d2 = designfilt('bandpassiir', 'SampleRate', 256, 'FilterOrder', 8 ,'HalfPowerFrequency1', 1, 'HalfPowerFrequency2', 10,'DesignMethod', 'butter');</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<p><a href="exampleERRP.m">exampleERRP.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% d2 = designfilt('bandpassiir', 'SampleRate', 256, 'FilterOrder', 8 ,'HalfPowerFrequency1', 1, 'HalfPowerFrequency2', 10,'DesignMethod', 'butter');</span>
+0002 
+0003 sess = eegtoolkit.util.Session;
+0004 sess.loadSubject(5,6);
+0005 
+0006 [z,p,k]=butter(3,[6,40]/128);
+0007 [s,g]=zp2sos(z,p,k);
+0008 Hd = dfilt.df2sos(s,g);
+0009 df = eegtoolkit.preprocessing.DigitalFilter; <span class="comment">%</span>
+0010 df.filt = Hd;
+0011 
+0012 ss = eegtoolkit.preprocessing.SampleSelection;
+0013 ss.channels = [4,9,14];
+0014 ss.sampleRange = 1500:1:1655;
+0015 
+0016 extr = {};
+0017 <span class="keyword">for</span> i=1:3
+0018     extr{i} = eegtoolkit.featextraction.ERRPFeatures;
+0019     extr{i}.channel = 1;
+0020 <span class="keyword">end</span>
+0021 
+0022 aggr = eegtoolkit.aggregation.ChannelConcat;
+0023 
+0024 classif = eegtoolkit.classification.LIBSVM;
+0025 
+0026 <span class="comment">%Setup experiment</span>
+0027 experiment = eegtoolkit.experiment.Experimenter;
+0028 experiment.session = sess;
+0029 experiment.preprocessing = {df,ss};
+0030 experiment.featextraction = extr;
+0031 experiment.aggregator = aggr;
+0032 experiment.classification = classif;
+0033 experiment.evalMethod = experiment.EVAL_METHOD_XFOLD_CV;
+0034 
+0035 experiment.run(10);
+0036 
+0037 accuracies = [];
+0038 <span class="keyword">for</span> i=1:length(experiment.results)
+0039     accuracies(i) = experiment.results{i}.getAccuracy();
+0040 <span class="keyword">end</span>
+0041 
+0042 accuracies'
+0043 fprintf(<span class="string">'mean acc = %.2f\n'</span>,mean(accuracies));</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

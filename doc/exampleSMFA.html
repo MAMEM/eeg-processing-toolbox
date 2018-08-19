@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exampleSMFA</title>
+  <meta name="keywords" content="exampleSMFA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; exampleSMFA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>exampleSMFA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<p><a href="exampleSMFA.m">exampleSMFA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 clear
+0002 
+0003 <span class="comment">% fileID = fopen('SMFA_Results.txt','a');</span>
+0004 <span class="keyword">for</span> subn=1:10
+0005     
+0006     <span class="comment">%Dataset 4</span>
+0007     sess = eegtoolkit.util.Session;
+0008     <span class="comment">% sess.loadAll(4);</span>
+0009     sess.loadSubject(4,subn);
+0010     
+0011     <span class="comment">% %Dataset 2</span>
+0012     <span class="comment">% sess = ssveptoolkit.util.Session;</span>
+0013     <span class="comment">% sess.loadAll(2);</span>
+0014     
+0015     load filters/filt_IIRElliptic;
+0016     
+0017     <span class="comment">%Dataset 4</span>
+0018     <span class="comment">% sti_f = [9.25, 11.25, 13.25, 9.75, 11.75, 13.75, 10.25, 12.25, 14.25, 10.75, 12.75, 14.75];</span>
+0019     <span class="comment">% extr = ssveptoolkit.featextraction.CCA(sti_f,[1:8],256,4);</span>
+0020     
+0021     extr = eegtoolkit.featextraction.MLR_Transf(1:8);
+0022     <span class="comment">%         sti_f = [9.25, 9.75, 10.25, 10.75, 11.25, 11.75, 12.25, 12.75, 13.25, 13.75, 14.25, 14.75];</span>
+0023     <span class="comment">%         extr = ssveptoolkit.featextraction.CCA(sti_f,1:8,256,4);</span>
+0024     
+0025     <span class="comment">%%Dataset 2</span>
+0026     <span class="comment">% sti_f = [12 10 8.57 7.50 6.66];</span>
+0027     <span class="comment">% sti_f = [6.66 7.5 8.57 10 12];</span>
+0028     <span class="comment">% extr = ssveptoolkit.featextraction.CCA(sti_f,[1:2],250,4);</span>
+0029     
+0030     <span class="comment">% extr = ssveptoolkit.featextraction.OMP(sti_f,[1:2],250,4,16,0);</span>
+0031     <span class="comment">%sti_f: reference signals</span>
+0032     <span class="comment">%[1:2]: input=2 channels. Depends on what you set on &quot;ss.channels&quot; e.g. if</span>
+0033     <span class="comment">%you select 10 channels you need to set &quot;[1:10]&quot;</span>
+0034     <span class="comment">%250: sampling rate (Dataset 1&amp;2=250)</span>
+0035     <span class="comment">%4: number of harmonics of the reference signals</span>
+0036     
+0037     <span class="comment">% %Dataset 2</span>
+0038     <span class="comment">% amu = ssveptoolkit.preprocessing.Amuse;</span>
+0039     <span class="comment">% amu.first = 15;</span>
+0040     <span class="comment">% amu.last = 252;</span>
+0041     
+0042     refer = eegtoolkit.preprocessing.Rereferencing;
+0043     <span class="comment">%Subtract the mean from the signal</span>
+0044     refer.meanSignal = 1;
+0045     
+0046     <span class="comment">%Dataset 4</span>
+0047     <span class="comment">% m_secs = 2;</span>
+0048     
+0049     <span class="comment">% %Dataset 2</span>
+0050     <span class="comment">% m_secs = 5;</span>
+0051     
+0052     ss = eegtoolkit.preprocessing.SampleSelection;
+0053     
+0054     <span class="comment">%Dataset 4</span>
+0055     onset=39;
+0056     <span class="comment">%delay of the visual system</span>
+0057     visual_delay = 35;
+0058     ss.sampleRange = [onset+visual_delay+1,onset+visual_delay+1*256];
+0059     ss.channels = 1:8;
+0060     <span class="comment">% ss.channels = 7;</span>
+0061     
+0062     <span class="comment">% %Dataset 2</span>
+0063     <span class="comment">% ss.sampleRange = [1,250*m_secs]; % Specify the sample range to be used for each Trial</span>
+0064     <span class="comment">% % ss.channels = [116,126,137,138,139,147,150];%[126,138]%Specify the channel(s) to be used</span>
+0065     <span class="comment">% ss.channels = [126,138];</span>
+0066     
+0067     <span class="comment">%Dataset 4</span>
+0068     df = eegtoolkit.preprocessing.DigitalFilter; <span class="comment">% Apply a filter to the raw data</span>
+0069     [z,p,k]=butter(3,[6,80]/128);
+0070     [s,g]=zp2sos(z,p,k);
+0071     Hd = dfilt.df2sos(s,g);
+0072     df.filt = Hd;
+0073     
+0074     Res = zeros(length(1:4:10),length(1:4:100));
+0075     
+0076     <span class="comment">% Set parameter grid to search</span>
+0077     <span class="comment">%         for qq=1:10</span>
+0078     <span class="comment">%             for ww=1:25</span>
+0079     
+0080     <span class="comment">%Number of subclasses per class</span>
+0081     NumS = 2*ones(1,12);
+0082     
+0083     S = 0.4;
+0084     <span class="comment">%                 kInt = qq;</span>
+0085     <span class="comment">%                 kPen = 4*(ww-1)+1;</span>
+0086     kInt = 3;
+0087     kPen = 50;
+0088     classif = eegtoolkit.classification.SMFA(0,NumS,S,kInt,kPen);
+0089     
+0090     experiment = eegtoolkit.experiment.Experimenter;
+0091     experiment.session = sess;
+0092     
+0093     <span class="comment">%Dataset 4</span>
+0094     experiment.preprocessing = {ss,refer,df};
+0095     
+0096     <span class="comment">% %Dataset 2</span>
+0097     <span class="comment">% experiment.preprocessing = {amu,ss,refer,df};% Order of preprocessing steps matters.</span>
+0098     
+0099     experiment.featextraction = extr;
+0100     experiment.classification = classif;
+0101     experiment.evalMethod = experiment.EVAL_METHOD_LOBO; <span class="comment">% specify that you want a &quot;leave one subject out&quot; (default is LOOCV)</span>
+0102     <span class="comment">% experiment.evalMethod = experiment.EVAL_METHOD_LOOCV;</span>
+0103     
+0104     <span class="comment">%run the experiment</span>
+0105     experiment.run();
+0106     accuracies = [];
+0107     <span class="keyword">for</span> i=1:length(experiment.results)
+0108         accuracies(i) = experiment.results{i}.getAccuracy();
+0109     <span class="keyword">end</span>
+0110     <span class="comment">% accuracies'</span>
+0111     <span class="comment">% mean accuracy for all subjects</span>
+0112 <span class="comment">%     fprintf('mean acc = %.2f\n', mean(accuracies));</span>
+0113     subaccuracies(subn) = mean(accuracies);
+0114 <span class="keyword">end</span>
+0115 fprintf(<span class="string">'mean acc for all subjects %.2f\n'</span>,mean(subaccuracies));</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

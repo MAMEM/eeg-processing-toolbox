@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SBLR -> SBLR;
+
+  SBLR [URL="SBLR.html"];
+}

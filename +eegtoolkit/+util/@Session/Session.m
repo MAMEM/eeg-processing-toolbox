@@ -1,10 +1,17 @@
 % SESSION class
 % Session I/O, splitting sessions into trials and applying filters
 %
-% Usage:
+% Properties:
+% trials: A cell array with the Trials of the loaded sessions.
+% filt: Filter to be applied when data is loaded
+% sessions: Cell array with the filenames of the dataset
+% subjectids: Vector with the subject ids corresponding to the loaded trials
+% sessionids: Vector with the session ids corresponding to the loaded trials
+%
+% Functions:
 %init a session
 %   session = eegtoolkit.util.Session();
-%init a session with a filter (created with 'filterbuilder' function)
+%init a session with a filter (created with 'filterbuilder')
 %   session = eegtoolkit.util.Session(filt);
 %load trials for a subject
 %   session.loadSubject(subjectid);
@@ -18,6 +25,14 @@
 %   session.applyFilter(filt);
 %
 %
+%DATASETS
+%1. SSVEP Dataset I (SINGLE)
+%2. SSVEP Dataset II (MULTI)
+%3. SSVEP Dataset III (EPOC-MULTI)
+%4. SSVEP Dataset SCCN
+%5. ERRP Dataset
+%6. MI Dataset
+
 classdef Session < handle
     
     properties (Constant)
@@ -31,13 +46,7 @@ classdef Session < handle
         sessionids;
     end
     
-    %DATASETS
-    %1. SSVEP Dataset I (SINGLE)
-    %2. SSVEP Dataset II (MULTI)
-    %3. SSVEP Dataset III (EPOC-MULTI)
-    %4. SSVEP Dataset SCCN
-    %5. ERRP Dataset 
-    %6. MI Dataset
+    
     methods (Access = public)
         function S = Session()
             %S = eegtoolkit.util.Session();
@@ -209,7 +218,7 @@ classdef Session < handle
             S.sessions{3,11,3} = 'U011c';
             S.sessions{3,11,4} = 'U011d';
             S.sessions{3,11,5} = 'U011e';
-       
+            
             %SCCN dataset
             S.sessions{4,1,1} = 's1';
             S.sessions{4,2,1} = 's2';
@@ -267,7 +276,7 @@ classdef Session < handle
             
             
             %MI dataset
-%             S.sessions{6,1,1} = ;
+            %             S.sessions{6,1,1} = ;
             
             
             S.subjectids = [];
@@ -373,7 +382,7 @@ classdef Session < handle
                     end
                 case 5
                     %ERRP Dataset
-                    SAMPLING_RATE = 256;                    
+                    SAMPLING_RATE = 256;
                     %range of trial in milliseconds based on the stimulus
                     %event
                     range = [200,800];

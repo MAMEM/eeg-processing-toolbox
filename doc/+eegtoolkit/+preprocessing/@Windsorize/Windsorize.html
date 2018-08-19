@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Windsorize</title>
+  <meta name="keywords" content="Windsorize">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+preprocessing</a> &gt; <a href="index.html">@Windsorize</a> &gt; Windsorize.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+preprocessing/@Windsorize&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Windsorize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Windsorize.html" class="code" title="">Windsorize</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Windsorize.html" class="code" title="">Windsorize</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = Windsorize(low,high)</a></li><li><a href="#_sub2" class="code">function trials = process(obj,trials)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(CS)</a></li><li><a href="#_sub4" class="code">function time = getTime(CS)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Windsorize.m">Windsorize.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Windsorize.html" class="code" title="">Windsorize</a> &lt; eegtoolkit.preprocessing.PreprocessingBase
+0002     properties
+0003         limit_l;
+0004         limit_h;
+0005         subjectids;
+0006     <span class="keyword">end</span>
+0007     
+0008     methods
+0009         <a name="_sub0" href="#_subfunctions" class="code">function obj = Windsorize(low,high)</a>
+0010             <span class="keyword">if</span> nargin == 0
+0011                 obj.limit_l = 0.05;
+0012                 obj.limit_h = 0.95;
+0013             <span class="keyword">elseif</span> nargin == 2
+0014                 obj.limit_l = low;
+0015                 obj.limit_h = high;
+0016             <span class="keyword">else</span>
+0017                 error(<span class="string">'2 inputs are required for windsorize, the low and high limits'</span>);
+0018             <span class="keyword">end</span>
+0019         <span class="keyword">end</span>
+0020         
+0021         <a name="_sub1" href="#_subfunctions" class="code">function trials = process(obj,trials)</a>
+0022             subs = unique(obj.subjectids);
+0023             nchannels = size(trials{1}.signal,1);
+0024             trial_length = size(trials{1}.signal,2);
+0025             <span class="keyword">for</span> i=1:numel(subs)
+0026                 ids = find(obj.subjectids == subs(i));
+0027                 ntrials = numel(ids);
+0028                 <span class="comment">% Concatenate signal</span>
+0029                 signal = [];
+0030                 <span class="keyword">for</span> j=1:numel(ids)
+0031                     signal = [signal trials{ids(j)}.signal];
+0032                 <span class="keyword">end</span>
+0033                 <span class="comment">%windsorize</span>
+0034                 sorted_sig = sort(signal,2);
+0035                 upbound = sorted_sig(:,round(obj.limit_h*size(signal,2)));
+0036                 uprep = sorted_sig(:,round(obj.limit_h*size(signal,2))-1);
+0037                 lowbound = sorted_sig(:,round(obj.limit_l*size(signal,2)));
+0038                 lowrep = sorted_sig(:,round(obj.limit_l*size(signal,2))+1);
+0039                 <span class="keyword">for</span> ch=1:nchannels
+0040                     signal(ch,signal(ch,:)&gt;upbound(ch)) = uprep(ch);
+0041                     signal(ch,signal(ch,:)&lt;lowbound(ch)) = lowrep(ch);
+0042                 <span class="keyword">end</span>
+0043                 temp = mat2cell(signal,nchannels,trial_length*ones(ntrials,1));
+0044                 <span class="keyword">for</span> j=1:numel(ids)
+0045                     trials{ids(j)}.signal = temp{j};
+0046                 <span class="keyword">end</span>
+0047             <span class="keyword">end</span>
+0048             
+0049         <span class="keyword">end</span>
+0050         
+0051         
+0052         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(CS)</a>
+0053             configInfo = sprintf(<span class="string">'Windsorizing\tLow limit: %f, High limit: %f'</span>,CS.limit_l,CS.limit_l);
+0054         <span class="keyword">end</span>
+0055         
+0056         
+0057         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(CS)</a>
+0058             time = 0;
+0059         <span class="keyword">end</span>
+0060         
+0061     <span class="keyword">end</span>
+0062     
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

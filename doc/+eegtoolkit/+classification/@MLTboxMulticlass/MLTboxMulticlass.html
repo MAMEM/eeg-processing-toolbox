@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MLTboxMulticlass</title>
+  <meta name="keywords" content="MLTboxMulticlass">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@MLTboxMulticlass</a> &gt; MLTboxMulticlass.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@MLTboxMulticlass&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MLTboxMulticlass
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLTboxMulticlass.html" class="code" title="">MLTboxMulticlass</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLTboxMulticlass.html" class="code" title="">MLTboxMulticlass</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function MLC = MLTboxMulticlass(instanceSet, learners, coding, fitPosterior, prior)</a></li><li><a href="#_sub2" class="code">function MLC = build(MLC)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(MLC,instance)</a></li><li><a href="#_sub4" class="code">function MLC = reset(MLC)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(MLC)</a></li><li><a href="#_sub6" class="code">function time = getTime(MLC)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="MLTboxMulticlass.m">MLTboxMulticlass.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MLTboxMulticlass.html" class="code" title="">MLTboxMulticlass</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004         
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008         Learners; <span class="comment">%'discriminant': Discriminant analysis. | 'knn': k-nearest neighbors. | 'naivebayes': Naive Bayes.</span>
+0009         <span class="comment">% 'svm': SVM. | 'tree': Classification trees. | any Matlab template classifier</span>
+0010         Coding; <span class="comment">% Coding design 'onevsall' (default) | 'allpairs' | 'binarycomplete' | 'denserandom' | 'onevsone' | 'ordinal' | 'sparserandom' | 'ternarycomplete' | numeric matrix</span>
+0011         FitPosterior; <span class="comment">% Flag indicating whether to transform scores to posterior probabilities false or 0 (default) | true or 1</span>
+0012         Prior <span class="comment">% 'empirical' (default) or 'uniform'.  Prior probabilities for each class.</span>
+0013         models;
+0014         totalTime;
+0015         totalCount;
+0016     <span class="keyword">end</span>
+0017     
+0018     methods (Access = public)
+0019         <a name="_sub0" href="#_subfunctions" class="code">function MLC = MLTboxMulticlass(instanceSet, learners, coding, fitPosterior, prior)</a>
+0020             <span class="comment">%set default parameters</span>
+0021             MLC.Learners = <span class="string">'svm'</span>;
+0022             MLC.Coding=<span class="string">'onevsall'</span>;
+0023             MLC.FitPosterior=<span class="string">'off'</span>;
+0024             MLC.Prior=<span class="string">'empirical'</span>;
+0025             
+0026             <span class="keyword">if</span> nargin &gt; 0
+0027                 MLC.instanceSet = instanceSet;
+0028             <span class="keyword">end</span>
+0029             <span class="keyword">if</span> nargin &gt; 1
+0030                 MLC.Learners = learners;
+0031             <span class="keyword">end</span>
+0032             <span class="keyword">if</span> nargin &gt; 2
+0033                 MLC.Coding=coding;
+0034             <span class="keyword">end</span>
+0035             <span class="keyword">if</span> nargin &gt; 3
+0036                 MLC.FitPosterior=fitPosterior;
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin &gt; 4
+0039                 MLC.Prior=prior;
+0040             <span class="keyword">end</span>
+0041             MLC.totalTime = 0;
+0042             MLC.totalCount = 0;
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub1" href="#_subfunctions" class="code">function MLC = build(MLC)</a>
+0046             <span class="comment">%clear all from previous calls to &quot;build&quot;</span>
+0047             MLC.reset;
+0048             numLabels = MLC.instanceSet.getNumLabels;
+0049             uniqueLabels = unique(MLC.instanceSet.getLabels);
+0050             
+0051             <span class="comment">% ---- Multi-Class ----- %</span>
+0052             instances=MLC.instanceSet.instances;
+0053             labels=MLC.instanceSet.labels;
+0054             
+0055             <span class="comment">%t=templateSVM('KernelFunction','linear');</span>
+0056             MLC.models{1}=fitcecoc(instances,labels,<span class="string">'Coding'</span>, MLC.Coding,<span class="string">'FitPosterior'</span>, MLC.FitPosterior,<span class="string">'Prior'</span>,MLC.Prior,<span class="string">'Learners'</span>,MLC.Learners);
+0057         <span class="keyword">end</span>
+0058         
+0059         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(MLC,instance)</a>
+0060 
+0061             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0062             numModels = length(MLC.models);
+0063             [numinstance, ~] = size(instance);
+0064             <span class="comment">%scores = zeros(numModels,numinstance);</span>
+0065             
+0066             <span class="comment">% ---- Multi-class ----- %</span>
+0067             tic
+0068             [label,scores,loss] = predict(MLC.models{1},instance);
+0069             MLC.totalTime = MLC.totalTime + toc;
+0070             MLC.totalCount = MLC.totalCount + numinstance;
+0071             output = zeros(numinstance,1);
+0072             probabilities = zeros(numinstance,1);
+0073             <span class="comment">%we need these for ranking metrics (e.g. mAP)</span>
+0074             ranking = scores;
+0075             <span class="keyword">for</span> i=1:numinstance
+0076                 <span class="comment">%select the class with the highest probability</span>
+0077                 [prob, idx] = max(scores(i,:));
+0078                 uniqueLabels = unique(MLC.instanceSet.getLabels);
+0079                 <span class="comment">%output the label with highest probability</span>
+0080                 output(i,1) = uniqueLabels(idx);
+0081                 <span class="comment">%return the probability for the output label</span>
+0082                 probabilities(i,1) = prob;
+0083             <span class="keyword">end</span>
+0084         <span class="keyword">end</span>
+0085         
+0086         <a name="_sub3" href="#_subfunctions" class="code">function MLC = reset(MLC)</a>
+0087             <span class="comment">%delete all stored models</span>
+0088             MLC.models = {};
+0089         <span class="keyword">end</span>
+0090         
+0091         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(MLC)</a>
+0092             configInfo=sprintf(<span class="string">'MLTboxMulticlass\tCoding:%s\tFitPosterior:%s\tPrior:%s\n\tLearners:'</span>, MLC.Coding, MLC.FitPosterior,MLC.Prior);
+0093             disp(MLC.Learners)
+0094             <span class="comment">%configInfo = 'MLSVMClassifier (Config info not supported yet)';</span>
+0095         <span class="keyword">end</span>
+0096         
+0097                         
+0098         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(MLC)</a>
+0099             time = MLC.totalTime/MLC.totalCount;
+0100         <span class="keyword">end</span>
+0101         
+0102     <span class="keyword">end</span>
+0103 <span class="keyword">end</span>
+0104</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

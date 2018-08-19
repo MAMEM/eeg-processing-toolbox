@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Goertzel</title>
+  <meta name="keywords" content="Goertzel">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="index.html">@Goertzel</a> &gt; Goertzel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featextraction/@Goertzel&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Goertzel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Goertzel.html" class="code" title="">Goertzel</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Goertzel.html" class="code" title="">Goertzel</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function GT = Goertzel(trials, seconds, channel, nfft)</a></li><li><a href="#_sub2" class="code">function extract(GT)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(GT)</a></li><li><a href="#_sub4" class="code">function time = getTime(GT)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="Goertzel.m">Goertzel.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Goertzel.html" class="code" title="">Goertzel</a> &lt; eegtoolkit.featextraction.FeatureExtractionBase
+0002 <span class="comment">%Computes the psd using the welch method</span>
+0003 <span class="comment">%Usage:</span>
+0004 <span class="comment">%   session = eegtoolkit.util.Session();</span>
+0005 <span class="comment">%   session.loadSubject(1);</span>
+0006 <span class="comment">%   pwt = ssveptolkit.transform.PWelchTransformer(session.trials);</span>
+0007 <span class="comment">%Specify the channel to be used (default = 126)</span>
+0008 <span class="comment">%   pwt.channel = 150;</span>
+0009 <span class="comment">%Specify the number of seconds to be used (default = 0, use all signal)</span>
+0010 <span class="comment">%   pwt.seconds = 3;</span>
+0011 <span class="comment">%Specify the nfft parameter (default = 512, computes 257 features)</span>
+0012 <span class="comment">%   pwt.nfft = 512;</span>
+0013 <span class="comment">%Transform the signal</span>
+0014 <span class="comment">%   pwt.transform();</span>
+0015     properties (Access = public)
+0016         channel;
+0017         seconds;
+0018         nfft;
+0019         pff;
+0020         avgTime;
+0021     <span class="keyword">end</span>
+0022     
+0023     methods (Access = public)
+0024         <a name="_sub0" href="#_subfunctions" class="code">function GT = Goertzel(trials, seconds, channel, nfft)</a>
+0025 <span class="comment">%             if ~iscell(trials)</span>
+0026 <span class="comment">%                 error('trials must be cell array of Trial object');</span>
+0027 <span class="comment">%             end</span>
+0028             <span class="keyword">if</span> nargin == 0
+0029                 GT.trials = {};
+0030                 GT.seconds = 0;
+0031                 GT.channel = 1;
+0032                 GT.nfft = 512;
+0033             <span class="keyword">elseif</span> nargin == 1
+0034                 GT.trials = trials;
+0035                 GT.seconds = 0;
+0036                 GT.channel = 1;
+0037                 GT.nfft = 512;
+0038             <span class="keyword">elseif</span> nargin == 2
+0039                 GT.trials = trials;
+0040                 GT.channel = 1;
+0041                 GT.seconds = seconds;
+0042                 GT.nfft = 512;
+0043             <span class="keyword">elseif</span> nargin == 3
+0044                 GT.trials = trials;
+0045                 GT.channel = channel;
+0046                 GT.seconds = seconds;
+0047                 GT.nfft = 512;
+0048             <span class="keyword">elseif</span> nargin == 4
+0049                 GT.trials = trials;
+0050                 GT.channel = channel;
+0051                 GT.seconds = seconds;
+0052                 GT.nfft = nfft;
+0053             <span class="keyword">else</span>
+0054 <span class="comment">%                 error('invalid number of arguments');</span>
+0055             <span class="keyword">end</span>
+0056         <span class="keyword">end</span>
+0057         
+0058         <a name="_sub1" href="#_subfunctions" class="code">function extract(GT)</a>
+0059            
+0060             numFeatures = length(GT.nfft);
+0061             numTrials = length(GT.trials);
+0062             instances = zeros(numTrials, numFeatures);
+0063             labels = zeros(numTrials,1);
+0064 <span class="comment">%             PWT.instances = zeros(numTrials, numFeatures);</span>
+0065 <span class="comment">%             PWT.labels = zeros(numTrials,1);</span>
+0066             tic;
+0067             <span class="keyword">for</span> i=1:numTrials
+0068                 numsamples = GT.trials{i}.samplingRate * GT.seconds;
+0069                 <span class="keyword">if</span>(numsamples == 0)
+0070                     y = GT.trials{i}.signal(GT.channel,:);
+0071                 <span class="keyword">else</span>
+0072                     y = GT.trials{i}.signal(GT.channel, 1:numsamples);
+0073                 <span class="keyword">end</span>
+0074 <span class="comment">%                 N = (length(y)+1)/2;</span>
+0075 <span class="comment">%                 f = (PWT.trials{i}.samplingRate/2)/N*(0:N-1);</span>
+0076 <span class="comment">%                 indxs = find(f&gt;1.2e3 &amp; f&lt;1.3e3);</span>
+0077 <span class="comment">%                 X = goertzel(x,indxs);</span>
+0078                 freq_indices = round(GT.nfft/GT.trials{i}.samplingRate*length(y)) + 1;
+0079 <span class="comment">%                 ff = [0:1/512:1/2]*250;</span>
+0080 <span class="comment">%                 freq_indices = round(ff/PWT.trials{i}.samplingRate*length(y))+1</span>
+0081                 dft_data = goertzel(y,freq_indices);<span class="comment">%goertzel(y,freq_indices); general_shortened</span>
+0082                 instances(i,:) = abs(dft_data) ./ length(y);
+0083                 labels(i,1) = floor(GT.trials{i}.label);
+0084             <span class="keyword">end</span>
+0085             GT.avgTime = toc/numTrials;
+0086             GT.instanceSet = eegtoolkit.util.InstanceSet(instances, labels);
+0087             GT.pff = GT.nfft;
+0088         <span class="keyword">end</span>
+0089         
+0090         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(GT)</a>
+0091             configInfo = sprintf(<span class="string">'Goertzel\tchannel:%d\tseconds:%d\tfreq range:%.3f to %.3f'</span>,GT.channel,GT.seconds,GT.nfft(1),GT.nfft(end));
+0092         <span class="keyword">end</span>
+0093         
+0094         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(GT)</a>
+0095             time = GT.avgTime;
+0096         <span class="keyword">end</span>
+0097     <span class="keyword">end</span>
+0098    
+0099 <span class="keyword">end</span>
+0100</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

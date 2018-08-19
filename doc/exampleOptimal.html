@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exampleOptimal</title>
+  <meta name="keywords" content="exampleOptimal">
+  <meta name="description" content="Load the data. Call this once outside of the script so you dont have to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; exampleOptimal.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>exampleOptimal
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Load the data. Call this once outside of the script so you dont have to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Load the data. Call this once outside of the script so you dont have to
+ load the data again and again. Make sure the dataset is included in your
+ Matlab path
+ sess = eegtoolkit.util.Session;
+ sess.loadAll(1); %Loads dataset I</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<p><a href="exampleOptimal.m">exampleOptimal.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Load the data. Call this once outside of the script so you dont have to</span>
+0002 <span class="comment">% load the data again and again. Make sure the dataset is included in your</span>
+0003 <span class="comment">% Matlab path</span>
+0004 <span class="comment">% sess = eegtoolkit.util.Session;</span>
+0005 <span class="comment">% sess.loadAll(1); %Loads dataset I</span>
+0006 
+0007 <span class="comment">%Load a filter from the samples</span>
+0008 load filters/filt_IIRElliptic;
+0009 
+0010 extr = eegtoolkit.featextraction.PWelchExperimental;
+0011 extr.nfft = 512;
+0012 extr.over_len = 0.75;
+0013 extr.win_len = 350;
+0014 
+0015 amu = eegtoolkit.preprocessing.Amuse;
+0016 amu.first = 15;
+0017 amu.last = 252;
+0018 
+0019 refer = eegtoolkit.preprocessing.Rereferencing;
+0020 <span class="comment">%Subtract the mean from the signal</span>
+0021 refer.meanSignal = 1;
+0022 
+0023 ss = eegtoolkit.preprocessing.SampleSelection;
+0024 ss.sampleRange = [1,1250]; <span class="comment">% Specify the sample range to be used for each Trial</span>
+0025 ss.channels = 138; <span class="comment">% Specify the channel(s) to be used</span>
+0026 
+0027 df = eegtoolkit.preprocessing.DigitalFilter; <span class="comment">% Apply a filter to the raw data</span>
+0028 df.filt = Hbp; <span class="comment">% Hbp is a filter built with &quot;filterbuilder&quot; matlab function</span>
+0029 
+0030 svd = eegtoolkit.featselection.SVD;
+0031 svd.modes = 90;
+0032 
+0033 <span class="comment">%Configure the classifier</span>
+0034 classif = eegtoolkit.classification.LIBSVMFast;
+0035 
+0036 <span class="comment">%Set the Experimenter wrapper class</span>
+0037 experiment = eegtoolkit.experiment.Experimenter;
+0038 experiment.session = sess;
+0039 <span class="comment">% Add the preprocessing steps (order is taken into account)</span>
+0040 experiment.preprocessing = {amu,ss,refer,df};
+0041 experiment.featselection = svd;
+0042 experiment.featextraction = extr;
+0043 experiment.classification = classif;
+0044 experiment.evalMethod = experiment.EVAL_METHOD_LOSO; <span class="comment">% specify that you want a &quot;leave one subject out&quot; (default is LOOCV)</span>
+0045 experiment.run();
+0046 <span class="keyword">for</span> i=1:length(experiment.results)
+0047     accuracies(i) = experiment.results{i}.getAccuracy();
+0048 <span class="keyword">end</span>
+0049 
+0050 accuracies'
+0051 <span class="comment">%mean accuracy for all subjects</span>
+0052 fprintf(<span class="string">'mean acc = %f\n'</span>, mean(accuracies));
+0053 <span class="comment">%get the configuration used (for reporting)</span>
+0054 experiment.getExperimentInfo
+0055 experiment.getTime</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

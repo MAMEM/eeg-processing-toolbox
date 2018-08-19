@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  L1MCCA -> L1MCCA;
+
+  L1MCCA [URL="L1MCCA.html"];
+}

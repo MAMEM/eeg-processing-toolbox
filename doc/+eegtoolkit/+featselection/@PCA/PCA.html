@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PCA</title>
+  <meta name="keywords" content="PCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featselection</a> &gt; <a href="index.html">@PCA</a> &gt; PCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featselection/@PCA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>PCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PCA.html" class="code" title="">PCA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PCA.html" class="code" title="">PCA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function PCA = PCA(instanceSet,componentNum)</a></li><li><a href="#_sub2" class="code">function PCA = compute(PCA)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(PCA)</a></li><li><a href="#_sub4" class="code">function time = getTime(PCA)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="PCA.m">PCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="PCA.html" class="code" title="">PCA</a> &lt; eegtoolkit.featselection.FeatureSelectionBase
+0002     properties (Access = public)
+0003         componentNum;
+0004         avgTime;
+0005     <span class="keyword">end</span>
+0006     methods
+0007         <a name="_sub0" href="#_subfunctions" class="code">function PCA = PCA(instanceSet,componentNum)</a>
+0008             <span class="keyword">if</span> nargin == 0
+0009                 PCA.componentNum = 50;
+0010             <span class="keyword">else</span>
+0011                 PCA.componentNum = componentNum;
+0012                 PCA.originalInstanceSet = instanceSet;
+0013             <span class="keyword">end</span>
+0014         <span class="keyword">end</span>
+0015         
+0016         <a name="_sub1" href="#_subfunctions" class="code">function PCA = compute(PCA)</a>
+0017             ins = PCA.originalInstanceSet.getInstances;
+0018             [numInst,~] = size(ins);
+0019             tic
+0020             [~,score,~,~,~] = pca(ins,<span class="string">'NumComponents'</span>,PCA.componentNum);
+0021             PCA.avgTime = toc/numInst;
+0022             PCA.filteredInstanceSet = eegtoolkit.util.InstanceSet(score,PCA.originalInstanceSet.getLabels);
+0023         <span class="keyword">end</span>
+0024         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(PCA)</a>
+0025             configInfo = sprintf(<span class="string">'PCA\tcomponents:%d'</span>, PCA.componentNum);
+0026         <span class="keyword">end</span>
+0027         
+0028         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(PCA)</a>
+0029             time = PCA.avgTime;
+0030         <span class="keyword">end</span>
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

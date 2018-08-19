@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CombiCCA</title>
+  <meta name="keywords" content="CombiCCA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@CombiCCA</a> &gt; CombiCCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@CombiCCA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>CombiCCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CombiCCA.html" class="code" title="">CombiCCA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CombiCCA.html" class="code" title="">CombiCCA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function CoCCA = CombiCCA( sti_f, numHarmonics, sampleLength, samplingRate)</a></li><li><a href="#_sub2" class="code">function CoCCA = build(CoCCA)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(CoCCA,instance)</a></li><li><a href="#_sub4" class="code">function CSP = reset(CSP)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(CSP)</a></li><li><a href="#_sub6" class="code">function time = getTime(CSP)</a></li><li><a href="#_sub7" class="code">function [Wx, Wy, r] = cca(CCA,X,Y)</a></li><li><a href="#_sub8" class="code">function instancesOutput = extract(CoCCA,sMatrix)</a></li><li><a href="#_sub9" class="code">function refSignal=ck_signalTrans(CCA,f,mLen,FreqSamp,NumHarm)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="CombiCCA.m">CombiCCA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="CombiCCA.html" class="code" title="">CombiCCA</a> &lt; eegtoolkit.classification.ClassifierBase;
+0002     <span class="comment">%COMBICCA Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     <span class="comment">%     fprintf('CombitCCA Processing TW %fs, No.crossvalidation %d \n',TW(tw_length),run);</span>
+0005     <span class="comment">%                         it=cell(12,1);</span>
+0006     <span class="comment">%                         for iN = 1:nClasses</span>
+0007     <span class="comment">%                             it{iN} = mean(SSVEPdata(chan_used,1:TW_p(tw_length),idx_traindata,iN),3);</span>
+0008     <span class="comment">%                         end</span>
+0009     <span class="comment">%                         % recognize SSVEP</span>
+0010     properties
+0011         individualTemplates;
+0012         refSignals;
+0013         <span class="comment">%         sti_f;</span>
+0014         baseClassifier;
+0015     <span class="keyword">end</span>
+0016     
+0017     methods
+0018         <a name="_sub0" href="#_subfunctions" class="code">function CoCCA = CombiCCA( sti_f, numHarmonics, sampleLength, samplingRate)</a>
+0019             <span class="comment">%             CoCCA.sti_f = sti_f;</span>
+0020             <span class="comment">%             CoCCA.numHarmonics = numHarmonics;</span>
+0021             CoCCA.refSignals = CoCCA.ck_signalTrans(sti_f,sampleLength, samplingRate, numHarmonics);
+0022         <span class="keyword">end</span>
+0023         
+0024         <a name="_sub1" href="#_subfunctions" class="code">function CoCCA = build(CoCCA)</a>
+0025             numLabels = length(unique(CoCCA.instanceSet.labels));
+0026             CoCCA.individualTemplates = cell(numLabels,1);
+0027             unLabels = unique(CoCCA.instanceSet.labels);
+0028             <span class="keyword">for</span> i=1:numLabels
+0029                 trialsIndices = CoCCA.instanceSet.labels==unLabels(i);
+0030                 CoCCA.individualTemplates{i} = squeeze(mean(CoCCA.instanceSet.sMatrix(trialsIndices,:,:),1));
+0031             <span class="keyword">end</span>
+0032             
+0033         <span class="keyword">end</span>
+0034         
+0035         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(CoCCA,instance)</a>
+0036             testInstances = CoCCA.extract(instance);
+0037             [output, probabilities, ranking] = CoCCA.baseClassifier.classifyInstance(testInstances);
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub3" href="#_subfunctions" class="code">function CSP = reset(CSP)</a>
+0041             <span class="comment">% 'Resets' the classifier.</span>
+0042             <span class="comment">%             CSP.models = {};</span>
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(CSP)</a>
+0046             configInfo = <span class="string">'\n'</span>;
+0047         <span class="keyword">end</span>
+0048         
+0049         
+0050         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(CSP)</a>
+0051             time = 0;
+0052         <span class="keyword">end</span>
+0053         
+0054     <span class="keyword">end</span>
+0055     methods (Access = private)
+0056         
+0057         <a name="_sub6" href="#_subfunctions" class="code">function [Wx, Wy, r] = cca(CCA,X,Y)</a>
+0058             <span class="comment">%</span>
+0059             <span class="comment">% CCA calculate canonical correlations</span>
+0060             <span class="comment">%</span>
+0061             <span class="comment">% [Wx Wy r] = cca(X,Y) where Wx and Wy contains the canonical correlation</span>
+0062             
+0063             <span class="comment">% vectors as columns and r is a vector with corresponding canonical</span>
+0064             <span class="comment">% correlations. The correlations are sorted in descending order. X and Y</span>
+0065             <span class="comment">% are matrices where each column is a sample. Hence, X and Y must have</span>
+0066             <span class="comment">% the same number of columns.</span>
+0067             <span class="comment">%</span>
+0068             <span class="comment">% Example: If X is M*K and Y is N*K there are L=MIN(M,N) solutions. Wx is</span>
+0069             <span class="comment">% then M*L, Wy is N*L and r is L*1.</span>
+0070             <span class="comment">%</span>
+0071             <span class="comment">%</span>
+0072             <span class="comment">% ?? 2000 Magnus Borga, Link?pings universitet</span>
+0073             
+0074             <span class="comment">% --- Calculate covariance matrices ---??????????????</span>
+0075             
+0076             z = [X;Y];
+0077             C = cov(z.');
+0078             sx = size(X,1);   <span class="comment">%X??????(??),</span>
+0079             sy = size(Y,1);
+0080             Cxx = C(1:sx, 1:sx) + 10^(-8)*eye(sx);
+0081             Cxy = C(1:sx, sx+1:sx+sy);
+0082             Cyx = Cxy';
+0083             Cyy = C(sx+1:sx+sy, sx+1:sx+sy) + 10^(-8)*eye(sy);<span class="comment">%eye()????????</span>
+0084             invCyy = inv(Cyy);
+0085             
+0086             <span class="comment">% --- Calcualte Wx and r ---</span>
+0087             
+0088             [Wx,r] = eig(inv(Cxx)*Cxy*invCyy*Cyx); <span class="comment">% Basis in X eig????????????</span>
+0089             r = sqrt(real(r));      <span class="comment">% Canonical correlations</span>
+0090             
+0091             <span class="comment">% --- Sort correlations ---</span>
+0092             
+0093             V = fliplr(Wx);        <span class="comment">% reverse order of eigenvectors??????????????????????i??????????i??????</span>
+0094             r = flipud(diag(r));    <span class="comment">% extract eigenvalues and reverse their order</span>
+0095             [r,I]= sort((real(r)));    <span class="comment">% sort reversed eigenvalues in ascending order</span>
+0096             r = flipud(r);        <span class="comment">% restore sorted eigenvalues into descending order??????????????</span>
+0097             <span class="keyword">for</span> j = 1:length(I)
+0098                 Wx(:,j) = V(:,I(j));  <span class="comment">% sort reversed eigenvectors in ascending order</span>
+0099             <span class="keyword">end</span>
+0100             Wx = fliplr(Wx);    <span class="comment">% restore sorted eigenvectors into descending order</span>
+0101             
+0102             <span class="comment">% --- Calcualte Wy  ---</span>
+0103             
+0104             Wy = invCyy*Cyx*Wx;     <span class="comment">% Basis in Y</span>
+0105             <span class="comment">% Wy = Wy./repmat(sqrt(sum(abs(Wy).^2)),sy,1); % Normalize Wy</span>
+0106             
+0107         <span class="keyword">end</span>
+0108         <a name="_sub7" href="#_subfunctions" class="code">function instancesOutput = extract(CoCCA,sMatrix)</a>
+0109             numClasses = length(CoCCA.individualTemplates);
+0110             numInstances = size(sMatrix,1);
+0111             instancesOutput = zeros(numInstances,numClasses);
+0112             <span class="keyword">for</span> i=1:numInstances
+0113                 <span class="keyword">for</span> j=1:numClasses
+0114                     [wxit,wyit,rit] = CoCCA.cca(squeeze(sMatrix(i,:,:)),CoCCA.individualTemplates{j});
+0115                     [wxref,wyref,rref] = CoCCA.cca(squeeze(sMatrix(i,:,:)),CoCCA.refSignals(:,:,j));
+0116                     [wxitref,wyitref,ritref] = CoCCA.cca(CoCCA.individualTemplates{j},CoCCA.refSignals(:,:,j));
+0117                     q1 = squeeze(sMatrix(i,:,:))'*wxref;
+0118                     q2 = CoCCA.refSignals(:,:,j)'*wyref;
+0119                     q3 = squeeze(sMatrix(i,:,:))'*wxit;
+0120                     q4 = CoCCA.individualTemplates{j}'*wxit;
+0121                     q5 = q1;
+0122                     q6 = CoCCA.individualTemplates{j}'*wxref;
+0123                     q7 = squeeze(sMatrix(i,:,:))'*wxitref;
+0124                     q8 = CoCCA.individualTemplates{j}'*wxitref;
+0125                     r_n = [corr(q1(:),q2(:)) corr(q3(:),q4(:)) corr(q5(:),q6(:)) corr(q7(:), q8(:))];
+0126                     rho_n = sum(sign(r_n).*r_n.^2);
+0127                     instancesOutput(i,j) = rho_n;
+0128                 <span class="keyword">end</span>
+0129             <span class="keyword">end</span>
+0130         <span class="keyword">end</span>
+0131         <span class="comment">%                         for j=1:nClasses</span>
+0132         <span class="comment">%                             tempvec=zeros(nClasses,1);</span>
+0133         <span class="comment">%                             for jj=1:nClasses</span>
+0134         <span class="comment">%                                 [wxit,wyit,rit ]=cca(SSVEPdata(chan_used,1:TW_p(tw_length),run,j),it{jj}(:,1:TW_p(tw_length)));</span>
+0135         <span class="comment">%                                 [wxref,wyref,rref ]=cca(SSVEPdata(chan_used,1:TW_p(tw_length),run,j),sc{jj}(:,1:TW_p(tw_length)));</span>
+0136         <span class="comment">%                                 [wxitref,wyitref,ritref ]=cca(it{jj}(:,1:TW_p(tw_length)),sc{jj}(:,1:TW_p(tw_length)));</span>
+0137         <span class="comment">%                                 q1 = SSVEPdata(chan_used,1:TW_p(tw_length),run,j)'*wxref;</span>
+0138         <span class="comment">%                                 q2 = sc{jj}(:,1:TW_p(tw_length))'*wyref;</span>
+0139         <span class="comment">%                                 q3 = SSVEPdata(chan_used,1:TW_p(tw_length),run,j)'*wxit;</span>
+0140         <span class="comment">%                                 q4 = it{jj}(:,1:TW_p(tw_length))'*wxit;</span>
+0141         <span class="comment">%                                 q5 = q1;</span>
+0142         <span class="comment">%                                 q6 = it{jj}(:,1:TW_p(tw_length))'*wxref;</span>
+0143         <span class="comment">%                                 q7 = SSVEPdata(chan_used,1:TW_p(tw_length),run,j)'*wxitref;</span>
+0144         <span class="comment">%                                 q8 = it{jj}(:,1:TW_p(tw_length))'*wxitref;</span>
+0145         <span class="comment">%                                 r_n = [corr(q1(:),q2(:)) corr(q3(:),q4(:)) corr(q5(:),q6(:)) corr(q7(:),q8(:))];</span>
+0146         <span class="comment">%                                 rho_n = sum(sign(r_n).*r_n.^2);</span>
+0147         <span class="comment">%                                 tempvec(jj) = rho_n;%max(r1);</span>
+0148         <span class="comment">%                             end</span>
+0149         <span class="comment">%</span>
+0150         <span class="comment">%                             [v,idx]=max(tempvec);</span>
+0151         <span class="comment">%                             sub_lab(mth,(run-1)*nClasses+j,tw_length)=idx;</span>
+0152         <span class="comment">%                             if idx==j</span>
+0153         <span class="comment">%                                 n_correct(tw_length,mth)=n_correct(tw_length,mth)+1;</span>
+0154         <span class="comment">%                             end</span>
+0155         <span class="comment">%                         end</span>
+0156         <a name="_sub8" href="#_subfunctions" class="code">function refSignal=ck_signalTrans(CCA,f,mLen,FreqSamp,NumHarm)</a>
+0157             
+0158             p=mLen;<span class="comment">%1250;</span>
+0159             fs=FreqSamp;<span class="comment">%250;</span>
+0160             TP=1/fs:1/fs:p/fs;
+0161             <span class="keyword">for</span> j=1:length(f)
+0162                 tempComp=[];
+0163                 <span class="keyword">for</span> k=1:NumHarm
+0164                     Sinh1=sin(2*pi*k*f(j)*TP);
+0165                     Cosh1=cos(2*pi*k*f(j)*TP);
+0166                     tempComp = [tempComp; Sinh1;Cosh1;];
+0167                 <span class="keyword">end</span>
+0168                 refSignal(:,:,j)=tempComp;
+0169             <span class="keyword">end</span>
+0170         <span class="keyword">end</span>
+0171     <span class="keyword">end</span>
+0172 <span class="keyword">end</span>
+0173</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FFT</title>
+  <meta name="keywords" content="FFT">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+featextraction</a> &gt; <a href="index.html">@FFT</a> &gt; FFT.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+featextraction/@FFT&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>FFT
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FFT.html" class="code" title="">FFT</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FFT.html" class="code" title="">FFT</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function mFFT = FFT(trials, seconds, channel,nfft)</a></li><li><a href="#_sub2" class="code">function extract(mFFT)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(mFFT)</a></li><li><a href="#_sub4" class="code">function time = getTime(mFFT)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="FFT.m">FFT.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="FFT.html" class="code" title="">FFT</a> &lt; eegtoolkit.featextraction.FeatureExtractionBase
+0002     
+0003     properties (Access = public)
+0004         channel;
+0005         seconds;
+0006         nfft;
+0007         avgTime;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods (Access = public)
+0011         <a name="_sub0" href="#_subfunctions" class="code">function mFFT = FFT(trials, seconds, channel,nfft)</a>
+0012             <span class="keyword">if</span> nargin == 0
+0013                 mFFT.seconds = 0;
+0014                 mFFT.channel = 1;
+0015                 mFFT.nfft = 512;
+0016             <span class="keyword">elseif</span> nargin == 1
+0017                 mFFT.trials = trials;
+0018                 mFFT.seconds = 0;
+0019                 mFFT.channel = 1;
+0020                 mFFT.nfft = 512;
+0021             <span class="keyword">elseif</span> nargin == 2
+0022                 mFFT.trials = trials;
+0023                 mFFT.channel = 1;
+0024                 mFFT.seconds = seconds;
+0025                 mFFT.nfft = 512;
+0026             <span class="keyword">elseif</span> nargin == 3
+0027                 mFFT.trials = trials;
+0028                 mFFT.channel = channel;
+0029                 mFFT.seconds = seconds;
+0030                 mFFT.nfft = 512;
+0031             <span class="keyword">elseif</span> nargin == 4
+0032                 mFFT.trials = trials;
+0033                 mFFT.channel = channel;
+0034                 mFFT.seconds = seconds;
+0035                 mFFT.nfft = nfft;
+0036                 error(<span class="string">'invalid number of arguments'</span>);
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub1" href="#_subfunctions" class="code">function extract(mFFT)</a>
+0041             NUM_FEATURES = mFFT.nfft/2+1;
+0042             numTrials = length(mFFT.trials);
+0043             instances = zeros(numTrials, NUM_FEATURES);
+0044             labels = zeros(numTrials,1);
+0045             tic
+0046             <span class="keyword">for</span> i=1:numTrials
+0047                 <span class="keyword">if</span> length(mFFT.seconds) == 1
+0048                 numsamples = mFFT.trials{i}.samplingRate * mFFT.seconds;
+0049                 <span class="keyword">if</span>(numsamples == 0)
+0050                     y = mFFT.trials{i}.signal(mFFT.channel,:);
+0051                 <span class="keyword">else</span>
+0052                     y = mFFT.trials{i}.signal(mFFT.channel, 1:numsamples);
+0053                 <span class="keyword">end</span>
+0054                 <span class="keyword">elseif</span> length(mFFT.seconds) == 2
+0055                     sampleA = mFFT.trials{i}.samplingRate * mFFT.seconds(1) + 1;
+0056                     sampleB = mFFT.trials{i}.samplingRate * mFFT.seconds(2);
+0057                     y = mFFT.trials{i}.signal(mFFT.channel, sampleA:sampleB);
+0058                 <span class="keyword">else</span>
+0059                     
+0060                     error (<span class="string">'invalid seconds parameter'</span>);
+0061                 <span class="keyword">end</span>
+0062                 <span class="keyword">if</span> isa(mFFT.filter,<span class="string">'dfilt.df2sos'</span>) || isa(mFFT.filter,<span class="string">'dfilt.df2'</span>)
+0063                     y = filter(mFFT.filter,y);
+0064                 <span class="keyword">elseif</span> isa(mFFT.filter,<span class="string">'dfilt.dffir'</span>)
+0065                     y = filtfilt(mFFT.filter.Numerator,1,y);
+0066                 <span class="keyword">end</span>
+0067                 <span class="comment">%Y = fft(y,(NUM_FEATURES-1)*2)/((NUM_FEATURES-1)*2);</span>
+0068                 <span class="comment">%f = Fs/2*linspace(0,1,NFFT/2+1);</span>
+0069                 <span class="comment">%pyy = abs(Y(1:(NUM_FEATURES-1)*2/2+1)).^2;</span>
+0070                 [pyy,f] = periodogram(y,[],mFFT.nfft,mFFT.trials{i}.samplingRate);
+0071                 instances(i,:) = pyy;
+0072                 labels(i,1) = floor(mFFT.trials{i}.label);
+0073             <span class="keyword">end</span>
+0074             mFFT.avgTime = toc/numTrials;
+0075             mFFT.instanceSet = eegtoolkit.util.InstanceSet(instances,labels);
+0076         <span class="keyword">end</span>
+0077         
+0078         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(mFFT)</a>
+0079             configInfo = sprintf(<span class="string">'FFT\tchannel:%d\tseconds:%d\tnfft:%d'</span>,mFFT.channel,mFFT.seconds,mFFT.nfft);
+0080         <span class="keyword">end</span>
+0081         
+0082                         
+0083         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(mFFT)</a>
+0084             time = mFFT.avgTime;
+0085         <span class="keyword">end</span>
+0086     <span class="keyword">end</span>
+0087    
+0088 <span class="keyword">end</span>
+0089</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

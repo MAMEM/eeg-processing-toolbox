@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MLDA</title>
+  <meta name="keywords" content="MLDA">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@MLDA</a> &gt; MLDA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@MLDA&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>MLDA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLDA.html" class="code" title="">MLDA</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="MLDA.html" class="code" title="">MLDA</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function MLDA = MLDA(instanceSet, discrimType, delta, gamma, fillCoeffs, scoreTransform,prior)</a></li><li><a href="#_sub2" class="code">function MLDA = build(MLDA)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(MLDA,instance)</a></li><li><a href="#_sub4" class="code">function MLDA = reset(MLDA)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(MLDA)</a></li><li><a href="#_sub6" class="code">function time = getTime(MLDA)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="MLDA.m">MLDA.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MLDA.html" class="code" title="">MLDA</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004 
+0005     <span class="keyword">end</span>
+0006     
+0007     properties
+0008        DiscrimType; <span class="comment">% 'linear' (default) | 'quadratic' | 'diagLinear' | 'diagQuadratic' | 'pseudoLinear' | 'pseudoQuadratic'</span>
+0009        Delta <span class="comment">% 0 (default) | nonnegative scalar value that acts as a linear coefficient threshold. Delta must be 0 for quadratic discriminant models.</span>
+0010        Gamma <span class="comment">% scalar value in the range [0,1]. Parameter for regularizing the correlation matrix of predictors.</span>
+0011        FillCoeffs <span class="comment">% on (default) Coeffs property flag, specified as the comma-separated pair consisting of 'FillCoeffs' and 'on' or 'off</span>
+0012        ScoreTransform <span class="comment">% 'none' (default). Score transform function. Check http://www.mathworks.com/help/stats/fitcdiscr.html</span>
+0013        Prior <span class="comment">% 'empirical' (default) or 'uniform'.  Prior probabilities for each class.</span>
+0014        models;
+0015        totalTime;
+0016        totalCount;
+0017     <span class="keyword">end</span>
+0018     
+0019     methods (Access = public)
+0020         <a name="_sub0" href="#_subfunctions" class="code">function MLDA = MLDA(instanceSet, discrimType, delta, gamma, fillCoeffs, scoreTransform,prior)</a>
+0021             <span class="comment">%set default parameters</span>
+0022             <span class="keyword">if</span> nargin &gt; 0
+0023                 MLDA.instanceSet = instanceSet;
+0024             <span class="keyword">end</span>
+0025             <span class="keyword">if</span> nargin &gt; 1
+0026                 MLDA.DiscrimType = discrimType;
+0027             <span class="keyword">end</span>
+0028             <span class="keyword">if</span> nargin &gt; 2 
+0029                 MLDA.Delta=delta;
+0030             <span class="keyword">end</span>
+0031             <span class="keyword">if</span> nargin &gt; 3
+0032                 MLDA.Gamma = gamma;
+0033             <span class="keyword">end</span>
+0034             <span class="keyword">if</span> nargin &gt; 4
+0035                 MLDA.FillCoeffs = fillCoeffs;
+0036             <span class="keyword">end</span>
+0037             <span class="keyword">if</span> nargin &gt; 5
+0038                 MLDA.ScoreTransform = scoreTransform;
+0039             <span class="keyword">end</span>
+0040             <span class="keyword">if</span> nargin &gt; 6
+0041                 MLDA.Prior = prior;
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub1" href="#_subfunctions" class="code">function MLDA = build(MLDA)</a>
+0046             <span class="comment">%clear all from previous calls to &quot;build&quot;</span>
+0047             MLDA.reset;
+0048             numLabels = MLDA.instanceSet.getNumLabels;
+0049             uniqueLabels = unique(MLDA.instanceSet.getLabels);
+0050            
+0051             <span class="comment">% ---- Multi-Class ----- %</span>
+0052             instances=MLDA.instanceSet.instances;
+0053             labels=MLDA.instanceSet.labels;
+0054             
+0055             <span class="comment">%LDA.models{1}=fitcecoc(instances,labels,'Coding','ternarycomplete');</span>
+0056             MLDA.models{1} = fitcdiscr(instances,labels,<span class="string">'DiscrimType'</span>,MLDA.DiscrimType,<span class="string">'Delta'</span>,MLDA.Delta,<span class="string">'Gamma'</span>,MLDA.Gamma,<span class="string">'FillCoeffs'</span>,MLDA.FillCoeffs,<span class="string">'ScoreTransform'</span>,MLDA.ScoreTransform, <span class="string">'Prior'</span>,MLDA.Prior);
+0057             
+0058             <span class="comment">% ---- One (vs) All ----- %</span>
+0059 <span class="comment">%             for i=1:numLabels</span>
+0060 <span class="comment">%                 currentLabel = uniqueLabels(i);</span>
+0061 <span class="comment">%                 labels = zeros(LDA.instanceSet.getNumInstances,1)-1;</span>
+0062 <span class="comment">%                 labels(LDA.instanceSet.getInstanceIndicesForLabel(currentLabel)) = 1;</span>
+0063 <span class="comment">%                 instances = sparse(LDA.instanceSet.getInstances);</span>
+0064 <span class="comment">%                 LDA.models{i} = libsvmtrain(labels,instances, '-t 0 -c 1 -b 1');</span>
+0065 <span class="comment">%                 if LDA.kernel == LDA.KERNEL_LINEAR;</span>
+0066 <span class="comment">%                    %store the models in an instance variable</span>
+0067 <span class="comment">%                    LDA.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -b 1 -q', LDA.kernel, LDA.cost));</span>
+0068 <span class="comment">%                 elseif LDA.kernel == LDA.KERNEL_RBF;</span>
+0069 <span class="comment">%                    LDA.models{i} = libsvmtrain(labels, instances, sprintf('-t %d -c %f -g %f -b 1 -q', LDA.kernel, LDA.cost, LDA.gamma));</span>
+0070 <span class="comment">%                 else</span>
+0071 <span class="comment">%                    error('invalid kernel parameter');</span>
+0072 <span class="comment">%                 end</span>
+0073 <span class="comment">%             end</span>
+0074         <span class="keyword">end</span>
+0075         
+0076         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(MLDA,instance)</a>
+0077             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0078             <span class="comment">%output = predicted class</span>
+0079             <span class="comment">%probabilities = probability for predicted class</span>
+0080             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0081             
+0082             
+0083             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0084             numModels = length(MLDA.models);
+0085             [numinstance, ~] = size(instance);
+0086             scores = zeros(numModels,numinstance);
+0087              
+0088             <span class="comment">% ---- Multi-class ----- %</span>
+0089             tic
+0090             [label,scores,cost] = predict(MLDA.models{1},instance); 
+0091             MLDA.totalTime = MLDA.totalTime + toc;
+0092             MLDA.totalCount = MLDA.totalCount  + numinstance;
+0093             <span class="comment">% ---- One (vs) All -----%</span>
+0094 <span class="comment">%              for i=1:numModels</span>
+0095 <span class="comment">%                  %predict using the stored models</span>
+0096 <span class="comment">%                  [label,score,cost] = predict(LDA.models{i},instance);</span>
+0097 <span class="comment">%                  %libsvmpredict(eye(numinstance,1),instance, LSVM.models{i},'-b 1 -q');</span>
+0098 <span class="comment">%                 %store probability for each class</span>
+0099 <span class="comment">%                 scores(i,:) = score(:,1);</span>
+0100 <span class="comment">%             end</span>
+0101 
+0102              output = zeros(numinstance,1);
+0103              probabilities = zeros(numinstance,1);
+0104              <span class="comment">%we need these for ranking metrics (e.g. mAP)</span>
+0105              ranking = scores;
+0106              <span class="keyword">for</span> i=1:numinstance
+0107                  <span class="comment">%select the class with the highest probability</span>
+0108                  [prob, idx] = max(scores(i,:));
+0109                  uniqueLabels = unique(MLDA.instanceSet.getLabels);
+0110                  <span class="comment">%output the label with highest probability</span>
+0111                  output(i,1) = uniqueLabels(idx);
+0112                  <span class="comment">%return the probability for the output label</span>
+0113                  probabilities(i,1) = prob;
+0114              <span class="keyword">end</span>
+0115         <span class="keyword">end</span>
+0116         
+0117         <a name="_sub3" href="#_subfunctions" class="code">function MLDA = reset(MLDA)</a>
+0118             <span class="comment">%delete all stored models</span>
+0119             MLDA.models = {};
+0120         <span class="keyword">end</span>
+0121         
+0122         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(MLDA)</a>
+0123             configInfo = sprintf(<span class="string">'MLDA\tdiscrimtype:%s\tdelta:%f\tgamma:%f\tfillcoeffs:%d\tscoretransform:%s\tprior:%s'</span>,MLDA.DiscrimType, MLDA.Delta, MLDA.Gamma, MLDA.FillCoeffs, MLDA.ScoreTransform, MLDA.Prior);
+0124         <span class="keyword">end</span>
+0125         
+0126                         
+0127         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(MLDA)</a>
+0128             time = MLDA.totalTime/MLDA.totalCount;
+0129         <span class="keyword">end</span>
+0130                 
+0131     <span class="keyword">end</span>
+0132 <span class="keyword">end</span>
+0133</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

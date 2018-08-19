@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of VLAD</title>
+  <meta name="keywords" content="VLAD">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+aggregation</a> &gt; <a href="index.html">@VLAD</a> &gt; VLAD.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+aggregation/@VLAD&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>VLAD
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="VLAD.html" class="code" title="">VLAD</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="VLAD.html" class="code" title="">VLAD</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function VA = VLAD(codebookfilename)</a></li><li><a href="#_sub2" class="code">function VA = aggregate(VA)</a></li><li><a href="#_sub3" class="code">function configInfo = getConfigInfo(VA)</a></li><li><a href="#_sub4" class="code">function time = getTime(VA)</a></li><li><a href="#_sub5" class="code">function [] = trainCodebook(session, channels, numCenters, codebookfilename)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="VLAD.m">VLAD.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="VLAD.html" class="code" title="">VLAD</a> &lt; eegtoolkit.aggregation.AggregatorBase;
+0002     
+0003     properties
+0004         kdtree;
+0005         centers;
+0006         codebookInfo;
+0007         numClusters;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods
+0011         
+0012         <a name="_sub0" href="#_subfunctions" class="code">function VA = VLAD(codebookfilename)</a>
+0013             load(codebookfilename);
+0014             VA.kdtree = kdtree;
+0015             VA.centers = centers;
+0016             VA.codebookInfo = codebookInfo;
+0017             [~,VA.numClusters] = size(centers);
+0018         <span class="keyword">end</span>
+0019         
+0020         <a name="_sub1" href="#_subfunctions" class="code">function VA = aggregate(VA)</a>
+0021             numExtract = length(VA.transformers);
+0022             numFeatures = VA.featextractors{1}.instanceSet.getNumFeatures;
+0023             numTrials = length(VA.featextractors{1}.trials);
+0024             instances = zeros(numTrials,numExtract,numFeatures);
+0025             vlads = zeros(numTrials,VA.kdtree.numData*numFeatures);
+0026             <span class="keyword">for</span> i=1:numExtract
+0027                 instances(:,i,:) = VA.featextractors{i}.getInstances;
+0028             <span class="keyword">end</span>
+0029             <span class="keyword">for</span> i=1:numTrials
+0030                 dataToBeEncoded = squeeze(instances(i,:,:));
+0031                 nn = vl_kdtreequery(VA.kdtree, VA.centers, dataToBeEncoded');
+0032                 assignments = zeros(VA.numClusters, numExtract);
+0033                 assignments(sub2ind(size(assignments), nn, 1:length(nn))) = 1;
+0034                 vlads(i,:) = vl_vlad(dataToBeEncoded',VA.centers,assignments);
+0035             <span class="keyword">end</span>
+0036             VA.instanceSet = eegtoolkit.util.InstanceSet(vlads,VA.featextractors{1}.getLabels);
+0037         <span class="keyword">end</span>
+0038         
+0039         <a name="_sub2" href="#_subfunctions" class="code">function configInfo = getConfigInfo(VA)</a>
+0040             configInfo = sprintf(<span class="string">'VLAD:\tcodebook:%s'</span>,VA.codebookInfo);
+0041         <span class="keyword">end</span>
+0042         
+0043                 
+0044         <a name="_sub3" href="#_subfunctions" class="code">function time = getTime(VA)</a>
+0045             time = 0;
+0046         <span class="keyword">end</span>
+0047     <span class="keyword">end</span>
+0048     
+0049     methods (Static)
+0050         <a name="_sub4" href="#_subfunctions" class="code">function [] = trainCodebook(session, channels, numCenters, codebookfilename)</a>
+0051             nfft = 512;
+0052             extractors = {};
+0053             numChannels = length(channels);
+0054             numTrials = length(session.trials);
+0055             numFeatures = nfft/2+1;
+0056             instances = zeros(numTrials,numChannels,numFeatures);
+0057             h = waitbar(0,<span class="string">'message'</span>);
+0058             <span class="keyword">for</span> i=1:length(channels)
+0059                 waitbar(i/(length(channels)+10),h,sprintf(<span class="string">'Computing channel:%d'</span>,channels(i)));
+0060                 extractors{i} = eegtoolkit.transformer.PWelchTransformer;
+0061                 extractors{i}.trials = session.trials;
+0062                 extractors{i}.channel = channels(i);
+0063                 extractors{i}.nfft = nfft;
+0064                 extractors{i}.seconds = 5;
+0065                 extractors{i}.transform;
+0066                 instances(:,i,:) = extractors{i}.getInstances;
+0067             <span class="keyword">end</span>
+0068             instances = reshape(instances,numTrials*numChannels,numFeatures);
+0069             waitbar(i/(length(channels)+10),h,<span class="string">'Clustering..'</span>);
+0070             centers = vl_kmeans(instances',numCenters);
+0071             waitbar(i+4/(length(channels)+10),h,<span class="string">'Building kdtree..'</span>);
+0072             kdtree = vl_kdtreebuild(centers);
+0073             waitbar(i+5/(length(channels)+10),h,<span class="string">'Saving variables..'</span>);
+0074             codebookInfo = sprintf(<span class="string">'filename:%s\tnumClusters:%d\tchannels:'</span>,codebookfilename, numCenters);
+0075             <span class="keyword">for</span> i=1:length(channels)
+0076                 codebookInfo = sprintf(<span class="string">'%s%d '</span>,codebookInfo,channels(i));
+0077             <span class="keyword">end</span>
+0078             save(codebookfilename,<span class="string">'centers'</span>,<span class="string">'kdtree'</span>,<span class="string">'codebookInfo'</span>);
+0079             close(h);
+0080         <span class="keyword">end</span>
+0081     <span class="keyword">end</span>
+0082 <span class="keyword">end</span>
+0083</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

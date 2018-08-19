@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of LIBSVMFast</title>
+  <meta name="keywords" content="LIBSVMFast">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">+eegtoolkit</a> &gt; <a href="#">+classification</a> &gt; <a href="index.html">@LIBSVMFast</a> &gt; LIBSVMFast.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for +eegtoolkit/+classification/@LIBSVMFast&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>LIBSVMFast
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LIBSVMFast.html" class="code" title="">LIBSVMFast</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="LIBSVMFast.html" class="code" title="">LIBSVMFast</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function LSVM = LIBSVMFast (instanceSet,kernel,cost,gamma,maxlag,scaleopt)</a></li><li><a href="#_sub2" class="code">function LSVM = build(LSVM)</a></li><li><a href="#_sub3" class="code">function [output, probabilities, ranking] = classifyInstance(LSVM)</a></li><li><a href="#_sub4" class="code">function LSVM = reset(LSVM)</a></li><li><a href="#_sub5" class="code">function configInfo = getConfigInfo(LSVM)</a></li><li><a href="#_sub6" class="code">function time = getTime(LSVM)</a></li></ul>
+<h2><a name="_download"></a>DOWNLOAD <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<p><a href="LIBSVMFast.m">LIBSVMFast.m</a></p>
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="LIBSVMFast.html" class="code" title="">LIBSVMFast</a> &lt; eegtoolkit.classification.ClassifierBase
+0002     
+0003     properties (Constant)
+0004 
+0005     <span class="keyword">end</span>
+0006     properties
+0007         kernel;
+0008         cost;
+0009         gamma;
+0010         models;
+0011         Ktrain;
+0012         Ktest;
+0013         maxlag;
+0014         scaleopt;
+0015         predictTotalTime;
+0016         predictCount;
+0017     <span class="keyword">end</span>
+0018     
+0019     methods (Access = public)
+0020         <a name="_sub0" href="#_subfunctions" class="code">function LSVM = LIBSVMFast (instanceSet,kernel,cost,gamma,maxlag,scaleopt)</a>
+0021             <span class="comment">%set default parameters</span>
+0022             LSVM.predictTotalTime = 0;
+0023             LSVM.predictCount = 0;
+0024             LSVM.kernel = <span class="string">'linear'</span>;
+0025             LSVM.cost = 1.0;
+0026             LSVM.gamma = 0.01;
+0027             LSVM.maxlag = 150;
+0028             LSVM.scaleopt = <span class="string">'coeff'</span>;
+0029             <span class="keyword">if</span> nargin &gt; 0
+0030                 LSVM.instanceSet = instanceSet;
+0031                 LSVM.gamma = 1/instanceSet.getNumFeatures;
+0032             <span class="keyword">end</span>
+0033             <span class="keyword">if</span> nargin &gt; 1
+0034                 LSVM.kernel = kernel;
+0035             <span class="keyword">end</span>
+0036             <span class="keyword">if</span> nargin &gt; 2
+0037                 LSVM.cost = cost;
+0038             <span class="keyword">end</span>
+0039             <span class="keyword">if</span> nargin &gt; 3
+0040                 LSVM.gamma = gamma;
+0041             <span class="keyword">end</span>
+0042             <span class="keyword">if</span> nargin &gt; 4
+0043                 LSVM.maxlag = maxlag;
+0044             <span class="keyword">end</span>
+0045             <span class="keyword">if</span> nargin &gt; 5
+0046                 LSVM.scaleopt = scaleopt;
+0047             <span class="keyword">end</span>
+0048         <span class="keyword">end</span>
+0049         
+0050         <a name="_sub1" href="#_subfunctions" class="code">function LSVM = build(LSVM)</a>
+0051             <span class="comment">%clear all from previous calls to &quot;build&quot;</span>
+0052             LSVM.reset;
+0053             numLabels = LSVM.instanceSet.getNumLabels;
+0054             uniqueLabels = unique(LSVM.instanceSet.getLabels);
+0055             <span class="keyword">for</span> i=1:numLabels
+0056                 currentLabel = uniqueLabels(i);
+0057                 labels = zeros(LSVM.instanceSet.getNumInstances,1)-1;
+0058                 labels(LSVM.instanceSet.getInstanceIndicesForLabel(currentLabel)) = 1;
+0059                 LSVM.models{i} = svmtrain(labels, [(1:size(LSVM.Ktrain,1))', <span class="keyword">...</span>
+0060                     LSVM.Ktrain+eye(size(LSVM.Ktrain,1))*realmin], <span class="keyword">...</span>
+0061                     sprintf(<span class="string">' -t 4 -c %f -b 1 -q'</span>, LSVM.cost));
+0062             <span class="keyword">end</span>
+0063         <span class="keyword">end</span>
+0064         
+0065         <a name="_sub2" href="#_subfunctions" class="code">function [output, probabilities, ranking] = classifyInstance(LSVM)</a>
+0066             <span class="comment">%input = instance matrix rows = instances, cols = attributes</span>
+0067             <span class="comment">%output = predicted class</span>
+0068             <span class="comment">%probabilities = probability for predicted class</span>
+0069             <span class="comment">%ranking = propabilities for all classes (e.g. to use with mAP)</span>
+0070             
+0071             <span class="comment">%TODO:should print an error if 'build' has not been called</span>
+0072             numModels = length(LSVM.models);
+0073             [numinstance, ~] = size(LSVM.Ktest);
+0074             scores = zeros(numModels,numinstance);
+0075             <span class="keyword">for</span> i=1:numModels
+0076                 <span class="comment">%predict using the stored models</span>
+0077                 tic
+0078                 [~, ~, t] = svmpredict(eye(numinstance,1),<span class="keyword">...</span>
+0079                     [(1:numinstance)', LSVM.Ktest], LSVM.models{i},<span class="string">'-b 1 -q'</span>);
+0080                 LSVM.predictTotalTime = LSVM.predictTotalTime + toc;
+0081                 LSVM.predictCount = LSVM.predictCount + numinstance;
+0082                 <span class="comment">%svmpredict(labels(~idx), [(1:sum(~idx))', K(~idx,idx)], model);</span>
+0083                 <span class="comment">%store probability for each class</span>
+0084                 scores(i,:) = t(:,1);
+0085             <span class="keyword">end</span>
+0086             output = zeros(numinstance,1);
+0087             probabilities = zeros(numinstance,1);
+0088             <span class="comment">%we need these for ranking metrics (e.g. mAP)</span>
+0089             ranking = scores;
+0090             <span class="keyword">for</span> i=1:numinstance
+0091                 <span class="comment">%select the class with the highest probability</span>
+0092                 [prob, idx] = max(scores(:,i));
+0093                 uniqueLabels = unique(LSVM.instanceSet.getLabels);
+0094                 <span class="comment">%output the label with highest probability</span>
+0095                 output(i,1) = uniqueLabels(idx);
+0096                 <span class="comment">%return the probability for the output label</span>
+0097                 probabilities(i,1) = prob;
+0098             <span class="keyword">end</span>
+0099         <span class="keyword">end</span>
+0100         
+0101         <a name="_sub3" href="#_subfunctions" class="code">function LSVM = reset(LSVM)</a>
+0102             <span class="comment">%delete all stored models</span>
+0103             LSVM.models = {};
+0104         <span class="keyword">end</span>
+0105         
+0106         <a name="_sub4" href="#_subfunctions" class="code">function configInfo = getConfigInfo(LSVM)</a>
+0107             <span class="keyword">switch</span> LSVM.kernel
+0108                 <span class="keyword">case</span> {<span class="string">'linear'</span>,<span class="string">'spearman'</span>,<span class="string">'correlation'</span>,<span class="string">'cosine'</span>}
+0109                     configInfo = sprintf(<span class="string">'LIBSVMFast\tkernel:%s\tcost:%d'</span>, LSVM.kernel, LSVM.cost);
+0110                 <span class="keyword">case</span> <span class="string">'xcorr'</span>
+0111                     configInfo = sprintf(<span class="string">'LIBSVMFast\tkernel:%s\tcost:%d\tgamma:%d\tmaxlag:%d\tscaleopt:%s'</span>, LSVM.kernel, LSVM.cost, LSVM.maxlag,LSVM.scaleopt);
+0112                 <span class="keyword">otherwise</span>
+0113                     configInfo = sprintf(<span class="string">'LIBSVMFast\tkernel:%s\tcost:%d\tgamma:%d'</span>, LSVM.kernel, LSVM.cost, LSVM.gamma);
+0114 <span class="comment">%                 otherwise</span>
+0115 <span class="comment">%                     configInfo = 'Error in configuration (only linear and rbf kernels supported for now)';</span>
+0116             <span class="keyword">end</span>
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub5" href="#_subfunctions" class="code">function time = getTime(LSVM)</a>
+0120             time = LSVM.predictTotalTime/LSVM.predictCount;
+0121         <span class="keyword">end</span>
+0122     <span class="keyword">end</span>
+0123 <span class="keyword">end</span>
+0124</pre></div>
+<hr><address>Generated on Fri 25-Nov-2016 17:12:22 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
